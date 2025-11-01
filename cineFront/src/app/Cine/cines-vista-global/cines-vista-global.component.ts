@@ -1,5 +1,4 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule, Button } from 'primeng/button';
 import { CardModule, Card } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
@@ -18,15 +17,15 @@ import { BadgeModule } from 'primeng/badge';
 import { AccordionModule } from 'primeng/accordion';
 import { FieldsetModule } from 'primeng/fieldset';
 import { SelectModule } from 'primeng/select';
-import { DropdownModule } from 'primeng/dropdown';
 import { TagModule } from 'primeng/tag';
-import { CineServiceService } from '../../services/cine-service.service';
-import { cine } from '../../models/Cine';
+import {CineServiceService} from '@/services/cine-service.service';
+import {cine} from '@/models/Cine';
+
 @Component({
   selector: 'app-cines-vista-global',
-  imports: [Card,  Button, FormsModule, DropdownModule,
-    SplitterModule,  FieldsetModule, SelectModule,TagModule,
-    ScrollPanelModule, CardModule, ButtonModule,  CommonModule,
+  imports: [Card, Button, FormsModule,
+    SplitterModule, FieldsetModule, SelectModule, TagModule,
+    ScrollPanelModule, CardModule, ButtonModule, CommonModule,
     CurrencyPipe, AccordionModule, AvatarModule, BadgeModule,
     PanelModule, PaginatorModule, DialogModule, FileUploadModule, RatingModule
   ],
@@ -88,7 +87,7 @@ export class CinesVistaGlobalComponent implements OnInit{
     this.visible = true;
     this.listadoComentarios = []
 
- 
+
   }
 
 
@@ -101,7 +100,7 @@ export class CinesVistaGlobalComponent implements OnInit{
     this.id_cineEditar=id
 
 
-   
+
   }
 
 
@@ -118,7 +117,7 @@ export class CinesVistaGlobalComponent implements OnInit{
     this.cineServicio.editarHotel(nuevoCine, this.id_cineEditar).subscribe(
             (next) => {
         console.log(next);
-        
+
       }, (error) => {
         console.log(error);
 
@@ -138,11 +137,11 @@ export class CinesVistaGlobalComponent implements OnInit{
       costo: this.costo
     }
 
-    
+
     this.cineServicio.crearHotel(nuevoCine).subscribe(
       (next) => {
         console.log(next);
-        
+
       }, (error) => {
         console.log(error);
 
