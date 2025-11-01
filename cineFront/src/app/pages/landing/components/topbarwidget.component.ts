@@ -26,7 +26,7 @@ import {AppFloatingConfigurator} from "@/layout/component/app.floatingconfigurat
                     />
                 </g>
             </svg>
-            <span class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal mr-20">SAKAI</span>
+            <span class="text-surface-900 dark:text-surface-0 font-medium text-2xl leading-normal mr-20">LuxScreen</span>
         </a>
 
         <a pButton [text]="true" severity="secondary" [rounded]="true" pRipple class="lg:hidden!" pStyleClass="@next" enterFromClass="hidden" leaveToClass="hidden" [hideOnOutsideClick]="true">
@@ -37,28 +37,28 @@ import {AppFloatingConfigurator} from "@/layout/component/app.floatingconfigurat
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
                 <li>
                     <a (click)="router.navigate(['/landing'], { fragment: 'home' })" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                        <span>Home</span>
+                        <span>Inicio</span>
                     </a>
                 </li>
                 <li>
                     <a (click)="router.navigate(['/landing'], { fragment: 'features' })" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                        <span>Features</span>
+                        <span>Peliculas</span>
                     </a>
                 </li>
                 <li>
                     <a (click)="router.navigate(['/landing'], { fragment: 'highlights' })" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                        <span>Highlights</span>
+                        <span>Cines</span>
                     </a>
                 </li>
                 <li>
                     <a (click)="router.navigate(['/landing'], { fragment: 'pricing' })" pRipple class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium text-xl">
-                        <span>Pricing</span>
+                        <span>Promociones</span>
                     </a>
                 </li>
             </ul>
             <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
-                <button pButton pRipple label="Login" routerLink="/auth/login" [rounded]="true" [text]="true"></button>
-                <button pButton pRipple label="Register" routerLink="/auth/login" [rounded]="true"></button>
+                <button pButton pRipple label="Iniciar sesión" routerLink="/auth/login" [rounded]="true" [text]="true"></button>
+                <button pButton pRipple label="Registrarse" routerLink="/auth/login" [rounded]="true"></button>
                 <app-floating-configurator [float]="false"/>
             </div>
         </div> `

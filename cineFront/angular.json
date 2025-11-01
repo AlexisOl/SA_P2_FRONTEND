@@ -26,10 +26,8 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
-                            {
-                                "glob": "**/*",
-                                "input": "public"
-                            }
+                            "src/logo.ico",
+                            "src/assets"
                         ],
                         "styles": [
                             "src/assets/styles.scss"

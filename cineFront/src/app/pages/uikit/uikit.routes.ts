@@ -14,6 +14,7 @@ import { TableDemo } from './tabledemo';
 import { OverlayDemo } from './overlaydemo';
 import { TreeDemo } from './treedemo';
 import { MenuDemo } from './menudemo';
+import {DemoComponent} from '@/pages/uikit/demo/demo.component';
 
 export default [
     { path: 'button', data: { breadcrumb: 'Button' }, component: ButtonDemo },
@@ -29,7 +30,7 @@ export default [
     { path: 'timeline', data: { breadcrumb: 'Timeline' }, component: TimelineDemo },
     { path: 'table', data: { breadcrumb: 'Table' }, component: TableDemo },
     { path: 'overlay', data: { breadcrumb: 'Overlay' }, component: OverlayDemo },
-    { path: 'tree', data: { breadcrumb: 'Tree' }, component: TreeDemo },
+    { path: 'tree', data: { breadcrumb: 'Tree' }, component: DemoComponent },
     { path: 'menu', data: { breadcrumb: 'Menu' }, component: MenuDemo },
     { path: '**', redirectTo: '/notfound' }
 ] as Routes;

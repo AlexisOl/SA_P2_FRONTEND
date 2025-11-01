@@ -37,7 +37,7 @@ import { Component } from '@angular/core';
                 </div>
 
                 <div class="flex justify-end order-1 sm:order-2 col-span-12 lg:col-span-6 bg-yellow-100 p-0" style="border-radius: 8px">
-                    <img src="https://primefaces.org/cdn/templates/sakai/landing/mockup-desktop.png" class="w-11/12" alt="mockup" />
+                    <img src="https://www.google.com/imgres?q=cine&imgurl=https%3A%2F%2Fwww.anahuac.mx%2Fgeneracion-anahuac%2Fsites%2Fdefault%2Ffiles%2Farticles%2FSalaDeCine.jpg&imgrefurl=https%3A%2F%2Fwww.anahuac.mx%2Fgeneracion-anahuac%2Fel-regreso-las-salas-de-cine-en-mexico&docid=PHt7G2cfaeJInM&tbnid=3YEutRNlG3n6KM&vet=12ahUKEwiAm6HmkdCQAxU3SzABHZyLDHUQM3oECGoQAA..i&w=772&h=472&hcb=2&ved=2ahUKEwiAm6HmkdCQAxU3SzABHZyLDHUQM3oECGoQAA" class="w-11/12" alt="mockup" />
                 </div>
             </div>
         </div>
