@@ -1,1 +1,153 @@
-<p>categoria works!</p>
+<p-toolbar styleClass="mb-6">
+      <ng-template #start>
+        <p-button
+          label="Nueva"
+          icon="pi pi-plus"
+          severity="secondary"
+          class="mr-2"
+          (onClick)="openNew()"
+        />
+        <p-button
+          severity="secondary"
+          [label]="bulkActionLabel()"
+          [icon]="bulkActionIcon()"
+          outlined
+          (onClick)="toggleSelected()"
+          [disabled]="!selected?.length"
+        />
+      </ng-template>
+
+      <ng-template #end>
+        <p-button
+          label="Exportar CSV"
+          icon="pi pi-upload"
+          severity="secondary"
+          (onClick)="exportCSV()"
+        />
+      </ng-template>
+    </p-toolbar>
+
+    <p-table
+      #dt
+      [value]="rows()"
+      [(selection)]="selected"
+      dataKey="id"
+      [rowHover]="true"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 20, 30]"
+      [tableStyle]="{ 'min-width': '64rem' }"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} categorías"
+      [showCurrentPageReport]="true"
+    >
+      <ng-template #caption>
+        <div class="flex items-center justify-between">
+          <h5 class="m-0">Categorías (Géneros)</h5>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              (input)="onGlobalFilter(dt, $event)"
+              placeholder="Buscar..."
+            />
+          </p-iconfield>
+        </div>
+      </ng-template>
+
+      <ng-template #header>
+        <tr>
+          <th style="width: 3rem"><p-tableHeaderCheckbox /></th>
+          <th>Nombre</th>
+          <th>Activa</th>
+          <th>Creada</th>
+          <th>Actualizada</th>
+          <th style="width: 8rem"></th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-c>
+        <tr>
+          <td style="width:3rem"><p-tableCheckbox [value]="c" /></td>
+          <td>{{ c.nombre }}</td>
+          <td>
+            <p-tag
+              [value]="c.activa ? 'ACTIVA' : 'INACTIVA'"
+              [severity]="c.activa ? 'success' : 'danger'"
+            ></p-tag>
+          </td>
+          <td>{{ c.createdAt ? (c.createdAt | date: 'short') : '-' }}</td>
+          <td>{{ c.updatedAt ? (c.updatedAt | date: 'short') : '-' }}</td>
+          <td class="text-right">
+            <p-button
+              icon="pi pi-pencil"
+              class="mr-2"
+              [rounded]="true"
+              [outlined]="true"
+              (click)="edit(c)"
+            />
+            <p-button
+              [icon]="c.activa ? 'pi pi-ban' : 'pi pi-check'"
+              [severity]="c.activa ? 'warn' : 'success'"
+              [label]="c.activa ? 'Desactivar' : 'Activar'"
+              [rounded]="true"
+              [outlined]="true"
+              (click)="toggleOne(c)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6" class="text-center py-6">Sin datos</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-dialog
+      [(visible)]="dialog"
+      [style]="{ width: '420px' }"
+      header="{{ editing ? 'Editar' : 'Nueva' }} categoría"
+      [modal]="true"
+    >
+      <ng-template #content>
+        <div class="flex flex-col gap-4">
+          <div>
+            <label class="block font-bold mb-2">Nombre *</label>
+            <input
+              pInputText
+              [(ngModel)]="form.nombre"
+              required
+              autofocus
+              fluid
+            />
+            <small class="text-red-500" *ngIf="submitted && !form.nombre"
+              >Requerido</small
+            >
+          </div>
+
+          <div class="flex align-items-center gap-2">
+            <p-checkbox
+              [(ngModel)]="form.activa"
+              [binary]="true"
+              inputId="activa"
+            ></p-checkbox>
+            <label for="activa">Activa</label>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #footer>
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          text
+          (click)="hideDialog()"
+        />
+        <p-button label="Guardar" icon="pi pi-check" (click)="save()" />
+      </ng-template>
+    </p-dialog>
+
+    <p-confirmdialog [style]="{ width: '450px' }" />
+    <p-toast />
