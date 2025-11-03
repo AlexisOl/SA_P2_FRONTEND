@@ -1,5 +1,5 @@
 export interface Movie {
-  id: string;
+  id?: string;
   titulo: string;
   sinopsis: string;
   duracion: number;

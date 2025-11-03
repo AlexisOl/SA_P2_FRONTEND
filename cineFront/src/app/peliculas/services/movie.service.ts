@@ -10,22 +10,8 @@ export class MovieService {
   private http = inject(HttpClient);
   private readonly BASE = 'http://localhost:8082/api/v1'; // o `${environment.apiUrl}/api/v1/peliculas`
 
-  list(page = 0, size = 10, search = '', sort = 'createdAt,desc'): Observable<Page<Movie>> {
-    let params = new HttpParams().set('page', page).set('size', size).set('sort', sort);
-    if (search) params = params.set('search', search);
-
-    return this.http.get<any>(`${this.BASE}/peliculas`, { params }).pipe(
-      map(res => {
-        
-        if (Array.isArray(res)) {
-          const start = page * size;
-          const sliced = res.slice(start, start + size);
-          return { content: sliced as Movie[], totalElements: res.length } as Page<Movie>;
-        }
-        // Caso paginado esperado: { content, totalElements, ... }
-        return res as Page<Movie>;
-      })
-    );
+  list(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(`${this.BASE}/peliculas`);
   }
 
   getById(id: string) {
@@ -41,19 +27,29 @@ export class MovieService {
   update(id: string, body: Partial<Movie>) {
     return this.http.put<Movie>(`${this.BASE}/peliculas/${id}`, body);
   }
+  getCategorias() {
+    return this.http.get<Array<{ id: string; nombre: string; activa: boolean }>>(
+      `${this.BASE}/categorias`
+    );
+  }
 
   remove(id: string) {
     return this.http.delete<void>(`${this.BASE}/peliculas/${id}`);
   }
 
   activar(id: string) {
-    return this.http.post<void>(`${this.BASE}/${id}/peliculas/activar`, {});
+    return this.http.post<void>(`${this.BASE}/peliculas/${id}/activar`, {});
   }
 
   desactivar(id: string) {
-    return this.http.post<void>(`${this.BASE}/${id}/desactivar`, {});
+    return this.http.post<void>(`${this.BASE}/peliculas/${id}/desactivar`, {});
   }
 
+  getCategoriasDePelicula(peliculaId: string) {
+    return this.http.get<Array<{ id: string; nombre: string }>>(
+      `${this.BASE}/detalle-categoria/peliculas/${peliculaId}/categorias`
+    );
+  }
 
   // categorías (detalle-categoria)
   listMovieCategories(movieId: string) {
