@@ -5,6 +5,7 @@ import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 import {LandingComponent} from '@/pages/landing/components/landing/landing.component';
+import { CategoriesCrudComponent } from '@/peliculas/categoria/categoria';
 
 export const appRoutes: Routes = [
 
@@ -15,6 +16,18 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
+            { path: 'documentation', component: Documentation },
+            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
+            { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
+        ]
+    },
+    {
+        path: 'peliculas',
+        component: AppLayout,
+        children: [
+            { path: '', component: Dashboard },
+            { path: 'categorias', component: CategoriesCrudComponent },
+            { path: 'categorias1', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
