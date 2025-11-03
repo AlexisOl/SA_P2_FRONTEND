@@ -25,9 +25,9 @@ export const appRoutes: Routes = [
         path: 'peliculas',
         component: AppLayout,
         children: [
-            { path: '', component: Dashboard },
-            { path: 'categorias', component: CategoriesCrudComponent },
-            { path: 'categorias1', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
+            //{ path: '', component: Dashboard },
+            //{ path: '', component: CategoriesCrudComponent },
+            { path: '', loadChildren: () => import('./app/peliculas/peliculas.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
