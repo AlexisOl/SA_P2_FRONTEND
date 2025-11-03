@@ -2,14 +2,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Category } from '@/interfaces/movie.interface';
 
-export interface Category {
-  id: string;
-  nombre: string;
-  activa: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+
 
 export type CategoryCreateDto = Pick<Category, 'nombre' | 'activa'>;
 

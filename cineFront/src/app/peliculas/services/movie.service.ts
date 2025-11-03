@@ -1,24 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
+import { Movie, Page } from '@/interfaces/movie.interface';
 
-export interface Movie {
-  id: string;
-  titulo: string;
-  sinopsis: string;
-  duracion: number;
-  posters: string[];      // URLs
-  cast: string[];
-  director: string;
-  clasificacion: string;  // A, B12, etc.
-  activa: boolean;
-  fechaEstreno: string;   // YYYY-MM-DD
-}
 
-export interface Page<T> {
-  content: T[];
-  totalElements: number;
-}
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
@@ -31,8 +16,6 @@ export class MovieService {
 
     return this.http.get<any>(`${this.BASE}/peliculas`, { params }).pipe(
       map(res => {
-        // Fallback si el backend devuelve arreglo plano sin paginar
-        console.log('Listando...------------');
         
         if (Array.isArray(res)) {
           const start = page * size;

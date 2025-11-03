@@ -18,7 +18,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Category, CategoryService } from '../services/category';
+import { CategoryService } from '../services/category';
+import { Category } from '@/interfaces/movie.interface';
 //import { Category, CategoryService } from '../service/category.service';
 
 @Component({

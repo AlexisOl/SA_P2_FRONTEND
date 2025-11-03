@@ -18,7 +18,8 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import type { ButtonSeverity } from 'primeng/button';
 
-import { Movie, MovieService, Page } from '../services/movie.service';
+import {  MovieService } from '../services/movie.service';
+import { Movie, Page } from '@/interfaces/movie.interface';
 
 @Component({
   selector: 'app-movies-list',
