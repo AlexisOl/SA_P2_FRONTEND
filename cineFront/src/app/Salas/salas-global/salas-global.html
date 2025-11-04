@@ -1,0 +1,235 @@
+<div class="card flex justify-center mb-2">
+  <p-fieldset legend="Gestion de salas">
+    <p class="m-0">
+      Para crear una nueva sala haga click en el boton
+    </p>
+    <p-button label="Nuevo cine" class="w-full" styleClass="w-full"
+      (onClick)="this.verDialogoNuevaSala()" />
+  </p-fieldset>
+</div>
+
+
+<!-- informacion general del cine-->
+<p-fieldset legend="Información general de hotel" class="mb-6">
+  <div class="grid grid-cols-1 gap-3 p-2">
+    <div class="flex">
+      <span class="font-semibold w-32">Nombre:</span>
+      <span>{{ this.cineEspecifico.nombre }}</span>
+    </div>
+    <div class="flex">
+      <span class="font-semibold w-32">Teléfono:</span>
+      <span>{{ this.cineEspecifico.telefono }}</span>
+    </div>
+    <div class="flex">
+      <span class="font-semibold w-32">Dirección:</span>
+      <span>{{ this.cineEspecifico.direccion }}</span>
+    </div>
+    <div class="flex">
+      <span class="font-semibold w-32">Ver saldos de la empresa:</span>
+      <span>
+        <p-button label="Ver información" icon="pi pi-search" iconPos="right">
+          <a [routerLink]="'/admin/reportes/hotel/' + this.cineEspecifico.id" class="p-button p-component"
+            style="text-decoration: none; color: inherit;">
+          </a>
+        </p-button>
+      </span>
+    </div>
+
+  </div>
+</p-fieldset>
+
+
+
+
+<!-- Panel LISTADO -->
+<div class="h-full w-full mb-2">
+  <div style="
+            display: grid;
+            grid-template-columns: repeat(3, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+          ">
+    @for (item of this.paginatedItems; track $index) {
+    <p-card [style]="{
+                width: '100%',
+                overflow: 'hidden',
+                borderRadius: '1rem',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+              }">
+
+      <ng-template #title>
+        <span style="font-weight: 600;"> {{ item.nombre }}</span>
+        @if(item.promocion) {
+         <p-tag  severity="success" [value]='"En promoción: "+item.promocion.cantidad_descuento + "%"'></p-tag>
+          
+        }
+      </ng-template>
+      <ng-template #subtitle>
+        <span style="color: #6b7280;">{{ item.tipoSala  }}</span>
+       
+      </ng-template>
+    <div class="flex gap-2 flex-wrap">
+      <p-tag
+        icon="pi pi-check"
+        [severity]="item.validacionesSala.validar_calificaciones ? 'success' : 'danger'"
+        [value]="item.validacionesSala.validar_calificaciones ? 'Calificaciones' : 'Sin calificaciones'"
+      ></p-tag>
+
+      <p-tag
+        icon="pi pi-comments"
+        [severity]="item.validacionesSala.validar_comnentarios ? 'success' : 'danger'"
+        [value]="item.validacionesSala.validar_comnentarios ? 'Comentarios' : 'Sin comentarios'"
+      ></p-tag>
+
+      <p-tag
+        icon="pi pi-eye"
+        [severity]="item.validacionesSala.visible ? 'success' : 'danger'"
+        [value]="item.validacionesSala.visible ? 'Visible' : 'No visible'"
+      ></p-tag>
+    </div>
+
+
+      <p>
+          Filas: {{item.matrizAsientos.filas}} - Columnas: {{item.matrizAsientos.columnas}}
+      </p>
+
+      <div class="card flex justify-center">
+
+        <p-rating [(ngModel)]="item.promedio_valoracion" [readonly]="true"></p-rating>
+
+      </div>
+
+      <ng-template #footer>
+        <div class="flex gap-4 mt-1">
+          <p-button label="Ver comentarios" class="w-full" styleClass="w-full" (click)="showDialog(item.id)" />
+          <p-button label="Ver Cartelera" class="w-full" styleClass="w-full" (click)="showDialog(item.id)" />
+        
+        </div>
+      </ng-template>
+    </p-card>
+    }
+  </div>
+
+  <!-- paginator -->
+  <div style="margin-top: 1rem; display: flex; justify-content: center;">
+    <p-paginator [first]="first" [rows]="rows" [totalRecords]="items.length" [rowsPerPageOptions]="[3, 6, 10]"
+      (onPageChange)="cambiarPagina($event)" />
+  </div>
+</div>
+
+
+
+<!-- comentarios en una habitacion-->
+<!-- <div class="card flex justify-center">
+  <p-dialog header="Comentarios" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+    <div class="card flex justify-content-center">
+      <p-accordion value="0">
+        @for (item of this.listadoComentarios; track $index) {
+        <p-accordion-panel value="$index">
+          <p-accordion-header>
+            <ng-template #toggleicon let-active="active">
+              @if (active) {
+              <i class="pi pi-minus"></i>
+              } @else {
+              <i class="pi pi-plus"></i>
+              }
+            </ng-template>
+            <span class="flex items-center gap-2 w-full">
+              <span class="font-bold whitespace-nowrap">Comentario No.{{$index}}</span>
+              <p-badge value="{{item.puntuacion}}" class="ml-auto mr-2" />
+            </span>
+          </p-accordion-header>
+          <p-accordion-content>
+            <p class="m-0">
+              {{item.comentario}}
+            </p>
+          </p-accordion-content>
+        </p-accordion-panel>
+        }
+
+
+
+      </p-accordion>
+    </div>
+  </p-dialog>
+</div> -->
+
+<!-- para nuevos cines-->
+
+<div class="card flex justify-center">
+<p-dialog header="Nueva Sala" [modal]="true" [(visible)]="visibleNuevaSala" [style]="{ width: '35rem' }">
+
+  <!-- Nombre Sala -->
+  <div class="flex items-center gap-4 mb-3">
+    <label for="nombre" class="font-semibold w-32">Nombre de Sala</label>
+    <input pInputText id="nombre"
+      class="flex-auto border border-gray-400 rounded px-2 py-1 focus:border-blue-500 focus:outline-none"
+      type="text" [(ngModel)]="this.nombre" />
+  </div>
+
+  <!-- Tipo Sala -->
+  <div class="flex items-center gap-4 mb-3">
+    <label for="tipo" class="font-semibold w-32">Tipo de Sala</label>
+    <p-select
+      id="tipo"
+      [options]="this.opcionesSala"
+      
+      placeholder="Seleccionar"
+      [(ngModel)]="this.tipoSala"
+    
+    />
+
+  </div>
+
+  <!-- Matriz Asientos -->
+  <h3 class="font-semibold mb-2">Asientos</h3>
+
+  <div class="flex items-center gap-4 mb-3">
+    <label for="filas" class="font-semibold w-32">Filas</label>
+    <input pInputText id="filas"
+      type="number"
+      min="1"
+      [(ngModel)]="this.filas"
+      class="border border-gray-400 rounded px-2 py-1 flex-auto" />
+  </div>
+
+  <div class="flex items-center gap-4 mb-3">
+    <label for="columnas" class="font-semibold w-32">Columnas</label>
+    <input pInputText id="columnas"
+      type="number"
+      min="1"
+      [(ngModel)]="this.columnas"
+      class="border border-gray-400 rounded px-2 py-1 flex-auto" />
+  </div>
+
+  <!-- Validaciones -->
+  <h3 class="font-semibold mb-2">Permisos sala</h3>
+
+  <div class="flex items-center gap-3 mb-3">
+    <p-checkbox inputId="comentarios"
+      [(ngModel)]="this.validar_comnentarios"></p-checkbox>
+    <label for="comentarios">Permitir comentarios</label>
+  </div>
+
+  <div class="flex items-center gap-3 mb-3">
+    <p-checkbox inputId="calificaciones"
+      [(ngModel)]="this.validar_calificaciones"></p-checkbox>
+    <label for="calificaciones">Permitir calificaciones</label>
+  </div>
+
+
+
+  <!-- Botones -->
+  <div class="flex justify-end gap-2 mt-4">
+    <p-button label="Cancelar" severity="secondary" (click)="visibleNuevaSala = false" />
+    <p-button label="Guardar" (click)="guardarSala()" />
+  </div>
+
+</p-dialog>
+
+</div>
+
+
+
+
+
