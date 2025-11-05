@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Category } from '@/interfaces/movie.interface';
+import { environment } from 'src/environments/environment.development';
 
 
 
@@ -11,7 +12,8 @@ export type CategoryCreateDto = Pick<Category, 'nombre' | 'activa'>;
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
   private http = inject(HttpClient);
-  private readonly BASE = 'http://localhost:8082/api/v1/categorias'; // <-- ajusta a tu gateway real
+  base = environment.URL_GATEWAY;
+  private readonly BASE = `${this.base}/api/v1/categorias`; // <-- ajusta a tu gateway real
 
   list(): Observable<Category[]> {
     return this.http.get<Category[]>(this.BASE);

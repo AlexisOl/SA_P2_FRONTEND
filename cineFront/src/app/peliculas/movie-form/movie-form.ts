@@ -119,7 +119,7 @@ import { Category, Movie } from '@/interfaces/movie.interface';
              (keydown)="onCastComma($event)" (blur)="addCastFromBlur()"
              class="flex-1"/>
       <p-button label="Añadir" icon="pi pi-plus"
-                (onClick)="addCastFromButton()" [disabled]="!castInput?.trim()"/>
+                (onClick)="addCastFromButton()" [disabled]="!castInput.trim()"/>
     </div>
   </div>
 

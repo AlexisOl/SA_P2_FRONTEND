@@ -1,6 +1,6 @@
 // src/app/services/users.service.ts
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { catchError, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserDTO } from '@/models/user.model';
@@ -61,6 +61,7 @@ export class UsersService {
   }
 
   acreditarBanca(id: string, dto: { monto: number; motivo: string }) {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     return this.http
       .patch(`${BASE}/${id}/banca/acreditar`, dto, { observe: 'response' })
       .pipe(map((res: HttpResponse<any>) => res.status >= 200 && res.status < 300));
