@@ -39,7 +39,7 @@ export interface snacks {
         id?:String;
     nombre:String;
      precio:Number;
-      tipo:TipoSnacks;
+      tipo:String;
      idCine:String;
     promedio_valoracion?:Number;
 

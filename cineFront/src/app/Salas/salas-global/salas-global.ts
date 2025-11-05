@@ -20,12 +20,14 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SelectModule } from 'primeng/select';
 import { SplitterModule } from 'primeng/splitter';
 import { TagModule } from 'primeng/tag';
+import { Checkbox } from 'primeng/checkbox';
+
 @Component({
   selector: 'app-salas-global',
   imports: [Card, Button, FormsModule,
     SplitterModule, FieldsetModule, SelectModule, TagModule,
     ScrollPanelModule, CardModule, ButtonModule, CommonModule,
-    CurrencyPipe, AccordionModule, AvatarModule, BadgeModule,RouterLink,
+    CurrencyPipe, AccordionModule, AvatarModule, BadgeModule,RouterLink,Checkbox,
     PanelModule, PaginatorModule, DialogModule, FileUploadModule, RatingModule],
   templateUrl: './salas-global.html',
   styleUrl: './salas-global.scss',

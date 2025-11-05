@@ -22,13 +22,18 @@
     </div>
     <div class="flex">
       <span class="font-semibold w-32">Dirección:</span>
-      <span>{{ this.cineEspecifico.direccion }}</span>
+      <span>{{ this.cineEspecifico.ubicacion }}</span>
+    </div>
+        <div class="flex">
+      <span class="font-semibold w-32">Cartera:</span>
+      <span>{{ this.cineEspecifico.cartera }}</span>
     </div>
     <div class="flex">
-      <span class="font-semibold w-32">Ver saldos de la empresa:</span>
+      <span class="font-semibold w-32">Ver dulceria del cine:</span>
       <span>
         <p-button label="Ver información" icon="pi pi-search" iconPos="right">
-          <a [routerLink]="'/admin/reportes/hotel/' + this.cineEspecifico.id" class="p-button p-component"
+
+          <a [routerLink]="'/home/cine/' + this.cineEspecifico.id+'/snacks'" class="p-button p-component"
             style="text-decoration: none; color: inherit;">
           </a>
         </p-button>
@@ -206,14 +211,17 @@
   <h3 class="font-semibold mb-2">Permisos sala</h3>
 
   <div class="flex items-center gap-3 mb-3">
+    
+
+
     <p-checkbox inputId="comentarios"
-      [(ngModel)]="this.validar_comnentarios"></p-checkbox>
+      [(ngModel)]="this.validar_comnentarios" [binary]="true"></p-checkbox>
     <label for="comentarios">Permitir comentarios</label>
   </div>
 
   <div class="flex items-center gap-3 mb-3">
     <p-checkbox inputId="calificaciones"
-      [(ngModel)]="this.validar_calificaciones"></p-checkbox>
+      [(ngModel)]="this.validar_calificaciones" [binary]="true"></p-checkbox>
     <label for="calificaciones">Permitir calificaciones</label>
   </div>
 

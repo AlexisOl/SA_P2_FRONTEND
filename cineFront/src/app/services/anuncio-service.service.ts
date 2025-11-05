@@ -1,4 +1,4 @@
-import { cine, snacks } from '@/models/Cine';
+import { snacks } from '@/models/Cine';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -7,9 +7,9 @@ import { environment } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root',
 })
-export class SnacksService {
-  
-  readonly URL = environment.URL_GATEWAY+"/snacks";
+export class AnuncioServiceService {
+
+    readonly URL = environment.URL_GATEWAY+"/snacks";
 
 
 
@@ -20,7 +20,7 @@ export class SnacksService {
 
 
 
-     public listarSnackEspecifica(cine:String):Observable<snacks[]> {
+     public listarSalaaEspecifica(cine:String):Observable<snacks[]> {
     return  this.http.get<snacks[]>(
       this.URL+'/'+cine
     )
@@ -32,10 +32,10 @@ export class SnacksService {
     )}
 
 
-     public crearSnackCine(sala: any):Observable<snacks> {
+     public crearSnackHotel(sala: any):Observable<snacks> {
       return  this.http.post<snacks>(
         this.URL, sala
       )
     }
-
+  
 }
