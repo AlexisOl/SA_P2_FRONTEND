@@ -16,52 +16,56 @@ import { Router, RouterModule } from '@angular/router';
   selector: 'app-movies-grid',
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    CardModule, ButtonModule, TagModule,
-    IconFieldModule, InputTextModule, InputIconModule
+    CommonModule,
+    FormsModule,
+    CardModule,
+    ButtonModule,
+    TagModule,
+    IconFieldModule,
+    InputTextModule,
+    InputIconModule,
   ],
-  templateUrl: './movie-list.html'
+  templateUrl: './movie-list.html',
 })
 export class MoviesListComponent implements OnInit {
-  // estado
   loading = true;
-
-  // query de búsqueda (ngModel en el input)
   q = '';
 
-  // datos
-  private _all = signal<Movie[]>([]);       // todo lo que viene del API
-  filtered = signal<Movie[]>([]);           // lo que se muestra
-
-  constructor(private moviesSvc: MovieService, private router: Router) {}
+  private _all = signal<Movie[]>([]);
+  filtered = signal<Movie[]>([]);
+  constructor(
+    private moviesSvc: MovieService,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.moviesSvc.list().subscribe({
       next: (list) => {
         this._all.set(list ?? []);
-        this.applyFilter();                 // inicial
+        this.applyFilter(); // inicial
         this.loading = false;
       },
       error: () => {
         this._all.set([]);
         this.filtered.set([]);
         this.loading = false;
-      }
+      },
     });
 
-    // Re-aplicar filtro cuando cambie la fuente original (si recargas)
-    effect(() => { this._all(); this.applyFilter(); });
+    effect(() => {
+      this._all();
+      this.applyFilter();
+    });
   }
 
   openMovie(m: Movie) {
-    // ajusta la ruta según tu app: '/peliculas/:id' o '/movies/:id'
-    console.log('navigate');
-    
+    console.log('navigate xd');
+
     this.router.navigate(['/peliculas', m.id]);
   }
 
-  // --- FILTRO LOCAL ---
-  // Normaliza: acentos fuera, minúsculas, quita espacios sobrantes
+  
+  // Normaliza
   private norm(s: unknown) {
     return String(s ?? '')
       .toLowerCase()
@@ -80,12 +84,12 @@ export class MoviesListComponent implements OnInit {
       return;
     }
 
-    const out = all.filter(m => {
+    const out = all.filter((m) => {
       const hay = [
         this.norm(m.titulo),
         this.norm(m.director),
         this.norm(m.clasificacion),
-        this.norm((m.cast ?? []).join(' '))
+        this.norm((m.cast ?? []).join(' ')),
       ].join(' ');
       return hay.includes(term);
     });
