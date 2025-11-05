@@ -20,6 +20,7 @@ export const appRoutes: Routes = [
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
             { path: 'promocion', loadChildren: () => import('./app/promocion/promocion.route') },
+            { path: 'anuncios', loadChildren: () => import('./app/Anuncios/anuncios.routes') },
         ]
     },
     {
