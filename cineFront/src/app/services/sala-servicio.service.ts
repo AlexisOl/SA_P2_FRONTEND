@@ -38,7 +38,19 @@ export class SalaServicio {
       )
     }
 
+ cambiarVisibilidad(id: String){
+     return this.http.put(this.URL+"/visible/"+id,{})
  
+   }
+   cambiarVisibilidadComentarios(id: String){
+     return this.http.put(this.URL+"/comentarios/"+id, {})
+ 
+   }
+   
+   cambiarVisibilidadCalificaciones( id: String){
+     return this.http.put(this.URL+"/calificaicones/"+id,{})
+ 
+   }
 
 
 }

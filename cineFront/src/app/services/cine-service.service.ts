@@ -47,6 +47,8 @@ export class CineServiceService {
 
   }
 
+  
+
   obtenerHotelEspecifico(id:string){
         return this.http.get<cine>(
       this.URL+"/"+id

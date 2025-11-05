@@ -1,0 +1,224 @@
+
+
+    <!--Para crear nuevos anuncios-->
+  <div class="lg:col-span-2 space-y-6">
+    <div class="card flex justify-center mb-2">
+      <p-fieldset legend="Gestion de anuncios">
+        <p class="m-0">
+          Para crear un nuevo annuncio haga click en el boton
+        </p>
+        <p-button label="Nuevo cine" class="w-full" styleClass="w-full" (onClick)="this.verDialogoNuevoAnuncio()" />
+      </p-fieldset>
+    </div>
+
+
+
+
+    <!-- Panel LISTADO anuncios -->
+  <div class="h-full w-full mb-2">
+  <div style="
+        display: grid;
+        grid-template-columns: repeat(3, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+      ">
+    @for (item of this.paginatedItems; track $index) {
+      <p-card [style]="{
+        width: '100%',
+        overflow: 'hidden',
+        borderRadius: '1rem',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+      }">
+        
+        <!-- TÍTULO + TIPO -->
+        <ng-template #title>
+          <div class="flex justify-between items-center">
+            <span class="font-semibold text-lg">{{ item.idAnuncio.titulo }}</span>
+            <p-tag 
+              [severity]="item.idAnuncio.activo ? 'success' : 'danger'"
+              [value]="item.idAnuncio.tipo"
+              class="text-xs"
+            />
+          </div>
+        </ng-template>
+
+        <!-- SUBTÍTULO: Estado -->
+        <ng-template #subtitle>
+          <p-tag class="text-sm text-gray-600" [severity]="item.idAnuncio.activo ? 'success' : 'danger'">
+            {{ item.idAnuncio.activo ? 'Activo' : 'Inactivo' }}
+          </p-tag>
+        </ng-template>
+
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <!-- IMAGEN -->
+          @if (item.idAnuncio.tipo === 'IMAGEN' && item.linkimagen) {
+            <img 
+              [src]="item.linkimagen" 
+              class="w-full h-48 object-contain rounded-lg border"
+              alt="Anuncio"
+            />
+          }
+
+          <!-- VIDEO -->
+          @else if (item.idAnuncio.tipo === 'VIDEO' && item.linkvideo) {
+            <video 
+              [src]="item.linkvideo" 
+              class="w-full h-48 rounded-lg border object-contain"
+              controls
+              preload="metadata"
+            ></video>
+          }
+
+          <!-- TEXTO -->
+          @else if (item.idAnuncio.tipo === 'TEXTO' && item.texto) {
+            <div class="p-4 bg-white border rounded-lg min-h-32 flex items-center justify-center text-center">
+              <h3 class="text-3xl  text-black font-bold">{{ item.texto }}</h3>
+            </div>
+          }
+
+          <!-- TEXTO SECUNDARIO (si hay) -->
+          @if (item.texto && item.idAnuncio.tipo !== 'TEXTO') {
+              <h3 class="text-2xl  text-gray-800 font-bold">{{ item.texto }}</h3>
+
+          }
+        </div>
+
+        <!-- FOOTER: Acciones -->
+         @if (item.idAnuncio.activo) {
+        <ng-template #footer>
+          <div class="flex gap-2 mt-2">
+            <p-button 
+              label="Comprar Anuncio" 
+              icon="pi pi-sale" 
+              class="flex-1" 
+              severity="info"
+              (onClick)="this.verDialogoNuevaCompraAnuncio(item.idAnuncio.id)"
+            />
+        
+          </div>
+        </ng-template>
+         }
+
+      </p-card>
+    }
+  </div>
+
+  <div class="flex justify-center mt-4">
+    <p-paginator 
+      [first]="first" 
+      [rows]="rows" 
+      [totalRecords]="items.length" 
+      [rowsPerPageOptions]="[3, 6, 10]"
+      (onPageChange)="cambiarPagina($event)" 
+    />
+  </div>
+</div>
+
+
+  </div>
+  <!-- COLUMNA 2: GALERÍA DE ANUNCIOS -->
+
+
+
+
+<!-- para nuevos anuncios-->
+
+<div class="card flex justify-center">
+  <p-dialog header="Nuevo Anuncio" [modal]="true" [(visible)]="visibleNuevoAnuncio" [style]="{ width: '40rem' }">
+
+    <!-- Título -->
+    <div class="flex items-center gap-4 mb-4">
+      <label for="titulo" class="font-semibold w-32">Título</label>
+      <input pInputText id="titulo" class="border border-gray-400 rounded px-2 py-1 flex-auto" [(ngModel)]="titulo" required />
+    </div>
+
+    <!-- Tipo de anuncio -->
+    <div class="flex items-center gap-4 mb-4">
+      <label for="tipo" class="font-semibold w-32">Tipo</label>
+      <p-select id="tipo" [options]="opcionesAnuncio"
+      class="border border-gray-400 rounded px-2 py-1 flex-auto"
+      [(ngModel)]="tipo" (onChange)="onTipoChange()" />
+    </div>
+
+    <!-- COSTOS (opcional) -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="flex items-center gap-2">
+        <label class="font-semibold w-32">Costo Vis.</label>
+        <input pInputText type="number" [(ngModel)]="costoVisibilidad" class="border border-gray-400 rounded px-2 py-1 flex-auto" />
+      </div>
+    
+    </div>
+
+    <!-- CAMPOS CONDICIONALES -->
+    <!-- TEXTO -->
+    <div *ngIf="tipo === 'TEXTO'" class="mb-4">
+      <label class="font-semibold block mb-2">Texto del anuncio</label>
+      <textarea pInputTextarea [(ngModel)]="texto" rows="4" class="border border-gray-400 rounded px-2 py-1 flex-auto w-full"></textarea>
+    </div>
+
+    <!-- IMAGEN -->
+    <div *ngIf="tipo === 'IMAGEN'" class="space-y-4">
+      <div>
+        <label class="font-semibold block mb-2">Texto (opcional)</label>
+        <textarea pInputTextarea [(ngModel)]="texto" rows="3" class="border border-gray-400 rounded px-2 py-1 flex-auto w-full"></textarea>
+      </div>
+      <div>
+        <label class="font-semibold block mb-2">Imagen</label>
+        <input type="file" accept="image/*" (change)="onFileChange($event, 'imagen')" class="border border-gray-400 rounded px-2 py-1 w-full flex-auto" />
+        <div *ngIf="previewUrl" class="mt-3">
+          <img [src]="previewUrl" class="max-w-full h-48 object-contain rounded-lg border" />
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEO -->
+    <div *ngIf="tipo === 'VIDEO'" class="space-y-4">
+      <div>
+        <label class="font-semibold block mb-2">Video</label>
+        <input type="file" accept="video/*" (change)="onFileChange($event, 'video')" class="border border-gray-400 rounded px-2 py-1 flex-auto w-full"/>
+        <div *ngIf="previewUrl" class="mt-3">
+          <video [src]="previewUrl" controls class="w-full max-h-64 rounded-lg border"></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="flex justify-end gap-2 mt-6">
+      <p-button label="Cancelar" severity="secondary" (click)="visibleNuevoAnuncio = false" />
+      <p-button label="Guardar" (click)="guardarAnuncio()" [disabled]="!titulo || !tipo" />
+    </div>
+
+  </p-dialog>
+</div>
+
+
+
+
+
+
+
+<!-- para nuevas compras-->
+
+<div class="card flex justify-center">
+  <p-dialog header="Nuevo Anuncio" [modal]="true" [(visible)]="visibleCompraAnuncio" [style]="{ width: '40rem' }">
+
+
+
+    <!-- Tipo de anuncio -->
+    <div class="flex items-center gap-4 mb-4">
+      <label for="tipo" class="font-semibold w-32">Tipo</label>
+      <p-select id="tipo" [options]="opcionesAnuncioVigencia"
+      class="border border-gray-400 rounded px-2 py-1 flex-auto"
+      [(ngModel)]="vigencia" />
+    </div>
+
+
+
+    <!-- BOTONES -->
+    <div class="flex justify-end gap-2 mt-6">
+      <p-button label="Cancelar" severity="secondary" (click)="visibleCompraAnuncio = false" />
+      <p-button label="Guardar" (click)="generarPropiedad()" [disabled]="!vigencia " />
+    </div>
+
+  </p-dialog>
+</div>
