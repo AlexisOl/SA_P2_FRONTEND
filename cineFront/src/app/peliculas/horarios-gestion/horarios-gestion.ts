@@ -75,79 +75,107 @@ export interface MovieMin {
     </p-toolbar>
 
     <!-- Filtros superiores -->
-    <div class="grid mb-4" style="row-gap:10px; column-gap:10px">
-      <div class="col-12 md:col-4">
-        <label class="block font-bold mb-2">Película *</label>
-        <p-select
-          class="w-full"
-          [(ngModel)]="sel.peliculaId"
-          [options]="peliculas"
-          optionLabel="titulo"
-          optionValue="id"
-          placeholder="Selecciona película"
-          (onChange)="onChangePelicula()"
-        />
+    <div
+      class="mb-4"
+      style="background: var(--surface-card); padding: 1.5rem; border-radius: 6px;"
+    >
+      <!-- Primera fila -->
+      <div
+        style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;"
+      >
+        <div style="flex: 1; min-width: 250px;">
+          <label
+            style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+            >Película *</label
+          >
+          <p-select
+            [(ngModel)]="sel.peliculaId"
+            [options]="peliculas"
+            optionLabel="titulo"
+            optionValue="id"
+            placeholder="Selecciona película"
+            (onChange)="onChangePelicula()"
+            [style]="{ width: '100%' }"
+          />
+        </div>
+
+        <div style="flex: 1; min-width: 250px;">
+          <label
+            style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+            >Cine *</label
+          >
+          <p-select
+            [(ngModel)]="sel.cinemaId"
+            [options]="cines"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Selecciona cine"
+            (onChange)="onChangeCine()"
+            [style]="{ width: '100%' }"
+          />
+        </div>
+
+        <div style="flex: 1; min-width: 250px;">
+          <label
+            style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+            >Sala *</label
+          >
+          <p-select
+            [(ngModel)]="sel.salaId"
+            [options]="salas"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Selecciona sala"
+            [disabled]="!salas.length"
+            [style]="{ width: '100%' }"
+          />
+        </div>
       </div>
 
-      <div class="col-12 md:col-4">
-        <label class="block font-bold mb-2">Cine *</label>
-        <p-select
-          class="w-full"
-          [(ngModel)]="sel.cinemaId"
-          [options]="cines"
-          optionLabel="nombre"
-          optionValue="id"
-          placeholder="Selecciona cine"
-          (onChange)="onChangeCine()"
-        />
-      </div>
+      <!-- Segunda fila -->
+      <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <label
+            style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+            >Desde</label
+          >
+          <p-datepicker
+            [(ngModel)]="filtrosDesde"
+            [showIcon]="true"
+            [showTime]="true"
+            [style]="{ width: '100%' }"
+          />
+        </div>
 
-      <div class="col-12 md:col-4">
-        <label class="block font-bold mb-2">Sala *</label>
-        <p-select
-          class="w-full"
-          [(ngModel)]="sel.salaId"
-          [options]="salas"
-          optionLabel="nombre"
-          optionValue="id"
-          placeholder="Selecciona sala"
-          [disabled]="!salas.length"
-        />
-      </div>
+        <div style="flex: 1; min-width: 200px;">
+          <label
+            style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+            >Hasta</label
+          >
+          <p-datepicker
+            [(ngModel)]="filtrosHasta"
+            [showIcon]="true"
+            [showTime]="true"
+            [style]="{ width: '100%' }"
+          />
+        </div>
 
-      <div class="col-12 md:col-3">
-        <label class="block font-bold mb-2">Desde</label>
-        <p-datepicker
-          class="w-full"
-          [(ngModel)]="filtrosDesde"
-          [showIcon]="true"
-          [showTime]="true"
-        ></p-datepicker>
-      </div>
-      <div class="col-12 md:col-3">
-        <label class="block font-bold mb-2">Hasta</label>
-        <p-datepicker
-          class="w-full"
-          [(ngModel)]="filtrosHasta"
-          [showIcon]="true"
-          [showTime]="true"
-        ></p-datepicker>
-      </div>
-      <div class="col-12 md:col-3 flex items-center gap-2">
-        <p-toggleswitch
-          [(ngModel)]="soloActivos"
-          (onChange)="load()"
-        ></p-toggleswitch
-        ><span>Solo activos</span>
-      </div>
-      <div class="col-12 md:col-3 flex gap-2">
-        <p-button label="Buscar" icon="pi pi-search" (click)="load()" />
-        <p-button
-          label="Limpiar"
-          icon="pi pi-eraser"
-          severity="secondary"
-          (click)="clearFilters()"
-        />
+        <div
+          style="flex: 0 0 auto; display: flex; align-items: center; gap: 0.5rem;"
+        >
+          <p-toggleswitch [(ngModel)]="soloActivos" (onChange)="load()" />
+          <span>Solo activos</span>
+        </div>
+
+        <div style="flex: 0 0 auto; display: flex; gap: 0.5rem;">
+          <p-button label="Buscar" icon="pi pi-search" (onClick)="load()" />
+          <p-button
+            label="Limpiar"
+            icon="pi pi-filter-slash"
+            severity="secondary"
+            (onClick)="clearFilters()"
+          />
+        </div>
       </div>
     </div>
 
@@ -215,6 +243,7 @@ export interface MovieMin {
     </p-table>
 
     <!-- Dialog crear/editar -->
+    <!-- Dialog crear/editar -->
     <p-dialog
       [(visible)]="dialog"
       [style]="{ width: '760px' }"
@@ -222,69 +251,99 @@ export interface MovieMin {
       header="{{ form.id ? 'Editar' : 'Nuevo' }} horario"
     >
       <ng-template #content>
-        <div class="grid" style="row-gap:10px; column-gap:10px">
-          <div class="col-12 md:col-4">
-            <label class="block font-bold mb-2">Idioma *</label>
+        <!-- Primera fila: Idioma, Formato, Precio -->
+        <div
+          style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;"
+        >
+          <div style="flex: 1; min-width: 200px;">
+            <label
+              style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+              >Idioma *</label
+            >
             <input
               pInputText
-              class="w-full"
               [(ngModel)]="form.idioma"
               placeholder="ES/EN..."
+              style="width: 100%;"
             />
           </div>
-          <div class="col-12 md:col-4">
-            <label class="block font-bold mb-2">Formato *</label>
+
+          <div style="flex: 1; min-width: 200px;">
+            <label
+              style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+              >Formato *</label
+            >
             <input
               pInputText
-              class="w-full"
               [(ngModel)]="form.formato"
               placeholder="2D/3D/IMAX..."
+              style="width: 100%;"
             />
           </div>
-          <div class="col-12 md:col-4">
-            <label class="block font-bold mb-2">Precio</label>
+
+          <div style="flex: 1; min-width: 200px;">
+            <label
+              style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+              >Precio</label
+            >
             <p-inputnumber
-              class="w-full"
               [(ngModel)]="form.precio"
               [min]="0"
               [useGrouping]="false"
               mode="currency"
               currency="GTQ"
               locale="es-GT"
-            ></p-inputnumber>
+              [style]="{ width: '100%' }"
+            />
           </div>
+        </div>
 
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Inicio *</label>
+        <!-- Segunda fila: Inicio, Fin -->
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 300px;">
+            <label
+              style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+              >Inicio *</label
+            >
             <p-datepicker
-              class="w-full"
               [(ngModel)]="formInicio"
               [showIcon]="true"
               [showTime]="true"
-            ></p-datepicker>
+              [style]="{ width: '100%' }"
+              appendTo="body"
+              dateFormat="dd/mm/yy"
+              [touchUI]="false"
+            />
           </div>
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Fin *</label>
+
+          <div style="flex: 1; min-width: 300px;">
+            <label
+              style="display: block; font-weight: 600; margin-bottom: 0.5rem;"
+              >Fin *</label
+            >
             <p-datepicker
-              class="w-full"
               [(ngModel)]="formFin"
               [showIcon]="true"
               [showTime]="true"
-            ></p-datepicker>
+              [style]="{ width: '100%' }"
+              appendTo="body"
+              dateFormat="dd/mm/yy"
+              [touchUI]="false"
+            />
           </div>
         </div>
       </ng-template>
+
       <ng-template #footer>
         <p-button
           label="Cancelar"
           icon="pi pi-times"
-          text
-          (click)="dialog = false"
+          [text]="true"
+          (onClick)="dialog = false"
         />
-        <p-button label="Guardar" icon="pi pi-check" (click)="save()" />
+        <p-button label="Guardar" icon="pi pi-check" (onClick)="save()" />
       </ng-template>
     </p-dialog>
-
     <p-confirmdialog [style]="{ width: '440px' }" />
     <p-toast />
   `,
