@@ -4,19 +4,28 @@ import { map, Observable } from 'rxjs';
 import { Movie, Page } from '@/interfaces/movie.interface';
 import {environment} from '../../../environments/environment';
 
-
+export interface PosterDto {
+  id: string;
+  url?: string; // puede venir como url/path/location
+  path?: string;
+  location?: string;
+  activa: boolean;
+  orden?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private http = inject(HttpClient);
-  private readonly BASE = 'http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1' // o `${environment.apiUrl}/api/v1/peliculas`
+  private readonly BASE = `${environment.URL_GATEWAY}/api/v1`;
 
   list(): Observable<Movie[]> {
     return this.http.get<Movie[]>(`http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1/peliculas`);
   }
 
   getById(id: string) {
-    return this.http.get<Movie>(`${this.BASE}/detalle-categoria/peliculas/${id}/categorias`);
+    return this.http.get<Movie>(
+      `${this.BASE}/detalle-categoria/peliculas/${id}/categorias`,
+    );
   }
 
   create(body: Partial<Movie>) {
@@ -29,9 +38,9 @@ export class MovieService {
     return this.http.put<Movie>(`${this.BASE}/peliculas/${id}`, body);
   }
   getCategorias() {
-    return this.http.get<Array<{ id: string; nombre: string; activa: boolean }>>(
-      `${this.BASE}/categorias`
-    );
+    return this.http.get<
+      Array<{ id: string; nombre: string; activa: boolean }>
+    >(`${this.BASE}/categorias`);
   }
 
   remove(id: string) {
@@ -48,7 +57,7 @@ export class MovieService {
 
   getCategoriasDePelicula(peliculaId: string) {
     return this.http.get<Array<{ id: string; nombre: string }>>(
-      `${this.BASE}/detalle-categoria/peliculas/${peliculaId}/categorias`
+      `${this.BASE}/detalle-categoria/peliculas/${peliculaId}/categorias`,
     );
   }
 
@@ -56,29 +65,34 @@ export class MovieService {
   listMovieCategories(movieId: string) {
     console.log('************* Categorias');
 
-    return this.http.get<{ id: string; nombre: string; activa: boolean; }[]>(
-      `${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias`
+    return this.http.get<{ id: string; nombre: string; activa: boolean }[]>(
+      `${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias`,
     );
   }
   attachCategory(movieId: string, categoriaId: string) {
     console.log('guardar----');
 
-    console.log({categoriaId});
+    console.log({ categoriaId });
 
-    return this.http.post<void>(`${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias`, { categoriaId });
+    return this.http.post<void>(
+      `${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias`,
+      { categoriaId },
+    );
   }
   detachCategory(movieId: string, categoriaId: string) {
     console.log('eliminar');
     console.log(categoriaId);
 
-    return this.http.delete<void>(`${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias/${categoriaId}`);
+    return this.http.delete<void>(
+      `${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias/${categoriaId}`,
+    );
   }
 
   // posters
   listPosters(movieId: string) {
-    return this.http.get<{ id: string; url: string; activa: boolean; orden: number; }[]>(
-      `${this.BASE}/posters/peliculas/${movieId}/posters`
-    );
+    return this.http.get<
+      { id: string; url: string; activa: boolean; orden: number }[]
+    >(`${this.BASE}/posters/peliculas/${movieId}/posters`);
   }
   uploadPoster(movieId: string, file: File, orden = 1) {
     const form = new FormData();
@@ -89,7 +103,15 @@ export class MovieService {
       { params: new HttpParams().set('orden', orden) }
     );
   }
-  activatePoster(posterId: string) { return this.http.post<void>(`/api/v1/posters/${posterId}/activar`, {}); }
-  deactivatePoster(posterId: string) { return this.http.post<void>(`/api/v1/posters/${posterId}/desactivar`, {}); }
-  deletePoster(posterId: string) { return this.http.delete<void>(`/api/v1/posters/${posterId}`); }
+  activatePoster(posterId: string) {
+    return this.http.post<void>(`/api/v1/posters/${posterId}/activar`, {});
+  }
+  deactivatePoster(posterId: string) {
+    return this.http.post<void>(`/api/v1/posters/${posterId}/desactivar`, {});
+  }
+  deletePoster(posterId: string) {
+    return this.http.delete<void>(`${this.BASE}/posters/${posterId}`);
+  }
+
+
 }

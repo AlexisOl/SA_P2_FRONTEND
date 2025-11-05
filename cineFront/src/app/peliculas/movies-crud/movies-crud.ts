@@ -1,4 +1,4 @@
-// src/app/pages/movies-crud.component.ts
+type PosterVM = { id: string; url: string; activa: boolean; orden?: number };
 import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +29,7 @@ import { Category, Movie } from '@/interfaces/movie.interface';
 import { CategoryService } from '../services/category';
 
 import { forkJoin } from 'rxjs';
+import { PosterService } from '../services/poster-service';
 
 @Component({
   selector: 'app-movies-crud',
@@ -172,8 +173,13 @@ import { forkJoin } from 'rxjs';
               class="mr-2"
               (click)="openCategorias(m)"
             />
-            <p-button label="Pósters" icon="pi pi-image" [outlined]="true" class="mr-2"
-          (click)="openPosters(m)" />
+            <p-button
+              label="Pósters"
+              icon="pi pi-image"
+              [outlined]="true"
+              class="mr-2"
+              (click)="openPosters(m)"
+            />
           </td>
         </tr>
       </ng-template>
@@ -372,19 +378,25 @@ import { forkJoin } from 'rxjs';
       </ng-template>
     </p-dialog>
 
-    <p-dialog [(visible)]="dialogPosters" [style]="{ width: '720px' }" [modal]="true"
-          header="Administrar pósters">
+    <p-dialog [(visible)]="dialogPosters" [style]="{ width: '780px' }" [modal]="true" header="Administrar pósters">
   <ng-template #content>
     <div class="flex flex-col gap-4">
-
       <!-- Existentes -->
       <div>
         <label class="block font-bold mb-2">Pósters actuales</label>
-        <div *ngIf="posterExistentes?.length; else sinExistentes"
-             class="grid grid-nogutter" style="gap:10px">
-          <div *ngFor="let url of posterExistentes; let i = index" class="p-2 border-round surface-100"
-               style="width:140px">
-            <img [src]="url" alt="poster" style="width:120px;height:160px;object-fit:cover" class="rounded" />
+        <div *ngIf="posterExistentes?.length; else sinExistentes" class="grid" style="grid-template-columns: repeat(auto-fill, 140px); gap: 12px">
+          <div *ngFor="let p of posterExistentes" class="p-2 border-round surface-100">
+            <img [src]="p.url" alt="poster" style="width:120px;height:160px;object-fit:cover" class="rounded mb-2" />
+            <div class="flex justify-between items-center">
+              <p-tag [value]="p.activa ? 'ACTIVO' : 'INACTIVO'" [severity]="p.activa ? 'success' : 'danger'"></p-tag>
+              <div class="flex gap-1">
+                <p-button [icon]="p.activa ? 'pi pi-ban' : 'pi pi-check'"
+                          [severity]="p.activa ? 'warn' : 'success'"
+                          [rounded]="true" [text]="true"
+                          (click)="togglePoster(p)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" (click)="deletePoster(p)" />
+              </div>
+            </div>
           </div>
         </div>
         <ng-template #sinExistentes>
@@ -398,31 +410,26 @@ import { forkJoin } from 'rxjs';
         <div class="flex items-center gap-3">
           <input type="file" accept="image/*" multiple (change)="onPosterFiles($event)" />
           <small class="text-color-secondary">
-            Puedes seleccionar varias imágenes. Máx: {{ maxPostersPorPelicula }} por película (ajusta si aplica).
+            Puedes seleccionar varias imágenes. Máx: {{ maxPostersPorPelicula }} por película.
           </small>
         </div>
 
         <!-- Previews locales -->
-        <div *ngIf="posterPreviews.length" class="mt-3 grid grid-nogutter" style="gap:10px">
-          <div *ngFor="let p of posterPreviews; let i = index" class="p-2 border-round surface-100"
-               style="width:140px">
-            <img [src]="p" alt="preview" style="width:120px;height:160px;object-fit:cover" class="rounded" />
+        <div *ngIf="posterPreviews.length" class="mt-3 grid" style="grid-template-columns: repeat(auto-fill, 140px); gap: 12px">
+          <div *ngFor="let preview of posterPreviews; let i = index" class="p-2 border-round surface-100">
+            <img [src]="preview" alt="preview" style="width:120px;height:160px;object-fit:cover" class="rounded" />
             <div class="mt-2 text-center">
-              <p-button icon="pi pi-times" size="small" severity="danger" [text]="true"
-                        (click)="removeLocalPoster(i)" />
+              <p-button icon="pi pi-times" size="small" severity="danger" [text]="true" (click)="removeLocalPoster(i)" />
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </ng-template>
 
   <ng-template #footer>
     <p-button label="Cerrar" icon="pi pi-times" text (click)="closePosters()" />
-    <p-button label="Subir" icon="pi pi-upload"
-              [disabled]="!posterFiles.length || !posterMovieId"
-              (click)="uploadPosters()" />
+    <p-button label="Subir" icon="pi pi-upload" [disabled]="!posterFiles.length || !posterMovieId" (click)="uploadPosters()" />
   </ng-template>
 </p-dialog>
 
@@ -459,6 +466,8 @@ export class MoviesCrudComponent implements OnInit {
     { label: 'C18', value: 'C18' },
   ];
 
+  
+
   // IDs seleccionados en el UI (checkboxes)
   selectedCategoriaIds: string[] = [];
 
@@ -470,7 +479,8 @@ export class MoviesCrudComponent implements OnInit {
   posterMovieId: string | null = null;
 
   // Pósters ya existentes (urls) y previsualizaciones locales
-  posterExistentes: string[] = [];
+  posterExistentes: PosterVM[] = [];  
+//  posterExistentes: string[] = [];
   posterFiles: File[] = [];
   posterPreviews: string[] = []; // object URLs
 
@@ -481,6 +491,7 @@ export class MoviesCrudComponent implements OnInit {
     private toast: MessageService,
     private confirm: ConfirmationService,
     private categoriaS: CategoryService,
+    private svcP: PosterService,
   ) {}
 
   ngOnInit(): void {
@@ -865,41 +876,94 @@ export class MoviesCrudComponent implements OnInit {
     });
   }
 
+  //Posters
+  // openPosters(m: Movie) {
+  //   this.posterMovieId = m.id!;
+  //   this.posterExistentes = Array.isArray(m.posters) ? [...m.posters] : [];
+  //   this.posterFiles = [];
+  //   this.resetPreviews();
+  //   this.dialogPosters = true;
+  // }
+
+  // closePosters() {
+  //   this.dialogPosters = false;
+  //   this.posterMovieId = null;
+  //   this.posterFiles = [];
+  //   this.resetPreviews();
+  // }
+
+  // crear/limpiar previews
+  private resetPreviews() {
+    // liberar URLs previas
+    this.posterPreviews.forEach((u) => URL.revokeObjectURL(u));
+    this.posterPreviews = [];
+  }
+
+  // onPosterFiles(evt: Event) {
+  //   const input = evt.target as HTMLInputElement;
+  //   const list = input.files ? Array.from(input.files) : [];
+  //   if (!list.length) return;
+
+  //   // Si tienes límite total (existentes + nuevos), respeta el máximo:
+  //   const ya = this.posterExistentes.length;
+  //   const espacio = Math.max(this.maxPostersPorPelicula - ya, 0);
+  //   const files = espacio > 0 ? list.slice(0, espacio) : [];
+
+  //   this.posterFiles = files;
+  //   this.resetPreviews();
+  //   this.posterPreviews = this.posterFiles.map((f) => URL.createObjectURL(f));
+  // }
   openPosters(m: Movie) {
   this.posterMovieId = m.id!;
-  this.posterExistentes = Array.isArray(m.posters) ? [...m.posters] : [];
   this.posterFiles = [];
   this.resetPreviews();
-  this.dialogPosters = true;
-}
 
+  // Siempre pedimos la lista al backend para tener id/activa/orden
+  this.svcP.getPostersByMovie(this.posterMovieId).subscribe({
+    next: (arr) => {
+      this.posterExistentes = (arr ?? []).map(a => this.posterToVM(a));
+      this.dialogPosters = true;
+    },
+    error: () => {
+      this.posterExistentes = [];
+      this.dialogPosters = true;
+      this.toast.add({ severity: 'warn', summary: 'Aviso', detail: 'No se pudieron cargar los pósters', life: 2500 });
+    }
+  });
+}
+onPosterFiles(evt: Event) {
+  const input = evt.target as HTMLInputElement;
+  const list = input.files ? Array.from(input.files) : [];
+  if (!list.length) return;
+
+  const ya = this.posterExistentes.length;
+  const espacio = Math.max(this.maxPostersPorPelicula - ya, 0);
+  this.posterFiles = espacio > 0 ? list.slice(0, espacio) : [];
+  this.resetPreviews();
+  this.posterPreviews = this.posterFiles.map(f => URL.createObjectURL(f));
+}
 closePosters() {
   this.dialogPosters = false;
   this.posterMovieId = null;
   this.posterFiles = [];
   this.resetPreviews();
 }
+  
 
-// crear/limpiar previews
-private resetPreviews() {
-  // liberar URLs previas
-  this.posterPreviews.forEach(u => URL.revokeObjectURL(u));
-  this.posterPreviews = [];
+  
+
+
+private posterToVM(x: any): PosterVM {
+  const url = (x?.url || x?.path || x?.location || (typeof x === 'string' ? x : '')) as string;
+  return { id: x?.id || '', url, activa: x?.activa ?? true, orden: x?.orden };
 }
 
-onPosterFiles(evt: Event) {
-  const input = evt.target as HTMLInputElement;
-  const list = input.files ? Array.from(input.files) : [];
-  if (!list.length) return;
-
-  // Si tienes límite total (existentes + nuevos), respeta el máximo:
-  const ya = this.posterExistentes.length;
-  const espacio = Math.max(this.maxPostersPorPelicula - ya, 0);
-  const files = espacio > 0 ? list.slice(0, espacio) : [];
-
-  this.posterFiles = files;
-  this.resetPreviews();
-  this.posterPreviews = this.posterFiles.map(f => URL.createObjectURL(f));
+private normalizePosterResponse(resp: any): PosterVM[] {
+  if (!resp) return [];
+  if (Array.isArray(resp)) return resp.map(this.posterToVM).filter(p => !!p.url);
+  if (Array.isArray(resp?.urls)) return resp.urls.map(this.posterToVM).filter((p: { url: any; }) => !!p.url);
+  if (Array.isArray(resp?.data)) return resp.data.map(this.posterToVM).filter((p: { url: any; }) => !!p.url);
+  return [];
 }
 
 removeLocalPoster(i: number) {
@@ -908,23 +972,57 @@ removeLocalPoster(i: number) {
   if (url) URL.revokeObjectURL(url);
 }
 
-
-
 uploadPosters() {
   if (!this.posterMovieId || !this.posterFiles.length) return;
 
-  const calls = this.posterFiles.map(f => this.svc.uploadPoster(this.posterMovieId!, f, 1));
-  forkJoin(calls).subscribe({
-    next: (results) => {
-      // results será array de respuestas; aplánalo si cada respuesta trae string[] con urls
-      const added = results.flat(); 
-      //this.posterExistentes = [...this.posterExistentes, ...added];
-      this.fetch();
-      this.toast.add({ severity: 'success', summary: 'OK', detail: 'Pósters subidos', life: 2200 });
-      this.posterFiles = [];
-      this.resetPreviews();
+  // subimos una por una para poder manejar orden si lo necesitas
+  const uploads = this.posterFiles.map((f, idx) => this.svcP.uploadPoster(this.posterMovieId!, f, idx + 1));
+  forkJoin(uploads).subscribe({
+    next: (resps) => {
+      // Normaliza y refresca desde el backend para obtener ids reales
+      this.svcP.getPostersByMovie(this.posterMovieId!).subscribe({
+        next: (arr) => {
+          this.posterExistentes = (arr ?? []).map(a => this.posterToVM(a));
+          this.fetch(); // refresca tabla de películas si estas muestran el primer póster
+          this.toast.add({ severity: 'success', summary: 'OK', detail: 'Pósters subidos', life: 2200 });
+          this.posterFiles = [];
+          this.resetPreviews();
+        }
+      });
     },
-    error: () => this.toast.add({ severity:'error', summary:'Error', detail:'No se pudo subir los pósters', life:2500 })
+    error: () =>
+      this.toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo subir los pósters', life: 2500 })
+  });
+}
+
+togglePoster(p: PosterVM) {
+  if (!p.id) return; // si no tiene id, no se puede activar/desactivar
+  const req = p.activa ? this.svcP.desactivarPoster(p.id) : this.svcP.activarPoster(p.id);
+  req.subscribe({
+    next: () => {
+      p.activa = !p.activa;
+      this.toast.add({ severity: 'success', summary: 'OK', detail: p.activa ? 'Póster activado' : 'Póster desactivado', life: 2000 });
+    },
+    error: () => this.toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cambiar el estado', life: 2500 })
+  });
+}
+
+deletePoster(p: PosterVM) {
+  if (!p.id) return;
+  this.confirm.confirm({
+    message: '¿Eliminar este póster?',
+    header: 'Confirmar',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      this.svcP.deletePoster(p.id).subscribe({
+        next: () => {
+          this.posterExistentes = this.posterExistentes.filter(x => x.id !== p.id);
+          this.toast.add({ severity: 'success', summary: 'OK', detail: 'Póster eliminado', life: 2000 });
+          this.fetch();
+        },
+        error: () => this.toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar', life: 2500 })
+      });
+    }
   });
 }
 }
