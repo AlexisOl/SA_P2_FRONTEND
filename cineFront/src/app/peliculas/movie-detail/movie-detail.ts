@@ -1,15 +1,18 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
+import { SelectModule } from 'primeng/select';
 
 import { MovieService } from '@/peliculas/services/movie.service';
 import { HorarioService } from '@/services/horario';
 import { SalaServicio } from '@/services/sala-servicio.service';
 import { CineServiceService } from '@/services/cine-service.service';
+
+import { FormsModule } from '@angular/forms';
 
 type Clasificacion = 'A' | 'B' | 'B12' | 'B15' | 'C';
 
@@ -41,7 +44,7 @@ interface HorarioVM {
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TagModule, ButtonModule, DividerModule],
+  imports: [CommonModule, RouterModule, TagModule, ButtonModule, DividerModule, SelectModule, FormsModule],
   template: `
   <div class="container mx-auto p-4 lg:p-6">
 
@@ -103,12 +106,32 @@ interface HorarioVM {
 
     <p-divider class="my-5"></p-divider>
 
+    <!-- SELECTOR DE CINE -->
+    <div class="card p-3 mb-4 rounded-lg" style="background: var(--surface-card);">
+      <div class="flex flex-wrap items-end gap-3">
+        <div class="flex-1 min-w-16rem">
+          <label class="block font-semibold mb-2">Filtrar por cine</label>
+          <p-select class="w-full"
+                    [options]="cineOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Todos los cines"
+                    [(ngModel)]="selectedCineId"
+                    (onChange)="onChangeCine()">
+          </p-select>
+        </div>
+        <div>
+          <p-tag *ngIf="selectedCineId" [value]="'Mostrando: ' + (cineMap[selectedCineId] || selectedCineId)" severity="secondary" />
+        </div>
+      </div>
+    </div>
+
     <!-- HORARIOS POR CINE -->
     <h3 class="text-2xl font-semibold mb-3">Horarios disponibles</h3>
 
-    <ng-container *ngIf="grupos().length; else sinHorarios">
+    <ng-container *ngIf="displayedGrupos().length; else sinHorarios">
       <div class="flex flex-col gap-5">
-        <div *ngFor="let g of grupos()" class="card shadow-1 p-3 rounded-lg">
+        <div *ngFor="let g of displayedGrupos()" class="card shadow-1 p-3 rounded-lg">
           <div class="flex items-center justify-between mb-2">
             <h4 class="m-0 text-xl font-bold">{{ nombreCine(g.cineId) }}</h4>
           </div>
@@ -140,8 +163,6 @@ interface HorarioVM {
                   <p-tag [value]="h.activo ? 'ACTIVO' : 'INACTIVO'"
                          [severity]="h.activo ? 'success' : 'danger'"></p-tag>
                 </div>
-                <!-- Acción futura (compra/selección) -->
-                <!-- <p-button label="Seleccionar" icon="pi pi-ticket" (onClick)="irAComprar(h)" /> -->
               </div>
             </div>
           </div>
@@ -172,17 +193,36 @@ export class MovieDetailComponent implements OnInit {
 
   grupos = signal<Array<{ cineId: string; items: HorarioVM[] }>>([]);
 
+  // Filtro por cine
+  selectedCineId: string = '';
+  cineOptions: Array<{label: string; value: string}> = [];
+
   // Mapas de nombres
-  private cineMap: Record<string, string> = {};
+  cineMap: Record<string, string> = {};
   private salaMaps: Record<string, Record<string, string>> = {}; // por cine
 
+  constructor() {
+    // Mantener mapeo y opciones del select sincronizados con el signal de cines
+    effect(() => {
+      const cines = this.cinesSvc.cinesSignal?.() ?? [];
+      const map: Record<string,string> = {};
+      const opts: Array<{label:string; value:string}> = [{ label: 'Todos los cines', value: '' }];
+      for (const c of cines) {
+        if (c?.id) {
+          const id = String(c.id);
+          const nombre = String(c.nombre ?? c.id);
+          map[id] = nombre;
+          opts.push({ label: nombre, value: id });
+        }
+      }
+      this.cineMap = map;
+      this.cineOptions = opts;
+    });
+  }
+
   ngOnInit(): void {
-    // Asegura catálogo de cines (para nombres)
+    // Cargar cines para poblar el select
     this.cinesSvc.obtenerHoteles?.();
-    const cines = this.cinesSvc.cinesSignal?.() ?? [];
-    for (const c of cines) {
-      if (c?.id) this.cineMap[String(c.id)] = String(c.nombre ?? c.id);
-    }
 
     const id = this.route.snapshot.paramMap.get('id')!;
     this.cargarPelicula(id);
@@ -192,7 +232,6 @@ export class MovieDetailComponent implements OnInit {
 
   // ---------- Cargas ----------
   private cargarPelicula(id: string) {
-    // No hay getById directo de la película pura; tomamos el listado y filtramos
     this.movies.list().subscribe((arr: any[]) => {
       const m = (arr || []).find(x => String(x.id) === String(id));
       if (m) this.movie.set(m as MovieVM);
@@ -243,21 +282,30 @@ export class MovieDetailComponent implements OnInit {
 
   private cargarSalasDeCine(cineId: string) {
     if (this.salaMaps[cineId]) return;
-    this.salasSvc.listarSalasId(cineId)
-  .subscribe((resp: any) => {
-    const salas: any[] = Array.isArray(resp) ? resp : (resp?.content ?? []);
-    this.salaMaps[cineId] = {};
-    for (const s of salas) {
-      this.salaMaps[cineId][String(s.id)] = String(s.nombre ?? s.id);
-    }
-  });
+    this.salasSvc.listarSalasId(cineId).subscribe((resp: any) => {
+      const salas: any[] = Array.isArray(resp) ? resp : (resp?.content ?? []);
+      this.salaMaps[cineId] = {};
+      for (const s of salas) {
+        this.salaMaps[cineId][String(s.id)] = String(s.nombre ?? s.id);
+      }
+    });
+  }
+
+  // ---------- Filtro UI ----------
+  onChangeCine() {
+    // No hace nada especial aquí; el template llama displayedGrupos() que usa selectedCineId
+  }
+
+  displayedGrupos() {
+    const gs = this.grupos();
+    if (!this.selectedCineId) return gs;
+    return gs.filter(g => g.cineId === this.selectedCineId);
   }
 
   // ---------- Helpers de UI ----------
   posterPrincipal(): string {
     const p = this.movie()?.posters;
     return (p && p.length) ? p[0] : 'https://placehold.co/600x800?text=Sin+poster';
-    // cambia placeholder si prefieres
   }
 
   clasifSeverity(c: Clasificacion): 'success' | 'warn' | 'danger' | 'secondary' {
@@ -280,9 +328,4 @@ export class MovieDetailComponent implements OnInit {
     if (!cineId || !salaId) return '-';
     return this.salaMaps[cineId]?.[salaId] ?? salaId;
   }
-
-  // Ejemplo de navegación futura
-  // irAComprar(h: HorarioVM) {
-  //   this.router.navigate(['/comprar', h.id]);
-  // }
 }
