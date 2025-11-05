@@ -1,0 +1,517 @@
+<!-- calificacion-snack.component.html -->
+<div class="calificacion-snack-container">
+
+  <!-- Toast para mensajes -->
+  <p-toast></p-toast>
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="left">
+      <div class="flex align-items-center gap-2">
+        <i class="pi pi-star-fill text-3xl text-yellow-500"></i>
+        <h2 class="m-0">Calificaciones de Snacks</h2>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="right">
+      <p-button
+        label="Nueva Calificación"
+        icon="pi pi-plus"
+        (onClick)="abrirDialogoCalificacion()"
+        severity="success">
+      </p-button>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Grid de estadísticas -->
+  <div class="grid mb-4 m-0">
+
+    <!-- Card de promedio -->
+    <div class="col-12 md:col-4 pl-0 pr-md-2 pr-0">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="p-3">
+            <h4 class="m-0">Promedio General</h4>
+          </div>
+        </ng-template>
+        <div class="flex flex-column align-items-center">
+          <div class="text-5xl font-bold text-yellow-500 mb-2">
+            <i class="pi pi-star-fill"></i>
+          </div>
+          <div class="text-4xl font-bold mb-2">
+            {{ calcularPromedioLocal() | number:'1.1-1' }}
+          </div>
+          <p-rating
+            [ngModel]="calcularPromedioLocal()"
+            [readonly]="true"
+          >
+          </p-rating>
+          <small class="text-color-secondary mt-2">
+            Basado en {{ totalCalificaciones }} calificaciones
+          </small>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Card de total de calificaciones -->
+    <div class="col-12 md:col-4 px-md-2 px-0">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="p-3">
+            <h4 class="m-0">Total Calificaciones</h4>
+          </div>
+        </ng-template>
+        <div class="flex flex-column align-items-center">
+          <div class="text-5xl font-bold text-blue-500 mb-2">
+            <i class="pi pi-comments"></i>
+          </div>
+          <div class="text-4xl font-bold">
+            {{ totalCalificaciones }}
+          </div>
+          <small class="text-color-secondary mt-2">
+            Opiniones registradas
+          </small>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Card de distribución -->
+    <div class="col-12 md:col-4 pl-md-2 pl-0 pr-0">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="p-3">
+            <h4 class="m-0">Distribución</h4>
+          </div>
+        </ng-template>
+        <div class="flex flex-column gap-2">
+          <div *ngFor="let estrella of [5,4,3,2,1]" class="flex align-items-center gap-2">
+            <span class="font-semibold" style="width: 30px;">{{ estrella }}★</span>
+            <p-progressBar
+              [value]="obtenerPorcentajeEstrella(estrella)"
+              [showValue]="false"
+              styleClass="flex-1"
+              [style]="{'height': '1rem'}">
+            </p-progressBar>
+            <span class="text-sm" style="width: 40px;">{{ obtenerPorcentajeEstrella(estrella) }}%</span>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+  </div>
+
+  <!-- Filtros -->
+  <p-card styleClass="mb-4">
+    <div class="flex flex-wrap gap-2">
+      <p-button
+        label="Todas"
+        icon="pi pi-list"
+        (onClick)="limpiarFiltros()"
+        [outlined]="true"
+        severity="secondary">
+      </p-button>
+      <p-button
+        label="Excelentes (4-5★)"
+        icon="pi pi-thumbs-up"
+        (onClick)="filtrarCalificacionesExcelentes()"
+        [outlined]="true"
+        severity="success">
+      </p-button>
+      <p-button
+        label="Regulares (3★)"
+        icon="pi pi-minus"
+        (onClick)="filtrarCalificacionesMalas()"
+        [outlined]="true"
+        severity="warn">
+      </p-button>
+      <p-button
+        label="Malas (1-2★)"
+        icon="pi pi-thumbs-down"
+        (onClick)="filtrarCalificacionesMalas()"
+        [outlined]="true"
+        severity="danger">
+      </p-button>
+    </div>
+  </p-card>
+
+  <!-- Tabla de calificaciones -->
+  <p-card>
+    <p-table
+      [value]="calificaciones"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} calificaciones"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [globalFilterFields]="['comentario', 'puntuacion']"
+      styleClass="p-datatable-striped"
+      responsiveLayout="scroll">
+
+
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="puntuacion" style="width: 120px;">
+            Puntuación <p-sortIcon field="puntuacion"></p-sortIcon>
+          </th>
+          <th style="width: 150px;">Rating</th>
+          <th>Comentario</th>
+          <th pSortableColumn="fecha" style="width: 200px;">
+            Fecha <p-sortIcon field="fecha"></p-sortIcon>
+          </th>
+          <th style="width: 150px;">Usuario</th>
+          <th style="width: 150px;">Snack</th>
+          <th style="width: 100px;">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-calificacion>
+        <tr>
+          <td>
+            <p-tag
+              [value]="calificacion.puntuacion + '/5'"
+              [severity]="getSeverityBadge(calificacion.puntuacion)"
+              [icon]="getIconoPuntuacion(calificacion.puntuacion)">
+            </p-tag>
+          </td>
+          <td>
+            <p-rating
+              [(ngModel)]="calificacion.puntuacion"
+              [readonly]="true"
+            >
+            </p-rating>
+          </td>
+          <td>
+            <div *ngIf="calificacion.comentario" class="flex align-items-start gap-2">
+              <i class="pi pi-comment text-color-secondary"></i>
+              <span>
+                {{ calificacion.comentario.length > 80
+                ? (calificacion.comentario | slice:0:80) + '...'
+                : calificacion.comentario }}
+              </span>
+            </div>
+            <span *ngIf="!calificacion.comentario" class="text-color-secondary italic">
+              Sin comentario
+            </span>
+          </td>
+          <td>
+            <i class="pi pi-calendar mr-2"></i>
+            {{ calificacion.fecha | date:'short' }}
+          </td>
+          <td>
+            <p-chip
+              [label]="(calificacion.usuarioId | slice:0:8) + '...'"
+              icon="pi pi-user">
+            </p-chip>
+          </td>
+          <td>
+            <p-chip
+              [label]="(calificacion.snackId | slice:0:8) + '...'"
+              icon="pi pi-shopping-bag">
+            </p-chip>
+          </td>
+          <td>
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              (onClick)="verDetalleCalificacion(calificacion)"
+              pTooltip="Ver detalle"
+              tooltipPosition="left">
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">
+            <div class="flex flex-column align-items-center justify-content-center p-5">
+              <i class="pi pi-inbox text-6xl text-color-secondary mb-3"></i>
+              <p class="text-xl text-color-secondary">No hay calificaciones disponibles</p>
+              <p class="text-sm text-color-secondary">Sé el primero en calificar este snack</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-chart-bar"></i>
+            <span>Total: {{ calificaciones.length }} calificaciones</span>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-star-fill text-yellow-500"></i>
+            <span>Promedio: {{ calcularPromedioLocal() | number:'1.1-1' }}</span>
+          </div>
+        </div>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Diálogo para crear calificación -->
+  <p-dialog
+    header="Nueva Calificación de Snack"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [style]="{ width: '600px' }"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!loading">
+
+    <form [formGroup]="calificacionForm">
+      <div class="p-fluid">
+
+        <!-- Usuario ID -->
+        <div class="field">
+          <label for="usuarioId" class="font-semibold block mb-2">
+            <i class="pi pi-user mr-2"></i>
+            Usuario ID <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="usuarioId"
+            type="text"
+            pInputText
+            formControlName="usuarioId"
+            placeholder="Ingrese el UUID del usuario"
+            [class.ng-invalid]="calificacionForm.get('usuarioId')?.invalid && calificacionForm.get('usuarioId')?.touched"
+            [class.ng-dirty]="calificacionForm.get('usuarioId')?.touched">
+          <small
+            *ngIf="calificacionForm.get('usuarioId')?.invalid && calificacionForm.get('usuarioId')?.touched"
+            class="p-error block mt-1">
+            <i class="pi pi-exclamation-circle mr-1"></i>
+            El usuario es obligatorio
+          </small>
+        </div>
+
+        <!-- Snack ID -->
+        <div class="field">
+          <label for="snackId" class="font-semibold block mb-2">
+            <i class="pi pi-shopping-bag mr-2"></i>
+            Snack ID <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="snackId"
+            type="text"
+            pInputText
+            formControlName="snackId"
+            placeholder="Ingrese el UUID del snack"
+            [class.ng-invalid]="calificacionForm.get('snackId')?.invalid && calificacionForm.get('snackId')?.touched"
+            [class.ng-dirty]="calificacionForm.get('snackId')?.touched">
+          <small
+            *ngIf="calificacionForm.get('snackId')?.invalid && calificacionForm.get('snackId')?.touched"
+            class="p-error block mt-1">
+            <i class="pi pi-exclamation-circle mr-1"></i>
+            El snack es obligatorio
+          </small>
+        </div>
+
+        <!-- Puntuación -->
+        <div class="field">
+          <label class="font-semibold block mb-2">
+            <i class="pi pi-star-fill mr-2"></i>
+            Puntuación <span class="text-red-500">*</span>
+          </label>
+          <div class="text-center p-4 border-round"
+               [ngClass]="{
+               'bg-red-50': ratingValue >= 1 && ratingValue <= 2,
+               'bg-orange-50': ratingValue === 3,
+               'bg-green-50': ratingValue >= 4 && ratingValue <= 5,
+               'surface-ground': ratingValue === 0
+             }">
+            <p-rating
+              [(ngModel)]="ratingValue"
+              [ngModelOptions]="{standalone: true}"
+              (ngModelChange)="onRatingChange($event)"
+              [stars]="5">
+            </p-rating>
+            <div class="mt-3" *ngIf="ratingValue > 0">
+              <div class="text-2xl font-bold mb-1"
+                   [ngClass]="{
+                   'text-red-600': ratingValue >= 1 && ratingValue <= 2,
+                   'text-orange-600': ratingValue === 3,
+                   'text-green-600': ratingValue >= 4 && ratingValue <= 5
+                 }">
+                {{ obtenerTextoCalificacion(ratingValue) }}
+              </div>
+              <small class="text-color-secondary">
+                {{ ratingValue }} de 5 estrellas
+              </small>
+            </div>
+            <small class="text-color-secondary block mt-2" *ngIf="ratingValue === 0">
+              Haz clic en las estrellas para calificar
+            </small>
+          </div>
+          <small
+            *ngIf="calificacionForm.get('puntuacion')?.invalid && calificacionForm.get('puntuacion')?.touched"
+            class="p-error block mt-2">
+            <i class="pi pi-exclamation-circle mr-1"></i>
+            La puntuación es obligatoria
+          </small>
+        </div>
+
+        <!-- Comentario -->
+        <div class="field">
+          <label for="comentario" class="font-semibold block mb-2">
+            <i class="pi pi-comment mr-2"></i>
+            Comentario <span class="text-color-secondary">(opcional)</span>
+          </label>
+          <textarea
+            id="comentario"
+            pInputTextarea
+            formControlName="comentario"
+            rows="4"
+            [maxlength]="MAX_COMENTARIO"
+            placeholder="Comparte tu experiencia con este snack..."
+            [autoResize]="true">
+        </textarea>
+          <div class="flex justify-content-between align-items-center mt-1">
+            <small class="text-color-secondary">
+              <i class="pi pi-info-circle mr-1"></i>
+              Ayuda a otros usuarios
+            </small>
+            <small [class.text-color-secondary]="(calificacionForm.value.comentario?.length || 0) < MAX_COMENTARIO"
+                   [class.text-orange-500]="(calificacionForm.value.comentario?.length || 0) >= MAX_COMENTARIO">
+              {{ calificacionForm.value.comentario?.length || 0 }} / {{ MAX_COMENTARIO }}
+            </small>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          (onClick)="displayDialog = false"
+          [text]="true"
+          severity="secondary"
+          [disabled]="loading">
+        </p-button>
+        <p-button
+          label="Enviar Calificación"
+          icon="pi pi-check"
+          (onClick)="crearCalificacion()"
+          [disabled]="calificacionForm.invalid"
+          [loading]="loading"
+          severity="success">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Diálogo de detalle -->
+  <p-dialog
+    header="Detalle de Calificación"
+    [(visible)]="displayDetalleDialog"
+    [modal]="true"
+    [style]="{ width: '600px' }"
+    [draggable]="false"
+    [resizable]="false">
+
+    <div *ngIf="calificacionSeleccionada" class="flex flex-column gap-4">
+
+      <!-- Puntuación destacada -->
+      <div class="flex flex-column align-items-center gap-2 p-4 border-round surface-ground">
+        <p-rating
+          [(ngModel)]="calificacionSeleccionada.puntuacion"
+          [readonly]="true"
+          [style]="{'font-size': '2rem'}">
+        </p-rating>
+        <div class="flex align-items-center gap-2">
+          <p-tag
+            [value]="calificacionSeleccionada.puntuacion + '/5'"
+            [severity]="getSeverityBadge(calificacionSeleccionada.puntuacion)"
+            [icon]="getIconoPuntuacion(calificacionSeleccionada.puntuacion)"
+            [style]="{'font-size': '1.2rem'}">
+          </p-tag>
+          <span class="text-xl font-semibold">
+            {{ obtenerTextoCalificacion(calificacionSeleccionada.puntuacion) }}
+          </span>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Información de IDs -->
+      <div class="grid">
+        <div class="col-12">
+          <div class="field">
+            <label class="font-semibold block mb-2">
+              <i class="pi pi-id-card mr-2"></i>
+              ID de Calificación:
+            </label>
+            <p-chip [label]="calificacionSeleccionada.calificacionId" icon="pi pi-hashtag"></p-chip>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <label class="font-semibold block mb-2">
+              <i class="pi pi-user mr-2"></i>
+              Usuario:
+            </label>
+            <p-chip [label]="calificacionSeleccionada.usuarioId" icon="pi pi-user"></p-chip>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <label class="font-semibold block mb-2">
+              <i class="pi pi-shopping-bag mr-2"></i>
+              Snack:
+            </label>
+            <p-chip [label]="calificacionSeleccionada.snackId" icon="pi pi-shopping-bag"></p-chip>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="field">
+            <label class="font-semibold block mb-2">
+              <i class="pi pi-calendar mr-2"></i>
+              Fecha:
+            </label>
+            <p>{{ calificacionSeleccionada.fecha | date:'full' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Comentario -->
+      <div class="field">
+        <label class="font-semibold block mb-2">
+          <i class="pi pi-comment mr-2"></i>
+          Comentario:
+        </label>
+        <p-card *ngIf="calificacionSeleccionada.comentario" styleClass="bg-gray-50">
+          <div class="flex gap-2">
+            <i class="pi pi-quote-left text-color-secondary"></i>
+            <p class="m-0 flex-1">{{ calificacionSeleccionada.comentario }}</p>
+            <i class="pi pi-quote-right text-color-secondary"></i>
+          </div>
+        </p-card>
+        <div *ngIf="!calificacionSeleccionada.comentario"
+             class="flex align-items-center gap-2 p-3 border-round surface-ground">
+          <i class="pi pi-info-circle text-color-secondary"></i>
+          <p class="m-0 text-color-secondary italic">Esta calificación no incluye comentario</p>
+        </div>
+      </div>
+
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Cerrar"
+        icon="pi pi-times"
+        (onClick)="displayDetalleDialog = false"
+        severity="secondary">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+</div>

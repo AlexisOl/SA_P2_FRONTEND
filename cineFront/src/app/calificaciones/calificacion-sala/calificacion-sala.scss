@@ -1,0 +1,48 @@
+/* Estrellas según puntuación */
+::ng-deep .p-rating-icon.pi-star-fill {
+  transition: color 0.3s;
+}
+
+/* 1-2 estrellas: Rojo */
+::ng-deep .rating-bad .p-rating-icon.pi-star-fill {
+  color: #ef4444 !important;
+}
+
+/* 3 estrellas: Naranja */
+::ng-deep .rating-regular .p-rating-icon.pi-star-fill {
+  color: #f97316 !important;
+}
+
+/* 4-5 estrellas: Verde */
+::ng-deep .rating-good .p-rating-icon.pi-star-fill {
+  color: #22c55e !important;
+}
+
+/* Tamaño de estrellas */
+::ng-deep .p-rating .p-rating-icon {
+  font-size: 2.5rem;
+}
+
+/* Eliminar padding del contenedor principal */
+.calificacion-sala-container {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Grid sin márgenes */
+.grid.m-0 {
+  margin: 0 !important;
+}
+
+/* Responsive padding para el grid */
+@media (max-width: 767px) {
+  .pl-0 { padding-left: 0 !important; }
+  .pr-0 { padding-right: 0 !important; }
+  .px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+}
+
+@media (min-width: 768px) {
+  .pl-md-2 { padding-left: 0.5rem !important; }
+  .pr-md-2 { padding-right: 0.5rem !important; }
+  .px-md-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+}
