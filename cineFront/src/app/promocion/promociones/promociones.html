@@ -1,0 +1,328 @@
+<p-toast />
+
+<p-toolbar styleClass="mb-6">
+  <ng-template #start>
+    <p-button
+      label="Nueva Promoción"
+      icon="pi pi-plus"
+      severity="secondary"
+      class="mr-2"
+      (onClick)="openNew()" />
+    <p-button
+      severity="danger"
+      label="Desactivar Seleccionadas"
+      icon="pi pi-trash"
+      outlined
+      (onClick)="deleteSelectedPromociones()"
+      [disabled]="!selectedPromociones || !selectedPromociones.length" />
+  </ng-template>
+
+  <ng-template #end>
+    <p-button
+      label="Exportar"
+      icon="pi pi-upload"
+      severity="secondary"
+      (onClick)="exportCSV()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table
+  #dt
+  [value]="promociones()"
+  [rows]="10"
+  [paginator]="true"
+  [globalFilterFields]="['nombre', 'descripcion', 'tipo']"
+  [tableStyle]="{ 'min-width': '75rem' }"
+  [(selection)]="selectedPromociones"
+  [rowHover]="true"
+  dataKey="promocionId"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} promociones"
+  [showCurrentPageReport]="true"
+  [rowsPerPageOptions]="[10, 20, 30]"
+>
+  <ng-template #caption>
+    <div class="flex items-center justify-between">
+      <h5 class="m-0">Gestión de Promociones</h5>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input
+          pInputText
+          type="text"
+          (input)="onGlobalFilter(dt, $event)"
+          placeholder="Buscar..." />
+      </p-iconfield>
+    </div>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th pSortableColumn="nombre" style="min-width:16rem">
+        Nombre
+        <p-sortIcon field="nombre" />
+      </th>
+      <th pSortableColumn="tipo" style="min-width:10rem">
+        Tipo
+        <p-sortIcon field="tipo" />
+      </th>
+      <th pSortableColumn="porcentajeDescuento" style="min-width:10rem">
+        Descuento
+        <p-sortIcon field="porcentajeDescuento" />
+      </th>
+      <th pSortableColumn="fechaInicio" style="min-width:10rem">
+        Fecha Inicio
+        <p-sortIcon field="fechaInicio" />
+      </th>
+      <th pSortableColumn="fechaFin" style="min-width:10rem">
+        Fecha Fin
+        <p-sortIcon field="fechaFin" />
+      </th>
+      <th pSortableColumn="activa" style="min-width:8rem">
+        Estado
+        <p-sortIcon field="activa" />
+      </th>
+      <th style="min-width: 12rem">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-promocion>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="promocion" />
+      </td>
+      <td style="min-width: 16rem">
+        <strong>{{ promocion.nombre }}</strong>
+        <br>
+        <small class="text-gray-500">{{ promocion.descripcion }}</small>
+      </td>
+      <td>
+        <p-tag
+          [value]="promocion.tipo"
+          [severity]="getSeverityTipo(promocion.tipo)" />
+      </td>
+      <td>
+        <strong>{{ promocion.porcentajeDescuento }}%</strong>
+      </td>
+      <td>{{ promocion.fechaInicio | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ promocion.fechaFin | date: 'dd/MM/yyyy' }}</td>
+      <td>
+        <p-tag
+          [value]="promocion.activa ? 'Activa' : 'Inactiva'"
+          [severity]="getSeverityEstado(promocion.activa)" />
+      </td>
+      <td>
+        <p-button
+          icon="pi pi-pencil"
+          class="mr-2"
+          [rounded]="true"
+          [outlined]="true"
+          severity="secondary"
+          (click)="editPromocion(promocion)"
+          pTooltip="Editar" />
+        <p-button
+          [icon]="promocion.activa ? 'pi pi-eye-slash' : 'pi pi-eye'"
+          class="mr-2"
+          [rounded]="true"
+          [outlined]="true"
+          [severity]="promocion.activa ? 'warn' : 'success'"
+          (click)="togglePromocionEstado(promocion)"
+          [pTooltip]="promocion.activa ? 'Desactivar' : 'Activar'" />
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [rounded]="true"
+          [outlined]="true"
+          (click)="deletePromocion(promocion)"
+          pTooltip="Eliminar" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Dialog para crear/editar promoción -->
+<p-dialog
+  [(visible)]="promocionDialog"
+  [style]="{ width: '600px' }"
+  [header]="isEditMode ? 'Editar Promoción' : 'Nueva Promoción'"
+  [modal]="true"
+  styleClass="p-fluid">
+
+  <ng-template #content>
+    <div class="flex flex-col gap-4">
+      <!-- Nombre -->
+      <div>
+        <label for="nombre" class="block font-bold mb-2">Nombre *</label>
+        <input
+          type="text"
+          pInputText
+          id="nombre"
+          [(ngModel)]="promocion.nombre"
+          required
+          autofocus
+          fluid
+          maxlength="200" />
+        <small class="text-red-500" *ngIf="submitted && !promocion.nombre?.trim()">
+          El nombre es obligatorio.
+        </small>
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        <label for="descripcion" class="block font-bold mb-2">Descripción</label>
+        <textarea
+          id="descripcion"
+          pTextarea
+          [(ngModel)]="promocion.descripcion"
+          rows="3"
+          fluid
+          maxlength="500">
+                </textarea>
+      </div>
+
+      <!-- Tipo y Descuento en grid -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6">
+          <label for="tipo" class="block font-bold mb-2">Tipo de Promoción *</label>
+          <p-select
+            [(ngModel)]="promocion.tipo"
+            inputId="tipo"
+            [options]="tiposPromocion"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione un tipo"
+            fluid />
+          <small class="text-red-500" *ngIf="submitted && !promocion.tipo">
+            El tipo es obligatorio.
+          </small>
+        </div>
+
+        <div class="col-span-6">
+          <label for="descuento" class="block font-bold mb-2">Descuento (%) *</label>
+          <p-inputnumber
+            id="descuento"
+            [(ngModel)]="promocion.porcentajeDescuento"
+            [min]="1"
+            [max]="100"
+            suffix="%"
+            fluid />
+          <small class="text-red-500" *ngIf="submitted && !promocion.porcentajeDescuento">
+            El descuento es obligatorio (1-100%).
+          </small>
+        </div>
+      </div>
+
+      <!-- Fechas -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6">
+          <label for="fechaInicio" class="block font-bold mb-2">Fecha Inicio *</label>
+          <p-datePicker
+            [(ngModel)]="promocion.fechaInicio"
+            inputId="fechaInicio"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            [minDate]="minDate"
+            [fluid]="true" />
+          <small class="text-red-500" *ngIf="submitted && !promocion.fechaInicio">
+            La fecha de inicio es obligatoria.
+          </small>
+        </div>
+
+        <div class="col-span-6">
+          <label for="fechaFin" class="block font-bold mb-2">Fecha Fin *</label>
+          <p-datePicker
+            [(ngModel)]="promocion.fechaFin"
+            inputId="fechaFin"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            [minDate]="promocion.fechaInicio || minDate"
+            [fluid]="true" />
+          <small class="text-red-500" *ngIf="submitted && !promocion.fechaFin">
+            La fecha de fin es obligatoria.
+          </small>
+        </div>
+      </div>
+
+      <!-- IDs -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+          <label for="cineId" class="block font-bold mb-2">ID del Cine *</label>
+          <input
+            type="text"
+            pInputText
+            id="cineId"
+            [(ngModel)]="promocion.cineId"
+            fluid
+            [disabled]="isEditMode" />
+          <small class="text-red-500" *ngIf="submitted && !promocion.cineId?.trim()">
+            El ID del cine es obligatorio.
+          </small>
+        </div>
+      </div>
+
+      <!-- IDs Opcionales -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-4">
+          <label for="salaId" class="block font-bold mb-2">ID Sala</label>
+          <input
+            type="text"
+            pInputText
+            id="salaId"
+            [(ngModel)]="promocion.salaId"
+            placeholder="Opcional"
+            fluid />
+        </div>
+
+        <div class="col-span-4">
+          <label for="peliculaId" class="block font-bold mb-2">ID Película</label>
+          <input
+            type="text"
+            pInputText
+            id="peliculaId"
+            [(ngModel)]="promocion.peliculaId"
+            placeholder="Opcional"
+            fluid />
+        </div>
+
+        <div class="col-span-4">
+          <label for="clienteId" class="block font-bold mb-2">ID Cliente</label>
+          <input
+            type="text"
+            pInputText
+            id="clienteId"
+            [(ngModel)]="promocion.clienteId"
+            placeholder="Opcional"
+            fluid />
+        </div>
+      </div>
+
+      <!-- Estado (solo en edición) -->
+      <div *ngIf="isEditMode">
+        <label for="activa" class="block font-bold mb-2">Estado</label>
+        <p-select
+          [(ngModel)]="promocion.activa"
+          inputId="activa"
+          [options]="estadosPromocion"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Seleccione el estado"
+          fluid />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      text
+      (click)="hideDialog()" />
+    <p-button
+      label="Guardar"
+      icon="pi pi-check"
+      (click)="savePromocion()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />

@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Movie, Page } from '@/interfaces/movie.interface';
+import {environment} from '../../../environments/environment';
 
 
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private http = inject(HttpClient);
-  private readonly BASE = 'http://localhost:8082/api/v1'; // o `${environment.apiUrl}/api/v1/peliculas`
+  private readonly BASE = `${environment.URL_GATEWAY}/api/v1`
 
   list(): Observable<Movie[]> {
     return this.http.get<Movie[]>(`${this.BASE}/peliculas`);
@@ -20,7 +21,7 @@ export class MovieService {
 
   create(body: Partial<Movie>) {
     console.log(body);
-    
+
     return this.http.post<Movie>(`${this.BASE}/peliculas`, body);
   }
 
@@ -54,22 +55,22 @@ export class MovieService {
   // categorías (detalle-categoria)
   listMovieCategories(movieId: string) {
     console.log('************* Categorias');
-    
+
     return this.http.get<{ id: string; nombre: string; activa: boolean; }[]>(
       `${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias`
     );
   }
   attachCategory(movieId: string, categoriaId: string) {
     console.log('guardar----');
-    
+
     console.log({categoriaId});
-    
+
     return this.http.post<void>(`${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias`, { categoriaId });
   }
   detachCategory(movieId: string, categoriaId: string) {
     console.log('eliminar');
     console.log(categoriaId);
-    
+
     return this.http.delete<void>(`${this.BASE}/detalle-categoria/peliculas/${movieId}/categorias/${categoriaId}`);
   }
 

@@ -19,6 +19,7 @@ export const appRoutes: Routes = [
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
+            { path: 'promocion', loadChildren: () => import('./app/promocion/promocion.route') },
         ]
     },
     {
