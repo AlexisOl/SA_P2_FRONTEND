@@ -9,10 +9,10 @@ import {environment} from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private http = inject(HttpClient);
-  private readonly BASE = `${environment.URL_GATEWAY}/api/v1`
+  private readonly BASE = 'http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1' // o `${environment.apiUrl}/api/v1/peliculas`
 
   list(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`${this.BASE}/peliculas`);
+    return this.http.get<Movie[]>(`http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1/peliculas`);
   }
 
   getById(id: string) {

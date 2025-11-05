@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { cine } from '../models/Cine';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -61,4 +62,11 @@ export class CineServiceService {
       }
     )
   }
+
+       public listarCineEspecifico(cine:String):Observable<cine[]> {
+      return  this.http.get<cine[]>(
+        this.URL+'/'+cine
+      )
+      
+    }
 }
