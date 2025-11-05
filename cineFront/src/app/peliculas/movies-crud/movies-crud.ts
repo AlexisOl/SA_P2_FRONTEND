@@ -29,6 +29,7 @@ import { Category, Movie } from '@/interfaces/movie.interface';
 import { CategoryService } from '../services/category';
 
 import { forkJoin } from 'rxjs';
+import { PosterService } from '../services/poster-service';
 
 @Component({
   selector: 'app-movies-crud',
@@ -490,6 +491,7 @@ export class MoviesCrudComponent implements OnInit {
     private toast: MessageService,
     private confirm: ConfirmationService,
     private categoriaS: CategoryService,
+    private svcP: PosterService,
   ) {}
 
   ngOnInit(): void {
@@ -917,7 +919,7 @@ export class MoviesCrudComponent implements OnInit {
   this.resetPreviews();
 
   // Siempre pedimos la lista al backend para tener id/activa/orden
-  this.svc.getPostersByMovie(this.posterMovieId).subscribe({
+  this.svcP.getPostersByMovie(this.posterMovieId).subscribe({
     next: (arr) => {
       this.posterExistentes = (arr ?? []).map(a => this.posterToVM(a));
       this.dialogPosters = true;
@@ -974,11 +976,11 @@ uploadPosters() {
   if (!this.posterMovieId || !this.posterFiles.length) return;
 
   // subimos una por una para poder manejar orden si lo necesitas
-  const uploads = this.posterFiles.map((f, idx) => this.svc.uploadPoster(this.posterMovieId!, f, idx + 1));
+  const uploads = this.posterFiles.map((f, idx) => this.svcP.uploadPoster(this.posterMovieId!, f, idx + 1));
   forkJoin(uploads).subscribe({
     next: (resps) => {
       // Normaliza y refresca desde el backend para obtener ids reales
-      this.svc.getPostersByMovie(this.posterMovieId!).subscribe({
+      this.svcP.getPostersByMovie(this.posterMovieId!).subscribe({
         next: (arr) => {
           this.posterExistentes = (arr ?? []).map(a => this.posterToVM(a));
           this.fetch(); // refresca tabla de películas si estas muestran el primer póster
@@ -995,7 +997,7 @@ uploadPosters() {
 
 togglePoster(p: PosterVM) {
   if (!p.id) return; // si no tiene id, no se puede activar/desactivar
-  const req = p.activa ? this.svc.desactivarPoster(p.id) : this.svc.activarPoster(p.id);
+  const req = p.activa ? this.svcP.desactivarPoster(p.id) : this.svcP.activarPoster(p.id);
   req.subscribe({
     next: () => {
       p.activa = !p.activa;
@@ -1012,7 +1014,7 @@ deletePoster(p: PosterVM) {
     header: 'Confirmar',
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
-      this.svc.deletePoster(p.id).subscribe({
+      this.svcP.deletePoster(p.id).subscribe({
         next: () => {
           this.posterExistentes = this.posterExistentes.filter(x => x.id !== p.id);
           this.toast.add({ severity: 'success', summary: 'OK', detail: 'Póster eliminado', life: 2000 });

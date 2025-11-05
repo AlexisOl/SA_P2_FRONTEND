@@ -88,36 +88,30 @@ export class MovieService {
     );
   }
 
+  // posters
+  listPosters(movieId: string) {
+    return this.http.get<
+      { id: string; url: string; activa: boolean; orden: number }[]
+    >(`${this.BASE}/posters/peliculas/${movieId}/posters`);
+  }
+  uploadPoster(movieId: string, file: File, orden = 1) {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ id: string; url: string }>(
+      `${this.BASE}/posters/peliculas/${movieId}/posters`,
+      form,
+      { params: new HttpParams().set('orden', orden) }
+    );
+  }
+  activatePoster(posterId: string) {
+    return this.http.post<void>(`/api/v1/posters/${posterId}/activar`, {});
+  }
+  deactivatePoster(posterId: string) {
+    return this.http.post<void>(`/api/v1/posters/${posterId}/desactivar`, {});
+  }
   deletePoster(posterId: string) {
     return this.http.delete<void>(`${this.BASE}/posters/${posterId}`);
   }
 
-  //Nuevos poster
-  getPostersByMovie(peliculaId: string) {
-    return this.http.get<PosterDto[]>(
-      `${this.BASE}/posters/peliculas/${peliculaId}/posters`,
-    );
-  }
 
-  uploadPoster(peliculaId: string, file: File, orden = 1) {
-    const fd = new FormData();
-    fd.append('file', file);
-    const params = new HttpParams().set('orden', String(orden));
-    return this.http.post<any>(
-      `${this.BASE}/posters/peliculas/${peliculaId}/posters`,
-      fd,
-      { params },
-    );
-  }
-
-  activarPoster(posterId: string) {
-    return this.http.post<void>(`${this.BASE}/posters/${posterId}/activar`, {});
-  }
-
-  desactivarPoster(posterId: string) {
-    return this.http.post<void>(
-      `${this.BASE}/posters/${posterId}/desactivar`,
-      {},
-    );
-  }
 }
