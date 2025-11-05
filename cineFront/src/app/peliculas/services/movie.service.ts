@@ -6,7 +6,7 @@ import {environment} from '../../../environments/environment';
 
 export interface PosterDto {
   id: string;
-  url?: string; // puede venir como url/path/location
+  url?: string; 
   path?: string;
   location?: string;
   activa: boolean;

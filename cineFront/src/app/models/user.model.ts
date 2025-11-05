@@ -4,6 +4,7 @@ export interface JwtClaims {
     sub: string;
     email: string;
     rol: Rol;
+    bancaVirtual: number;
     iat: number;
     exp: number;
 }
@@ -13,6 +14,7 @@ export interface RegisterDTO {
     password: string;
     dpi: string;
     rol: Rol;
+    bancaVirtual:number
 }
 
 export interface UserDTO {
@@ -21,6 +23,7 @@ export interface UserDTO {
     email: string;
     dpi: string;
     rol: Rol;
+    bancaVirtual?: number;
     enabled: boolean;
     createdAt: string;
     updatedAt?: string;

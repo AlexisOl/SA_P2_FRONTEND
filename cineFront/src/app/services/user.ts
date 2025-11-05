@@ -1,21 +1,14 @@
 // src/app/services/users.service.ts
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { catchError, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { UserDTO } from '@/models/user.model';
 //import { environment } from '@/enviroments/enviroment';
 
-export interface UserDTO {
-    id: string;
-    nombre: string;
-    email: string;
-    dpi: string;
-    rol: 'ADMIN' | 'CLIENTE' | 'EMPLEADO_REST' | 'EMPLEADO_HOTEL';
-    enabled: boolean;
-    createdAt: string;
-}
 
-const BASE = environment+'/v1/users';
+
+const BASE = environment.URL_GATEWAY+'/v1/users';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
@@ -24,7 +17,7 @@ export class UsersService {
     listar(
         opts: {
             q?: string;
-            rol?: 'ADMIN' | 'CLIENTE' | 'EMPLEADO_REST' | 'EMPLEADO_HOTEL';
+            rol?: 'ADMIN' |'ADMIN_CINE'| 'CLIENTE' | 'EMPLEADO_CINE' | 'CLIENTE_ANUNCIOS';
             enabled?: boolean;
             page?: number;
             size?: number;
@@ -38,10 +31,44 @@ export class UsersService {
         if (typeof opts.size === 'number') params = params.set('size', String(opts.size));
 
         // El authInterceptor adjunta el Bearer automáticamente
+        console.log(this.http.get<UserDTO[]>(BASE, { params }));
+        const fullUrl = `${BASE}?${params.toString()}`;
+  console.log('Llamando a:', fullUrl);
+        
         return this.http.get<UserDTO[]>(BASE, { params });
     }
 
     detalle(id: string): Observable<UserDTO> {
         return this.http.get<UserDTO>(`${BASE}/${id}`);
     }
+
+
+    updatePartial(id: string, partial: Partial<UserDTO>) {
+    return this.http.patch(`${BASE}/${id}`, partial, { observe: 'response' })
+      .pipe(
+        map((res: HttpResponse<any>) =>
+          // si la API no devuelve body, regresamos la fusión local
+          (res.body as UserDTO | null) ?? ({ id, ...partial } as UserDTO)
+        ),
+        catchError(() =>
+          // fallback a PUT si tu endpoint es PUT
+          this.http.put(`${BASE}/${id}`, partial, { observe: 'response' })
+            .pipe(map((res: HttpResponse<any>) =>
+              (res.body as UserDTO | null) ?? ({ id, ...partial } as UserDTO)
+            ))
+        )
+      );
+  }
+
+  acreditarBanca(id: string, dto: { monto: number; motivo: string }) {
+    return this.http
+      .patch(`${BASE}/${id}/banca/acreditar`, dto, { observe: 'response' })
+      .pipe(map((res: HttpResponse<any>) => res.status >= 200 && res.status < 300));
+  }
+
+  debitarBanca(id: string, dto: { monto: number; motivo: string }) {
+    return this.http
+      .patch(`${BASE}/${id}/banca/debitar`, dto, { observe: 'response' })
+      .pipe(map((res: HttpResponse<any>) => res.status >= 200 && res.status < 300));
+  }
 }

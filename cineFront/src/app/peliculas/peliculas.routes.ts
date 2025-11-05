@@ -13,11 +13,12 @@ import {  HorariosGestionComponent } from './horarios-gestion/horarios-gestion';
 export default [
   {path: 'categorias', component: CategoriesCrudComponent},
   {path: '', component: MoviesCrudComponent},
-  {path: 'nueva', component: MovieFormComponent},
-  {path: ':id/editar', component: MovieFormComponent},
-  { path: ':peliculaId/horarios', component: HorariosPageComponent },
+  //{path: 'nueva', component: MovieFormComponent},
+  //{path: ':id/editar', component: MovieFormComponent},
+  //{ path: ':peliculaId/horarios', component: HorariosPageComponent },
   //{ path: 'horarios', component: HorariosPageComponent },
   { path: 'horarios', component: HorariosGestionComponent },
+  
 
   
 ] as Routes;
