@@ -46,7 +46,9 @@
         <div class="flex gap-4 mt-1">
           <p-button label="Ver comentarios" class="w-full" styleClass="w-full" (click)="showDialog(item.id)" />
           <p-button label="ver salas" class="w-full" styleClass="w-full"
-            (onClick)="this.visibleReservacion= true" />
+            
+             [routerLink]="['/home/cine/',item.id]"
+             />
 
                   <p-button label="Editar cine" class="w-full" styleClass="w-full"
                   severity="warn"

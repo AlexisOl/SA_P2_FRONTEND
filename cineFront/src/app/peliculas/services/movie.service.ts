@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Movie, Page } from '@/interfaces/movie.interface';
-import { environment } from 'src/environments/environment.development';
+import {environment} from '../../../environments/environment';
 
 export interface PosterDto {
   id: string;
@@ -19,7 +19,7 @@ export class MovieService {
   private readonly BASE = `${environment.URL_GATEWAY}/api/v1`;
 
   list(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`${this.BASE}/peliculas`);
+    return this.http.get<Movie[]>(`http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1/peliculas`);
   }
 
   getById(id: string) {

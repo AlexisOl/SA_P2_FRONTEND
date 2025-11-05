@@ -20,6 +20,7 @@ import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import {CineServiceService} from '@/services/cine-service.service';
 import {cine} from '@/models/Cine';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cines-vista-global',
@@ -27,7 +28,7 @@ import {cine} from '@/models/Cine';
     SplitterModule, FieldsetModule, SelectModule, TagModule,
     ScrollPanelModule, CardModule, ButtonModule, CommonModule,
     CurrencyPipe, AccordionModule, AvatarModule, BadgeModule,
-    PanelModule, PaginatorModule, DialogModule, FileUploadModule, RatingModule
+    PanelModule, PaginatorModule, DialogModule, FileUploadModule, RatingModule, RouterLink
   ],
   templateUrl: './cines-vista-global.component.html',
   styleUrl: './cines-vista-global.component.css'
@@ -105,24 +106,7 @@ export class CinesVistaGlobalComponent implements OnInit{
 
 
   editarCine(){
-        const nuevoCine: cine = {
-      nombre: this.nombre,
-      ubicacion: this.ubicacion,
-      telefono: this.telefono,
-      fechaCreacion: new Date(Date.now()),
-      cartera:this.cartera,
-      costo: this.costo
-    }
-
-    this.cineServicio.editarHotel(nuevoCine, this.id_cineEditar).subscribe(
-            (next) => {
-        console.log(next);
-
-      }, (error) => {
-        console.log(error);
-
-      }
-    )
+ 
   }
 
 
