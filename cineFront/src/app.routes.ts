@@ -21,6 +21,8 @@ export const appRoutes: Routes = [
             { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
             { path: 'promocion', loadChildren: () => import('./app/promocion/promocion.route') },
             { path: 'anuncios', loadChildren: () => import('./app/Anuncios/anuncios.routes') },
+            { path: 'calificacion', loadChildren: () => import('./app/calificaciones/calificacion.route') },
+
         ]
     },
     {
@@ -36,7 +38,7 @@ export const appRoutes: Routes = [
         ]
     },
 
-  
+
 
     { path: 'landing', component: Landing },
     { path: 'notfound', component: Notfound },

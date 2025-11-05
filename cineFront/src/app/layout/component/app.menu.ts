@@ -45,6 +45,32 @@ export class AppMenu {
                       }
                     ]
                   },
+                  {
+                    label: 'Calificaciones',
+                    icon: 'pi pi-fw pi-star-fill',
+                    items: [
+                      {
+                        label: 'Calificaciones de Salas',
+                        icon: 'pi pi-fw pi-building',
+                        routerLink: ['/home/calificacion/sala']
+                      },
+                      {
+                        label: 'Calificaciones de Snacks',
+                        icon: 'pi pi-fw pi-shopping-bag',
+                        routerLink: ['/home/calificacion/snack']
+                      },
+                      {
+                        label: 'Calificaciones de Películas',
+                        icon: 'pi pi-fw pi-video',
+                        routerLink: ['/home/calificacion/pelicula']
+                      }
+                    ]
+                  },
+                  {
+                    label: 'Promociones',
+                    icon: 'pi pi-fw pi-percentage',
+                    routerLink: ['/home/promocion']
+                  }
                 ]
             },
 
