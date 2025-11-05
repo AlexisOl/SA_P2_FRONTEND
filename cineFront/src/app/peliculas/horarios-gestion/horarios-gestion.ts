@@ -79,6 +79,7 @@ export interface MovieMin {
       class="mb-4"
       style="background: var(--surface-card); padding: 1.5rem; border-radius: 6px;"
     >
+   
       <!-- Primera fila -->
       <div
         style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;"
@@ -251,6 +252,36 @@ export interface MovieMin {
       header="{{ form.id ? 'Editar' : 'Nuevo' }} horario"
     >
       <ng-template #content>
+         <!-- Fila 0: Cine y Sala (dentro del diálogo) -->
+<div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+  <div style="flex: 1; min-width: 250px;">
+    <label style="display:block; font-weight:600; margin-bottom: .5rem;">Cine *</label>
+    <p-select
+      [(ngModel)]="sel.cinemaId"
+      [options]="cines"
+      optionLabel="nombre"
+      optionValue="id"
+      placeholder="Selecciona cine"
+      (onChange)="onDialogChangeCine()"
+      [style]="{ width: '100%' }"
+      appendTo="body"
+    />
+  </div>
+
+  <div style="flex: 1; min-width: 250px;">
+    <label style="display:block; font-weight:600; margin-bottom: .5rem;">Sala *</label>
+    <p-select
+      [(ngModel)]="sel.salaId"
+      [options]="salas"
+      optionLabel="nombre"
+      optionValue="id"
+      placeholder="Selecciona sala"
+      [disabled]="!sel.cinemaId || !salas.length"
+      [style]="{ width: '100%' }"
+      appendTo="body"
+    />
+  </div>
+</div>
         <!-- Primera fila: Idioma, Formato, Precio -->
         <div
           style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;"
@@ -494,36 +525,52 @@ export class HorariosGestionComponent implements OnInit {
   }
 
   // CRUD
-  newHorario() {
-    if (!this.sel.peliculaId || !this.sel.cinemaId || !this.sel.salaId) {
-      this.toast.add({
-        severity: 'warn',
-        summary: 'Campos',
-        detail: 'Selecciona película, cine y sala',
-        life: 2000,
-      });
-      return;
+ newHorario() {
+  if (!this.sel.peliculaId || !this.sel.cinemaId) {
+    this.toast.add({
+      severity: 'warn',
+      summary: 'Campos',
+      detail: 'Selecciona al menos película y cine',
+      life: 2000,
+    });
+    return;
+  }
+
+  this.form = { id: null, idioma: '', formato: '', precio: 0 };
+  this.formInicio = this.formFin = null;
+
+  // Asegurar salas del cine actual para el selector dentro del diálogo
+  this.ensureSalasLoaded(this.sel.cinemaId, () => {
+    // si no hay sala seleccionada y hay salas, autoselecciona la primera
+    if (!this.sel.salaId && this.salas.length) this.sel.salaId = this.salas[0].id!;
+    this.dialog = true;
+  });
+}
+
+edit(h: Horario) {
+  this.sel.peliculaId = h.peliculaId;
+  this.sel.cinemaId   = h.cinemaId;
+  this.sel.salaId     = h.salaId;
+
+  this.form = {
+    id: h.id,
+    idioma: h.idioma,
+    formato: h.formato,
+    precio: h.precio ?? 0,
+  };
+  this.formInicio = h.inicio ? new Date(h.inicio) : null;
+  this.formFin    = h.fin    ? new Date(h.fin)    : null;
+
+  // Cargar salas del cine del horario, para que el selector muestre la actual marcada
+  this.ensureSalasLoaded(this.sel.cinemaId, () => {
+    // si la sala del horario no está en la lista (caso raro), no rompas la selección
+    if (!this.salas.some(s => s.id === this.sel.salaId) && this.salas.length) {
+      this.sel.salaId = this.salas[0].id!;
     }
-    this.form = { id: null, idioma: '', formato: '', precio: 0 };
-    this.formInicio = this.formFin = null;
     this.dialog = true;
-  }
-
-  edit(h: Horario) {
-    this.sel.peliculaId = h.peliculaId;
-    this.sel.cinemaId = h.cinemaId;
-    this.sel.salaId = h.salaId;
-    this.form = {
-      id: h.id,
-      idioma: h.idioma,
-      formato: h.formato,
-      precio: h.precio ?? 0,
-    };
-    this.formInicio = h.inicio ? new Date(h.inicio) : null;
-    this.formFin = h.fin ? new Date(h.fin) : null;
-    this.dialog = true;
-  }
-
+  });
+}
+  saving = false;
   save() {
     const ok =
       this.sel.peliculaId &&
@@ -534,11 +581,15 @@ export class HorariosGestionComponent implements OnInit {
       this.formInicio &&
       this.formFin;
     if (!ok) {
+      /* toast */ return;
+    }
+
+    if (this.formInicio!.getTime() >= this.formFin!.getTime()) {
       this.toast.add({
         severity: 'warn',
-        summary: 'Campos',
-        detail: 'Completa todos los campos',
-        life: 2000,
+        summary: 'Rango inválido',
+        detail: 'La hora de inicio debe ser menor que la de fin',
+        life: 2200,
       });
       return;
     }
@@ -549,17 +600,15 @@ export class HorariosGestionComponent implements OnInit {
       salaId: this.sel.salaId,
       idioma: this.form.idioma,
       formato: this.form.formato,
-      inicio: this.toApiLocal(this.formInicio!), // 👈 antes usabas toISO()
-      fin: this.toApiLocal(this.formFin!), // 👈
+      inicio: this.toApiLocal(this.formInicio!),
+      fin: this.toApiLocal(this.formFin!),
       precio: Number(this.form.precio ?? 0),
     };
-    console.log('payload');
-
-    console.log(payload);
 
     const req = this.form.id
       ? this.horarios.update(this.form.id, payload)
       : this.horarios.create(payload);
+    this.saving = true;
     req.subscribe({
       next: () => {
         this.toast.add({
@@ -571,6 +620,14 @@ export class HorariosGestionComponent implements OnInit {
         this.dialog = false;
         this.load();
       },
+      error: () =>
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo guardar',
+          life: 2500,
+        }),
+      complete: () => (this.saving = false),
     });
   }
 
@@ -594,4 +651,39 @@ export class HorariosGestionComponent implements OnInit {
       },
     });
   }
+
+  // Reuso del cambio de cine dentro del diálogo (no afecta los filtros superiores)
+onDialogChangeCine() {
+  // Al cambiar cine dentro del diálogo, hay que recargar salas y resetear sala
+  this.sel.salaId = '';
+  if (!this.sel.cinemaId) {
+    this.salas = [];
+    this.salaMap = {};
+    return;
+  }
+  this.ensureSalasLoaded(this.sel.cinemaId);
+}
+
+// Carga salas para un cine específico y ejecuta un callback opcional al terminar
+private ensureSalasLoaded(cinemaId: string, done?: () => void) {
+  this.salas = [];
+  this.salaMap = {};
+  this.salasSvc.listarSalasId(cinemaId).subscribe({
+    next: (salas: any) => {
+      this.salas = (salas || []).map((s: any) => ({
+        id: String(s.id),
+        nombre: s.nombre || s.name || `Sala ${s.id}`,
+      }));
+      this.salaMap = this.salas.reduce((acc, s) => {
+        if (s?.id) acc[String(s.id)] = String(s.nombre ?? s.id);
+        return acc;
+      }, {} as Record<string, string>);
+      if (done) done();
+    },
+    error: () => {
+      this.toast.add({ severity:'error', summary:'Error', detail:'No se pudieron cargar las salas', life:2500 });
+      if (done) done();
+    }
+  });
+}
 }
