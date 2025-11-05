@@ -4,6 +4,9 @@ import { CategoriesCrudComponent } from './categoria/categoria';
 //import { MoviesListComponent } from './movie-list/movie-list';
 import { MovieFormComponent } from './movie-form/movie-form';
 import { MoviesCrudComponent } from './movies-crud/movies-crud';
+import { HorariosPageComponent } from './horario-page/horario-page';
+import {  HorariosGestionComponent } from './horarios-gestion/horarios-gestion';
+//import { HorariosAdminComponent } from './horario-admin/horario-admin';
 //import {  MoviesCrudComponent } from './movie-form/movie-form';
 
 
@@ -12,5 +15,9 @@ export default [
   {path: '', component: MoviesCrudComponent},
   {path: 'nueva', component: MovieFormComponent},
   {path: ':id/editar', component: MovieFormComponent},
+  { path: ':peliculaId/horarios', component: HorariosPageComponent },
+  //{ path: 'horarios', component: HorariosPageComponent },
+  { path: 'horarios', component: HorariosGestionComponent },
+
   
 ] as Routes;
