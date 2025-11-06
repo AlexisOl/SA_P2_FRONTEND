@@ -60,11 +60,11 @@ export class AuthService {
   }
 
   forgotPassword(email: string) {
-    return this.http.post(`${BASE_URL}/v1/auth/forgot-password`, { email });
+    return this.http.post(`${BASE_URL}/v1/auth/password/forgot`, { email });
   }
 
   resetPassword(token: string, newPassword: string) {
-    return this.http.post(`${BASE_URL}/v1/auth/reset-password`, {
+    return this.http.post(`${BASE_URL}/v1/auth/password/reset`, {
       token,
       newPassword,
     });

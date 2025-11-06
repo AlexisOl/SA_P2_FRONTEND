@@ -134,7 +134,7 @@ export class ResetPasswordComponent implements OnInit {
           this.toast.add({ severity: 'success', summary: 'Contraseña actualizada',
             detail: 'Ya puedes iniciar sesión con tu nueva contraseña.' });
           this.form.reset();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
         },
         error: (err) => {
           const detail = err?.error?.message || err.message || 'No se pudo restablecer';
