@@ -1,0 +1,204 @@
+.venta-snacks-container {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .form-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .snacks-section {
+    margin-top: 1.5rem;
+
+    h3 {
+      color: #495057;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .snacks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+
+      .snack-card {
+        height: 100%;
+
+        ::ng-deep .p-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s, box-shadow 0.2s;
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          .p-card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .p-card-content {
+            flex: 1;
+          }
+        }
+
+        .snack-image {
+          height: 150px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+
+          i {
+            font-size: 3rem;
+          }
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .snack-info {
+          h4 {
+            margin: 0 0 0.5rem 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+          }
+
+          .snack-descripcion {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            min-height: 40px;
+          }
+
+          .snack-precio {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+
+            .precio {
+              font-size: 1.25rem;
+              font-weight: bold;
+              color: #28a745;
+            }
+
+            .stock {
+              font-size: 0.85rem;
+              padding: 0.25rem 0.5rem;
+              background-color: #e3f2fd;
+              color: #1976d2;
+              border-radius: 4px;
+              font-weight: 500;
+
+              &.sin-stock {
+                background-color: #ffebee;
+                color: #c62828;
+              }
+            }
+          }
+        }
+
+        .snack-actions {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+
+          ::ng-deep .p-inputnumber {
+            flex: 1;
+          }
+
+          ::ng-deep .p-button {
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+
+  .carrito-section {
+    margin-top: 2rem;
+
+    h3 {
+      color: #495057;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .total-section {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+
+      .total-label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+      }
+
+      .total-amount {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #28a745;
+      }
+    }
+
+    .acciones-carrito {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+  }
+
+  ::ng-deep {
+    .p-card-header {
+      padding: 0;
+      border-bottom: none;
+    }
+
+    .p-datatable {
+      .p-datatable-thead > tr > th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+      }
+    }
+
+    .p-inputnumber-input {
+      text-align: center;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .venta-snacks-container {
+    .snacks-section .snacks-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .carrito-section .acciones-carrito {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

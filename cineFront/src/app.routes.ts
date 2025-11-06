@@ -24,7 +24,7 @@ export const appRoutes: Routes = [
             { path: 'anuncios', loadChildren: () => import('./app/Anuncios/anuncios.routes') },
             { path: 'reportes', component: ReportesGenerales },
             { path: 'calificacion', loadChildren: () => import('./app/calificaciones/calificacion.route') },
-
+            { path: 'ventas', loadChildren: () => import('./app/ventas/ventas.route') },
         ]
     },
     {

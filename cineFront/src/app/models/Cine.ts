@@ -36,13 +36,13 @@ export enum TipoSnacks{
 }
 
 export interface snacks {
-        id?:String;
-    nombre:String;
-     precio:Number;
-      tipo:String;
-     idCine:String;
-    promedio_valoracion?:Number;
-
+  id?: string;
+  nombre: string;
+  precio: number;
+  tipo: string;
+  idCine: string;
+  promedio_valoracion?: number;
+  cantidadSeleccionada?: number;
 }
 
 

@@ -34,15 +34,11 @@ export class AppMenu {
                         routerLink: ['/home/cine']
                       },
                       {
-                        label: 'Crear cine',
-                        icon: 'pi pi-fw pi-plus-circle',
-                        routerLink: ['/home/uikit/input']
+                        label: 'Asientos',
+                        icon: 'pi pi-fw pi-th-large',
+                        routerLink: ['/home/ventas/asientos']
                       },
-                      {
-                        label: 'Configuracion',
-                        icon: 'pi pi-fw pi-cog',
-                        routerLink: ['/home/uikit/overlay']
-                      }
+
                     ]
                   },
                   {
@@ -93,8 +89,13 @@ export class AppMenu {
 
                   {
                     label: 'Promociones',
-                    icon: 'pi pi-fw pi-percentage',
+                    icon: 'pi pi-fw pi-gift',
                     routerLink: ['/home/promocion']
+                  },
+                  {
+                    label: 'Snacks',
+                    icon: 'pi pi-fw pi-shopping-bag',
+                    routerLink: ['/home/ventas/snack']
                   },
                   {
   label: 'Películas',
@@ -124,11 +125,11 @@ export class AppMenu {
 },
 {
   label: 'Usuario',
-  icon: 'pi pi-fw pi-user', 
+  icon: 'pi pi-fw pi-user',
   items: [
     {
       label: 'Gestión de usuarios',
-      icon: 'pi pi-fw pi-users', 
+      icon: 'pi pi-fw pi-users',
       routerLink: ['/user/register']
     },
     {

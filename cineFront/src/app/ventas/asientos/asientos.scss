@@ -1,0 +1,186 @@
+.asiento-sala-container {
+  padding: 0;
+  margin: 0;
+}
+
+// Pantalla del cine
+.pantalla-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.pantalla {
+  background: linear-gradient(to bottom, #374151, #1f2937);
+  color: white;
+  padding: 1rem 4rem;
+  border-radius: 0 0 50px 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
+
+// Grid de asientos
+.asientos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.fila-asientos {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.label-fila {
+  min-width: 40px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #374151;
+  text-align: center;
+}
+
+.asientos-fila {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// Estilos de asientos
+.asiento {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.asiento-disponible {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: 2px solid #059669;
+
+  &:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+}
+
+.asiento-ocupado {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: 2px solid #dc2626;
+  cursor: not-allowed;
+
+  &:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.asiento-seleccionado {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: 2px solid #2563eb;
+  transform: scale(1.1);
+
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  }
+}
+
+.asiento-numero {
+  position: relative;
+  z-index: 1;
+}
+
+.asiento-icono {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.7rem;
+  z-index: 2;
+}
+
+// Leyenda
+.asiento-disponible-legend,
+.asiento-ocupado-legend,
+.asiento-seleccionado-legend {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.asiento-disponible-legend {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 2px solid #059669;
+}
+
+.asiento-ocupado-legend {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: 2px solid #dc2626;
+}
+
+.asiento-seleccionado-legend {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: 2px solid #2563eb;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .asiento {
+    width: 38px;
+    height: 38px;
+    font-size: 0.8rem;
+  }
+
+  .label-fila {
+    min-width: 30px;
+    font-size: 1rem;
+  }
+
+  .pantalla {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    min-width: 200px;
+  }
+
+  .asientos-fila {
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .asiento {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+
+  .label-fila {
+    min-width: 25px;
+    font-size: 0.9rem;
+  }
+
+  .asiento-icono {
+    font-size: 0.6rem;
+  }
+}
