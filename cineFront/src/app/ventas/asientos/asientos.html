@@ -1,0 +1,695 @@
+<!-- asiento-sala.component.html -->
+<div class="asiento-sala-container">
+
+  <!-- Toast para mensajes -->
+  <p-toast></p-toast>
+
+  <!-- Toolbar -->
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="left">
+      <div class="flex align-items-center gap-2">
+        <i class="pi pi-th-large text-3xl text-primary"></i>
+        <h2 class="m-0">Gestión de Asientos</h2>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="right">
+      <div class="flex gap-2">
+        <p-button
+          label="Crear Asiento"
+          icon="pi pi-plus"
+          (onClick)="abrirDialogoCrearAsiento()"
+          severity="success">
+        </p-button>
+        <p-button
+          label="Generar Mapa"
+          icon="pi pi-table"
+          (onClick)="abrirDialogoGenerarMapa()"
+          severity="info">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-toolbar>
+
+<!--  &lt;!&ndash; Selector de Sala &ndash;&gt;-->
+<!--  <p-card styleClass="mb-4">-->
+<!--    <div class="flex flex-column md:flex-row align-items-center gap-3">-->
+<!--      <label for="salaId" class="font-semibold">-->
+<!--        <i class="pi pi-building mr-2"></i>-->
+<!--        Seleccionar Sala:-->
+<!--      </label>-->
+<!--      <input-->
+<!--        id="salaId"-->
+<!--        type="text"-->
+<!--        pInputText-->
+<!--        [(ngModel)]="salaIdSeleccionada"-->
+<!--        placeholder="Ingrese el UUID de la sala"-->
+<!--        class="flex-1">-->
+<!--      <p-button-->
+<!--        label="Cargar Asientos"-->
+<!--        icon="pi pi-refresh"-->
+<!--        (onClick)="cargarAsientosPorSala()"-->
+<!--        [loading]="loading"-->
+<!--        [disabled]="!salaIdSeleccionada">-->
+<!--      </p-button>-->
+<!--    </div>-->
+<!--  </p-card>-->
+
+  <!-- Selector de Cine y Sala -->
+  <p-card styleClass="mb-4">
+    <div class="grid">
+      <!-- Selector de Cine -->
+      <div class="col-12 md:col-5">
+        <label for="cineSelect" class="font-semibold block mb-2">
+          <i class="pi pi-video mr-2"></i>
+          Seleccionar Cine <span class="text-red-500">*</span>
+        </label>
+        <p-select
+          id="cineSelect"
+          [options]="cines"
+          [(ngModel)]="cineSeleccionado"
+          (onChange)="onCineChange($event)"
+          optionLabel="nombre"
+          placeholder="Seleccione un cine"
+          [filter]="true"
+          [showClear]="true"
+          styleClass="w-full">
+          <ng-template #item let-cine>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-video"></i>
+              <div>
+                <div>{{ cine.nombre }}</div>
+                <small class="text-color-secondary">{{ cine.direccion }}</small>
+              </div>
+            </div>
+          </ng-template>
+        </p-select>
+        <small *ngIf="loadingCines" class="block mt-1 text-color-secondary">
+          <i class="pi pi-spin pi-spinner mr-1"></i>
+          Cargando cines...
+        </small>
+      </div>
+
+      <!-- Selector de Sala -->
+      <div class="col-12 md:col-5">
+        <label for="salaSelect" class="font-semibold block mb-2">
+          <i class="pi pi-building mr-2"></i>
+          Seleccionar Sala <span class="text-red-500">*</span>
+        </label>
+        <p-select
+          id="salaSelect"
+          [options]="salas"
+          [(ngModel)]="salaSeleccionada"
+          (onChange)="onSalaChange($event)"
+          optionLabel="nombre"
+          placeholder="Seleccione una sala"
+          [filter]="true"
+          [showClear]="true"
+          [disabled]="!cineSeleccionado || loadingSalas"
+          styleClass="w-full">
+          <ng-template #item let-sala>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-building"></i>
+              <div>
+                <div>{{ sala.nombre }}</div>
+                <small class="text-color-secondary">
+                  Capacidad: {{ sala.capacidad || 'N/A' }}
+                </small>
+              </div>
+            </div>
+          </ng-template>
+        </p-select>
+        <small *ngIf="loadingSalas" class="block mt-1 text-color-secondary">
+          <i class="pi pi-spin pi-spinner mr-1"></i>
+          Cargando salas...
+        </small>
+        <small *ngIf="!cineSeleccionado && !loadingSalas" class="block mt-1 text-color-secondary">
+          Primero seleccione un cine
+        </small>
+      </div>
+
+      <!-- Botón Cargar -->
+      <div class="col-12 md:col-2 flex align-items-end">
+        <p-button
+          label="Cargar"
+          icon="pi pi-refresh"
+          (onClick)="cargarAsientosPorSala()"
+          [loading]="loading"
+          [disabled]="!salaSeleccionada"
+          styleClass="w-full">
+        </p-button>
+      </div>
+</div>
+
+    <!-- Información de selección -->
+    <div class="mt-3" *ngIf="cineSeleccionado || salaSeleccionada">
+      <p-divider></p-divider>
+      <div class="flex flex-wrap gap-2 align-items-center">
+      <span class="font-semibold text-color-secondary">
+        <i class="pi pi-info-circle mr-2"></i>
+        Selección actual:
+      </span>
+        <p-chip
+          *ngIf="cineSeleccionado"
+          [label]="cineSeleccionado.nombre"
+          icon="pi pi-video">
+        </p-chip>
+        <i class="pi pi-arrow-right text-color-secondary" *ngIf="cineSeleccionado && salaSeleccionada"></i>
+        <p-chip
+          *ngIf="salaSeleccionada"
+          [label]="salaSeleccionada.nombre"
+          icon="pi pi-building">
+        </p-chip>
+      </div>
+    </div>
+  </p-card>
+
+
+  <!-- Estadísticas -->
+  <div class="grid mb-4" *ngIf="asientos.length > 0">
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="flex align-items-center gap-3">
+          <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
+               style="width: 3rem; height: 3rem;">
+            <i class="pi pi-th-large text-blue-600 text-2xl"></i>
+          </div>
+          <div>
+            <span class="block text-500 font-medium mb-1">Total Asientos</span>
+            <div class="text-900 font-bold text-xl">{{ asientos.length }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="flex align-items-center gap-3">
+          <div class="flex align-items-center justify-content-center bg-green-100 border-round"
+               style="width: 3rem; height: 3rem;">
+            <i class="pi pi-check-circle text-green-600 text-2xl"></i>
+          </div>
+          <div>
+            <span class="block text-500 font-medium mb-1">Disponibles</span>
+            <div class="text-900 font-bold text-xl">{{ asientosDisponibles }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="flex align-items-center gap-3">
+          <div class="flex align-items-center justify-content-center bg-red-100 border-round"
+               style="width: 3rem; height: 3rem;">
+            <i class="pi pi-times-circle text-red-600 text-2xl"></i>
+          </div>
+          <div>
+            <span class="block text-500 font-medium mb-1">Ocupados</span>
+            <div class="text-900 font-bold text-xl">{{ asientosOcupados }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="flex align-items-center gap-3">
+          <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
+               style="width: 3rem; height: 3rem;">
+            <i class="pi pi-percentage text-orange-600 text-2xl"></i>
+          </div>
+          <div>
+            <span class="block text-500 font-medium mb-1">Ocupación</span>
+            <div class="text-900 font-bold text-xl">{{ porcentajeOcupacion }}%</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Leyenda -->
+  <p-card styleClass="mb-4" *ngIf="asientos.length > 0">
+    <div class="flex flex-wrap gap-4 align-items-center">
+      <span class="font-semibold">
+        <i class="pi pi-info-circle mr-2"></i>
+        Leyenda:
+      </span>
+      <div class="flex align-items-center gap-2">
+        <div class="asiento-disponible-legend"></div>
+        <span>Disponible</span>
+      </div>
+      <div class="flex align-items-center gap-2">
+        <div class="asiento-ocupado-legend"></div>
+        <span>Ocupado</span>
+      </div>
+      <div class="flex align-items-center gap-2">
+        <div class="asiento-seleccionado-legend"></div>
+        <span>Seleccionado</span>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Mapa de Asientos -->
+  <p-card *ngIf="asientos.length > 0">
+    <ng-template pTemplate="header">
+      <div class="p-3 flex align-items-center justify-content-between">
+        <h3 class="m-0">
+          <i class="pi pi-map mr-2"></i>
+          Mapa de Asientos
+        </h3>
+        <p-chip [label]="'Sala: ' + salaIdSeleccionada.slice(0, 8) + '...'" icon="pi pi-building"></p-chip>
+      </div>
+    </ng-template>
+
+    <!-- Pantalla -->
+    <div class="pantalla-container mb-4">
+      <div class="pantalla">
+        <i class="pi pi-desktop mr-2"></i>
+        PANTALLA
+      </div>
+    </div>
+
+    <!-- Grid de Asientos -->
+    <div class="asientos-grid">
+      <div *ngFor="let fila of filasUnicas" class="fila-asientos">
+        <div class="label-fila">{{ fila }}</div>
+        <div class="asientos-fila">
+          <div
+            *ngFor="let asiento of obtenerAsientosPorFila(fila)"
+            class="asiento"
+            [ngClass]="{
+              'asiento-disponible': asiento.disponible && !esAsientoSeleccionado(asiento),
+              'asiento-ocupado': !asiento.disponible,
+              'asiento-seleccionado': esAsientoSeleccionado(asiento)
+            }"
+            (click)="toggleSeleccionAsiento(asiento)"
+            [pTooltip]="obtenerTooltipAsiento(asiento)"
+            tooltipPosition="top">
+            <span class="asiento-numero">{{ asiento.columna }}</span>
+            <i *ngIf="!asiento.disponible" class="pi pi-lock asiento-icono"></i>
+            <i *ngIf="esAsientoSeleccionado(asiento)" class="pi pi-check asiento-icono"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-between align-items-center">
+        <div class="flex align-items-center gap-2">
+          <i class="pi pi-info-circle text-color-secondary"></i>
+          <span class="text-color-secondary">Haz clic en un asiento disponible para seleccionarlo</span>
+        </div>
+        <p-button
+          *ngIf="asientosSeleccionados.length > 0"
+          [label]="'Asientos seleccionados: ' + asientosSeleccionados.length"
+          icon="pi pi-check-circle"
+          severity="info"
+          [outlined]="true">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-card>
+
+  <!-- Tabla de Asientos -->
+  <p-card styleClass="mt-4" *ngIf="asientos.length > 0">
+    <ng-template pTemplate="header">
+      <div class="p-3">
+        <h3 class="m-0">
+          <i class="pi pi-list mr-2"></i>
+          Lista de Asientos
+        </h3>
+      </div>
+    </ng-template>
+
+    <p-table
+      [value]="asientos"
+      [paginator]="true"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} asientos"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [globalFilterFields]="['fila', 'columna', 'asientoId']"
+      styleClass="p-datatable-striped"
+      responsiveLayout="scroll">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="fila">
+            Fila <p-sortIcon field="fila"></p-sortIcon>
+          </th>
+          <th pSortableColumn="columna">
+            Columna <p-sortIcon field="columna"></p-sortIcon>
+          </th>
+          <th>Identificador</th>
+          <th>Estado</th>
+          <th>Sala</th>
+          <th style="width: 120px;">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-asiento>
+        <tr>
+          <td>
+            <p-tag [value]="asiento.fila" severity="info"></p-tag>
+          </td>
+          <td>
+            <span class="font-semibold">{{ asiento.columna }}</span>
+          </td>
+          <td>
+            <p-chip [label]="asiento.asientoId.slice(0, 8) + '...'" icon="pi pi-hashtag"></p-chip>
+          </td>
+          <td>
+            <p-tag
+              [value]="asiento.disponible ? 'Disponible' : 'Ocupado'"
+              [severity]="asiento.disponible ? 'success' : 'danger'"
+              [icon]="asiento.disponible ? 'pi pi-check-circle' : 'pi pi-times-circle'">
+            </p-tag>
+          </td>
+          <td>
+            <p-chip [label]="asiento.salaId.slice(0, 8) + '...'" icon="pi pi-building"></p-chip>
+          </td>
+          <td>
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              (onClick)="verDetalleAsiento(asiento)"
+              pTooltip="Ver detalle"
+              tooltipPosition="left">
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="flex flex-column align-items-center justify-content-center p-5">
+              <i class="pi pi-inbox text-6xl text-color-secondary mb-3"></i>
+              <p class="text-xl text-color-secondary">No hay asientos disponibles</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Mensaje cuando no hay sala seleccionada -->
+  <p-card *ngIf="asientos.length === 0 && !loading">
+    <div class="flex flex-column align-items-center justify-content-center p-5">
+      <i class="pi pi-building text-6xl text-color-secondary mb-3"></i>
+      <p class="text-xl text-color-secondary mb-2">No hay sala seleccionada</p>
+      <p class="text-sm text-color-secondary">Ingresa el ID de una sala y haz clic en "Cargar Asientos"</p>
+    </div>
+  </p-card>
+
+  <!-- Diálogo para crear asiento individual -->
+  <p-dialog
+    header="Crear Asiento"
+    [(visible)]="displayDialogCrear"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!loading">
+
+    <form [formGroup]="asientoForm">
+      <div class="p-fluid">
+
+        <div class="field">
+          <label for="salaIdForm" class="font-semibold block mb-2">
+            <i class="pi pi-building mr-2"></i>
+            Sala ID <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="salaIdForm"
+            type="text"
+            pInputText
+            formControlName="salaId"
+            placeholder="UUID de la sala">
+          <small
+            *ngIf="asientoForm.get('salaId')?.invalid && asientoForm.get('salaId')?.touched"
+            class="p-error">
+            La sala es obligatoria
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="fila" class="font-semibold block mb-2">
+            <i class="pi pi-bars mr-2"></i>
+            Fila <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="fila"
+            type="text"
+            pInputText
+            formControlName="fila"
+            placeholder="Ej: A, B, C..."
+            maxlength="1">
+          <small
+            *ngIf="asientoForm.get('fila')?.invalid && asientoForm.get('fila')?.touched"
+            class="p-error">
+            La fila es obligatoria
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="columna" class="font-semibold block mb-2">
+            <i class="pi pi-hashtag mr-2"></i>
+            Columna <span class="text-red-500">*</span>
+          </label>
+          <p-inputNumber
+            id="columna"
+            formControlName="columna"
+            [min]="1"
+            [max]="50"
+            placeholder="Número de columna">
+          </p-inputNumber>
+          <small
+            *ngIf="asientoForm.get('columna')?.invalid && asientoForm.get('columna')?.touched"
+            class="p-error">
+            La columna es obligatoria (1-50)
+          </small>
+        </div>
+
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          (onClick)="displayDialogCrear = false"
+          [text]="true"
+          severity="secondary"
+          [disabled]="loading">
+        </p-button>
+        <p-button
+          label="Crear Asiento"
+          icon="pi pi-check"
+          (onClick)="crearAsiento()"
+          [disabled]="asientoForm.invalid"
+          [loading]="loading"
+          severity="success">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Diálogo para generar mapa completo -->
+  <p-dialog
+    header="Generar Mapa de Asientos"
+    [(visible)]="displayDialogGenerarMapa"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!loading">
+
+    <form [formGroup]="mapaForm">
+      <div class="p-fluid">
+
+        <div class="field">
+          <label for="salaIdMapa" class="font-semibold block mb-2">
+            <i class="pi pi-building mr-2"></i>
+            Sala ID <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="salaIdMapa"
+            type="text"
+            pInputText
+            formControlName="salaId"
+            placeholder="UUID de la sala">
+        </div>
+
+        <div class="field">
+          <label for="filaInicio" class="font-semibold block mb-2">
+            <i class="pi pi-arrow-down mr-2"></i>
+            Fila Inicial <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="filaInicio"
+            type="text"
+            pInputText
+            formControlName="filaInicio"
+            placeholder="Ej: A"
+            maxlength="1">
+        </div>
+
+        <div class="field">
+          <label for="filaFin" class="font-semibold block mb-2">
+            <i class="pi pi-arrow-up mr-2"></i>
+            Fila Final <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="filaFin"
+            type="text"
+            pInputText
+            formControlName="filaFin"
+            placeholder="Ej: J"
+            maxlength="1">
+        </div>
+
+        <div class="field">
+          <label for="cantidadColumnas" class="font-semibold block mb-2">
+            <i class="pi pi-th-large mr-2"></i>
+            Cantidad de Columnas <span class="text-red-500">*</span>
+          </label>
+          <p-inputNumber
+            id="cantidadColumnas"
+            formControlName="cantidadColumnas"
+            [min]="1"
+            [max]="50"
+            placeholder="Ej: 10">
+          </p-inputNumber>
+        </div>
+
+        <p-divider></p-divider>
+
+        <div class="surface-ground p-3 border-round">
+          <div class="flex align-items-center gap-2 mb-2">
+            <i class="pi pi-info-circle text-blue-500"></i>
+            <span class="font-semibold">Vista Previa</span>
+          </div>
+          <div class="text-sm text-color-secondary">
+            Se crearán aproximadamente
+            <span class="font-bold text-primary">{{ calcularTotalAsientos() }}</span>
+            asientos
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          (onClick)="displayDialogGenerarMapa = false"
+          [text]="true"
+          severity="secondary"
+          [disabled]="loading">
+        </p-button>
+        <p-button
+          label="Generar Mapa"
+          icon="pi pi-check"
+          (onClick)="generarMapaAsientos()"
+          [disabled]="mapaForm.invalid"
+          [loading]="loading"
+          severity="success">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Diálogo de detalle -->
+  <p-dialog
+    header="Detalle del Asiento"
+    [(visible)]="displayDialogDetalle"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+    [draggable]="false"
+    [resizable]="false">
+
+    <div *ngIf="asientoSeleccionadoDetalle" class="flex flex-column gap-3">
+
+      <div class="flex align-items-center justify-content-center p-4 border-round"
+           [ngClass]="{
+             'bg-green-50': asientoSeleccionadoDetalle.disponible,
+             'bg-red-50': !asientoSeleccionadoDetalle.disponible
+           }">
+        <div class="text-center">
+          <div class="text-6xl mb-2">
+            <i class="pi pi-tag"
+               [ngClass]="{
+                 'text-green-600': asientoSeleccionadoDetalle.disponible,
+                 'text-red-600': !asientoSeleccionadoDetalle.disponible
+               }"></i>
+          </div>
+          <div class="text-3xl font-bold mb-2">
+            {{ asientoSeleccionadoDetalle.fila }}{{ asientoSeleccionadoDetalle.columna }}
+          </div>
+          <p-tag
+            [value]="asientoSeleccionadoDetalle.disponible ? 'Disponible' : 'Ocupado'"
+            [severity]="asientoSeleccionadoDetalle.disponible ? 'success' : 'danger'"
+            [icon]="asientoSeleccionadoDetalle.disponible ? 'pi pi-check-circle' : 'pi pi-times-circle'">
+          </p-tag>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="field">
+        <label class="font-semibold block mb-2">
+          <i class="pi pi-hashtag mr-2"></i>
+          ID del Asiento:
+        </label>
+        <p-chip [label]="asientoSeleccionadoDetalle.asientoId" icon="pi pi-id-card"></p-chip>
+      </div>
+
+      <div class="field">
+        <label class="font-semibold block mb-2">
+          <i class="pi pi-building mr-2"></i>
+          ID de la Sala:
+        </label>
+        <p-chip [label]="asientoSeleccionadoDetalle.salaId" icon="pi pi-building"></p-chip>
+      </div>
+
+      <div class="grid">
+        <div class="col-6">
+          <div class="field">
+            <label class="font-semibold block mb-2">
+              <i class="pi pi-bars mr-2"></i>
+              Fila:
+            </label>
+            <p class="text-xl font-bold m-0">{{ asientoSeleccionadoDetalle.fila }}</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field">
+            <label class="font-semibold block mb-2">
+              <i class="pi pi-hashtag mr-2"></i>
+              Columna:
+            </label>
+            <p class="text-xl font-bold m-0">{{ asientoSeleccionadoDetalle.columna }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Cerrar"
+        icon="pi pi-times"
+        (onClick)="displayDialogDetalle = false"
+        severity="secondary">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+
+  </div>

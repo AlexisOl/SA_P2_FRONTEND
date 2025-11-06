@@ -68,7 +68,7 @@ export class AppMenu {
                   },
                   {
                     label: 'Promociones',
-                    icon: 'pi pi-fw pi-percentage',
+                    icon: 'pi pi-fw pi-gift',
                     routerLink: ['/home/promocion']
                   }
                 ]

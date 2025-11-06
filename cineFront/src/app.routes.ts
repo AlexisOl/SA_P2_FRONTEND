@@ -22,7 +22,7 @@ export const appRoutes: Routes = [
             { path: 'promocion', loadChildren: () => import('./app/promocion/promocion.route') },
             { path: 'anuncios', loadChildren: () => import('./app/Anuncios/anuncios.routes') },
             { path: 'calificacion', loadChildren: () => import('./app/calificaciones/calificacion.route') },
-
+            { path: 'ventas', loadChildren: () => import('./app/ventas/ventas.route') },
         ]
     },
     {

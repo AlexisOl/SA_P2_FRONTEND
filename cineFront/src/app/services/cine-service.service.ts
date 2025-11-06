@@ -28,12 +28,12 @@ export class CineServiceService {
     ).subscribe(
       (next:any) => {
         console.log(next);
-        
+
         this.cinesSignal.set(next)
       },
       (error:any) => {
         console.log(error);
-        
+
       }
     )
   }
@@ -47,7 +47,7 @@ export class CineServiceService {
 
   }
 
-  
+
 
   obtenerHotelEspecifico(id:string){
         return this.http.get<cine>(
@@ -55,12 +55,12 @@ export class CineServiceService {
     ).subscribe(
       (next:any) => {
         console.log(next);
-        
+
         this.cinesSignal.set(next)
       },
       (error:any) => {
         console.log(error);
-        
+
       }
     )
   }
@@ -69,6 +69,12 @@ export class CineServiceService {
       return  this.http.get<cine[]>(
         this.URL+'/'+cine
       )
-      
+
+    }
+
+    obtenerCInesLIst(): Observable<cine[]> {
+      return this.http.get<cine[]>(
+        this.URL
+      );
     }
 }
