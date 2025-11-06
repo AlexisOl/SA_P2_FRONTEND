@@ -15,6 +15,14 @@ import { AuthService } from '@/services/auth';
 import { UsersService } from '@/services/user';
 import { UserDTO } from '@/models/user.model';
 
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEsGT from '@angular/common/locales/es-GT';
+import localeEsGTExtra from '@angular/common/locales/extra/es-GT';
+
+// Registra los datos del locale
+registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -412,6 +420,8 @@ export class ProfileComponent implements OnInit {
       if (u) {
         this._user.set(u as any);
         this.formNombre.patchValue({ nombre: u.nombre || '' });
+        console.log(u.bancaVirtual);
+        
       }
     });
     this.refreshUser();

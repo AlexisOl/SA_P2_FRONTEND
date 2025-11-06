@@ -14,6 +14,8 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '@/services/auth';
 
+import { RouterModule } from '@angular/router'; 
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -26,6 +28,7 @@ import { AuthService } from '@/services/auth';
     PasswordModule,
     RippleModule,
     ToastModule,
+    RouterModule,
   ],
   providers: [MessageService],
   templateUrl: './login.html',
