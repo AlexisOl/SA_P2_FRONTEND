@@ -2,11 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Movie, Page } from '@/interfaces/movie.interface';
-import {environment} from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 export interface PosterDto {
   id: string;
-  url?: string; // puede venir como url/path/location
+  url?: string;
   path?: string;
   location?: string;
   activa: boolean;
@@ -19,7 +19,14 @@ export class MovieService {
   private readonly BASE = `${environment.URL_GATEWAY}/api/v1`;
 
   list(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(`http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1/peliculas`);
+    return this.http.get<Movie[]>(
+      `http://a18e35ebb746b4fb7905838fa95b8c7a-1531005396.us-east-1.elb.amazonaws.com:8088/api/v1/peliculas`,
+    );
+  }
+
+  // src/app/services/movie.service.ts
+  getMovieById(id: string) {
+    return this.http.get<Movie>(`${this.BASE}/peliculas/${id}`);
   }
 
   getById(id: string) {
@@ -100,7 +107,7 @@ export class MovieService {
     return this.http.post<{ id: string; url: string }>(
       `${this.BASE}/posters/peliculas/${movieId}/posters`,
       form,
-      { params: new HttpParams().set('orden', orden) }
+      { params: new HttpParams().set('orden', orden) },
     );
   }
   activatePoster(posterId: string) {
@@ -112,6 +119,4 @@ export class MovieService {
   deletePoster(posterId: string) {
     return this.http.delete<void>(`${this.BASE}/posters/${posterId}`);
   }
-
-
 }

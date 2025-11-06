@@ -194,126 +194,104 @@ import { PosterService } from '../services/poster-service';
     <!-- Dialog Crear/Editar -->
     <!-- Dialog Crear/Editar -->
     <p-dialog
-      [(visible)]="dialog"
-      [style]="{ width: '720px' }"
-      [modal]="true"
-      header="{{ editing ? 'Editar' : 'Nueva' }} película"
-    >
-      <ng-template #content>
-        <!-- p-fluid aplica 100% width a inputs compatibles -->
-        <div
-          class="grid formgrid p-fluid"
-          style="row-gap:1rem; column-gap:1rem"
-        >
-          <!-- Fila 1: Clasificación / Título -->
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Clasificación *</label>
-            <p-select
-              class="w-full"
-              [(ngModel)]="form.clasificacion"
-              [options]="clasificaciones"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Seleccionar"
-            />
-            <small class="text-red-500" *ngIf="submitted && !form.clasificacion"
-              >Requerido</small
-            >
-          </div>
+  [(visible)]="dialog"
+  [style]="{ width: '760px' }"
+  [modal]="true"
+  header="{{ editing ? 'Editar' : 'Nueva' }} película"
+>
+  <ng-template #content>
+    <!-- CONTENEDOR VISUAL -->
+    <div style="background: var(--surface-card); padding: 1.25rem; border-radius: 8px;">
+      <!-- Fila 1: Clasificación / Título -->
+      <div style="display:flex; gap:1rem; margin-bottom:1rem; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+          <label style="display:block; font-weight:600; margin-bottom:.5rem;">Clasificación *</label>
+          <p-select
+            [(ngModel)]="form.clasificacion"
+            [options]="clasificaciones"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccionar"
+            appendTo="body"
+            [style]="{ width:'100%' }"
+          />
+          <small class="text-red-500" *ngIf="submitted && !form.clasificacion">Requerido</small>
+        </div>
 
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Título *</label>
-            <input
-              pInputText
-              class="w-full"
-              [(ngModel)]="form.titulo"
-              required
-            />
-            <small class="text-red-500" *ngIf="submitted && !form.titulo"
-              >Requerido</small
-            >
-          </div>
+        <div style="flex:2; min-width:260px;">
+          <label style="display:block; font-weight:600; margin-bottom:.5rem;">Título *</label>
+          <input pInputText [(ngModel)]="form.titulo" placeholder="Ej: Guardianes del Fuego 2" style="width:100%;" />
+          <small class="text-red-500" *ngIf="submitted && !form.titulo">Requerido</small>
+        </div>
+      </div>
 
-          <!-- Fila 2: Duración / Fecha -->
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Duración (min) *</label>
-            <p-inputnumber
-              class="w-full"
-              [(ngModel)]="form.duracion"
-              [min]="1"
-              [useGrouping]="false"
-            ></p-inputnumber>
-            <small class="text-red-500" *ngIf="submitted && !form.duracion"
-              >Requerido</small
-            >
-          </div>
+      <!-- Fila 2: Duración / Fecha de estreno -->
+      <div style="display:flex; gap:1rem; margin-bottom:1rem; flex-wrap:wrap;">
+        <div style="flex:1; min-width:220px;">
+          <label style="display:block; font-weight:600; margin-bottom:.5rem;">Duración (min) *</label>
+          <p-inputnumber
+            [(ngModel)]="form.duracion"
+            [min]="1"
+            [useGrouping]="false"
+            inputId="duracion"
+            [style]="{ width:'100%' }"
+          ></p-inputnumber>
+          <small class="text-red-500" *ngIf="submitted && !form.duracion">Requerido</small>
+        </div>
 
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Fecha de estreno *</label>
-            <p-datepicker
-              class="w-full"
-              [(ngModel)]="fechaEstrenoModel"
-              [showIcon]="true"
-            ></p-datepicker>
-            <small class="text-red-500" *ngIf="submitted && !fechaEstrenoModel"
-              >Requerido</small
-            >
-          </div>
+        <div style="flex:1; min-width:220px;">
+          <label style="display:block; font-weight:600; margin-bottom:.5rem;">Fecha de estreno *</label>
+          <p-datepicker
+            [(ngModel)]="fechaEstrenoModel"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            appendTo="body"
+            [style]="{ width:'100%' }"
+          ></p-datepicker>
+          <small class="text-red-500" *ngIf="submitted && !fechaEstrenoModel">Requerido</small>
+        </div>
 
-          <!-- Fila 3: Activa / Director -->
-          <div class="col-12 md:col-6 flex align-items-end gap-3">
-            <div>
-              <label class="block font-bold mb-2">Activa</label>
-              <p-toggleswitch [(ngModel)]="form.activa"></p-toggleswitch>
-            </div>
-          </div>
-
-          <div class="col-12 md:col-6">
-            <label class="block font-bold mb-2">Director *</label>
-            <input pInputText class="w-full" [(ngModel)]="form.director" />
-            <small class="text-red-500" *ngIf="submitted && !form.director"
-              >Requerido</small
-            >
-          </div>
-
-          <!-- Fila 4: Sinopsis (full) -->
-          <div class="col-12">
-            <label class="block font-bold mb-2">Sinopsis *</label>
-            <textarea
-              pTextarea
-              class="w-full"
-              rows="3"
-              [(ngModel)]="form.sinopsis"
-            ></textarea>
-            <small class="text-red-500" *ngIf="submitted && !form.sinopsis"
-              >Requerido</small
-            >
-          </div>
-
-          <!-- Fila 5: Cast (full) -->
-          <div class="col-12">
-            <label class="block font-bold mb-2">Reparto (cast)</label>
-            <input
-              pInputText
-              class="w-full"
-              [(ngModel)]="castInput"
-              placeholder="Ej: Nombre1, Nombre2"
-            />
-            <small class="text-color-secondary">Separados por coma</small>
+        <div style="flex:0 0 160px; display:flex; align-items:flex-end; gap:.75rem;">
+          <div>
+            <label style="display:block; font-weight:600; margin-bottom:.5rem;">Activa</label>
+            <p-toggleswitch [(ngModel)]="form.activa"></p-toggleswitch>
           </div>
         </div>
-      </ng-template>
+      </div>
 
-      <ng-template #footer>
-        <p-button
-          label="Cancelar"
-          icon="pi pi-times"
-          text
-          (click)="hideDialog()"
+      <!-- Fila 3: Director -->
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-weight:600; margin-bottom:.5rem;">Director *</label>
+        <input pInputText [(ngModel)]="form.director" placeholder="Ej: Luisa Romero" style="width:100%;" />
+        <small class="text-red-500" *ngIf="submitted && !form.director">Requerido</small>
+      </div>
+
+      <!-- Fila 4: Sinopsis -->
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-weight:600; margin-bottom:.5rem;">Sinopsis *</label>
+        <textarea pTextarea [(ngModel)]="form.sinopsis" rows="4" placeholder="Breve descripción de la película" style="width:100%;"></textarea>
+        <small class="text-red-500" *ngIf="submitted && !form.sinopsis">Requerido</small>
+      </div>
+
+      <!-- Fila 5: Reparto -->
+      <div>
+        <label style="display:block; font-weight:600; margin-bottom:.5rem;">Reparto (cast)</label>
+        <input
+          pInputText
+          [(ngModel)]="castInput"
+          placeholder="Ej: María Pérez, José López"
+          style="width:100%;"
         />
-        <p-button label="Guardar" icon="pi pi-check" (click)="save()" />
-      </ng-template>
-    </p-dialog>
+        <small class="text-color-secondary">Separa nombres con coma.</small>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #footer>
+    <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+    <p-button label="Guardar" icon="pi pi-check" (click)="save()" />
+  </ng-template>
+</p-dialog>
     <!-- Dialog Definir Categoría -->
     <p-dialog
       [(visible)]="dialogCategorias"
@@ -460,10 +438,10 @@ export class MoviesCrudComponent implements OnInit {
 
   clasificaciones = [
     { label: 'A', value: 'A' },
-    { label: 'B7', value: 'B7' },
+    { label: 'B', value: 'B' },
     { label: 'B12', value: 'B12' },
-    { label: 'C15', value: 'C15' },
-    { label: 'C18', value: 'C18' },
+    { label: 'B15', value: 'B15' },
+    { label: 'C', value: 'C' },
   ];
 
   

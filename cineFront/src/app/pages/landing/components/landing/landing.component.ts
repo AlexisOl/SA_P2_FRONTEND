@@ -13,7 +13,7 @@ import {DividerModule} from 'primeng/divider';
 import {TopbarWidgetComponent} from '@/pages/landing/components/topbar-widget/topbar-widget.component';
 
 @Component({
-  selector: 'app-landing',
+  selector: 'app-landing-page',
   imports: [
     FeaturesWidget,
     FooterWidget,

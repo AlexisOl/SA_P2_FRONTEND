@@ -1,0 +1,92 @@
+<div class="hero mb-5" *ngIf="movie">
+  <img *ngIf="posterMain" class="bg" [src]="posterMain" alt="bg" />
+  <div class="overlay p-4 md:p-6">
+    <div class="flex items-end gap-5 w-full">
+      <img *ngIf="posterMain" class="poster" [src]="posterMain" alt="poster" />
+      <div class="text-white pb-2 flex-1">
+        <div class="flex items-center gap-2 mb-2">
+          <h1 class="text-3xl md:text-4xl font-extrabold m-0">{{ movie.titulo }}</h1>
+          <p-tag *ngIf="movie.clasificacion" [value]="movie.clasificacion" severity="info"></p-tag>
+          <p-tag *ngIf="enCartelera()" value="EN CARTELERA" severity="success"></p-tag>
+          <p-tag *ngIf="!enCartelera()" value="PRÓXIMAMENTE" severity="secondary"></p-tag>
+        </div>
+        <div class="opacity-90 text-sm md:text-base flex flex-wrap gap-4">
+          <span *ngIf="movie.duracion">⏱ {{ movie.duracion }} min</span>
+          <span *ngIf="movie.director">🎬 Dir: {{ movie.director }}</span>
+          <span *ngIf="movie.fechaEstreno">📅 Estreno: {{ movie.fechaEstreno | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sinopsis + Categorías -->
+<div class="grid" style="row-gap:1rem; column-gap:1rem">
+  <div class="col-12 md:col-8 section">
+    <h3 class="m-0 mb-3">Sinopsis</h3>
+    <p class="m-0 whitespace-pre-line">{{ movie?.sinopsis }}</p>
+  </div>
+
+  <div class="col-12 md:col-4 section">
+    <h3 class="m-0 mb-3">Categorías</h3>
+    <div class="flex gap-2 flex-wrap">
+      <p-chip *ngFor="let c of categorias" [label]="c.nombre"></p-chip>
+      <span *ngIf="!categorias?.length" class="text-color-secondary">Sin categorías</span>
+    </div>
+  </div>
+</div>
+
+<p-divider />
+
+<!-- Filtros horarios -->
+<div class="section mb-3">
+  <div class="flex items-end gap-3 flex-wrap">
+    <div>
+      <label class="font-semibold block mb-2">Desde</label>
+      <p-datepicker [(ngModel)]="filtroFecha" [showIcon]="true" [style]="{width:'16rem'}"></p-datepicker>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-tag [value]="soloActivos ? 'Solo activos' : 'Todos'"></p-tag>
+      <p-button (onClick)="soloActivos=!soloActivos; buscarHorarios()" [text]="true" icon="pi pi-sync" label="Alternar"></p-button>
+    </div>
+    <div class="flex-1"></div>
+    <p-button icon="pi pi-search" label="Buscar horarios" (onClick)="buscarHorarios()"></p-button>
+  </div>
+</div>
+
+<!-- Horarios por cine -->
+<div class="section" *ngIf="!loadingSched; else schedLoading">
+  <h3 class="m-0 mb-3">Horarios</h3>
+
+  <div *ngIf="!grupos().length" class="text-color-secondary">No hay funciones para los filtros seleccionados.</div>
+
+  <div class="grid" style="row-gap:1rem; column-gap:1rem">
+    <div class="col-12" *ngFor="let g of grupos()">
+      <div class="cine-card">
+        <div class="flex justify-content-between align-items-center mb-2">
+          <h4 class="m-0">{{ cineNombre(g.cineId) }}</h4>
+        </div>
+
+        <div *ngFor="let h of g.items" class="py-2 border-top-1 surface-border">
+          <div class="flex flex-wrap gap-3 align-items-center justify-content-between">
+            <div class="flex gap-2 items-center">
+              <span class="pill">Sala: {{ salaNombre(g.cineId, h.salaId) }}</span>
+              <span class="pill" *ngIf="h.idioma">Idioma: {{ h.idioma }}</span>
+              <span class="pill" *ngIf="h.formato">Formato: {{ h.formato }}</span>
+            </div>
+            <div class="flex gap-2 items-center">
+              <p-tag [value]="h.activo ? 'ACTIVO' : 'INACTIVO'" [severity]="h.activo ? 'success' : 'danger'"></p-tag>
+              <strong>{{ h.inicio | date:'medium' }}</strong>
+              <span *ngIf="h.fin" class="text-color-secondary">— {{ h.fin | date:'shortTime' }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #schedLoading>
+  <div class="section">Cargando horarios…</div>
+</ng-template>

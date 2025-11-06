@@ -66,11 +66,55 @@ export class AppMenu {
                       }
                     ]
                   },
+
                   {
                     label: 'Promociones',
                     icon: 'pi pi-fw pi-gift',
                     routerLink: ['/home/promocion']
-                  }
+                  },
+                  {
+  label: 'Películas',
+  icon: 'pi pi-fw pi-video', // 🎬 Ícono principal del módulo de películas
+  items: [
+    {
+      label: 'Gestión de películas',
+      icon: 'pi pi-fw pi-film', // 🎞️ Representa una película
+      routerLink: ['/peliculas']
+    },
+    {
+      label: 'Categorías',
+      icon: 'pi pi-fw pi-tags', // 🏷️ Representa categorías o etiquetas
+      routerLink: ['/peliculas/categorias']
+    },
+    {
+      label: 'Gestión de funciones',
+      icon: 'pi pi-fw pi-calendar-clock', // 🕒 Representa horarios o funciones
+      routerLink: ['/peliculas/horarios']
+    },
+    {
+      label: 'Cartelera',
+      icon: 'pi pi-fw pi-ticket', // 🎟️ Representa la cartelera o boletos
+      routerLink: ['/peliculas/listado']
+    }
+  ]
+},
+{
+  label: 'Usuario',
+  icon: 'pi pi-fw pi-user', 
+  items: [
+    {
+      label: 'Gestión de usuarios',
+      icon: 'pi pi-fw pi-users', 
+      routerLink: ['/user/register']
+    },
+    {
+      label: 'Mi perfil',
+      icon: 'pi pi-fw pi-id-card',
+      routerLink: ['/user/perfil']
+    }
+  ]
+}
+
                 ]
             },
 
