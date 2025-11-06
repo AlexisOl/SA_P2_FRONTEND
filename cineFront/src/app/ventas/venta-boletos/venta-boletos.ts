@@ -415,22 +415,21 @@ export class VentaBoletos implements OnInit {
 
   mostrarResumenVenta(venta: any): void {
     let detalles = `
-      <div style="text-align: left;">
-        <p><strong>ID de Venta:</strong> ${venta.ventaId}</p>
-        <p><strong>Boletos:</strong> ${venta.cantidadBoletos}</p>
-        <p><strong>Monto Original:</strong> ${venta.montoOriginal?.toFixed(2) || this.calcularSubtotal().toFixed(2)} GTQ</p>
+        ID de Venta: ${venta.ventaId}
+        Boletos: ${venta.cantidadBoletos}
+        Monto Original: ${venta.montoOriginal?.toFixed(2) || this.calcularSubtotal().toFixed(2)} GTQ
     `;
 
     if (venta.montoDescuento && venta.montoDescuento > 0) {
       detalles += `
-        <p><strong>Descuento:</strong> ${venta.montoDescuento.toFixed(2)} GTQ (${venta.porcentajeDescuento}%)</p>
+        Descuento: ${venta.montoDescuento.toFixed(2)} GTQ (${venta.porcentajeDescuento}%)
       `;
     }
 
     detalles += `
-        <p><strong>Total Pagado:</strong> ${venta.montoTotal.toFixed(2)} GTQ</p>
-        <p><strong>Estado:</strong> ${venta.estado}</p>
-      </div>
+        Total Pagado: ${venta.montoTotal.toFixed(2)} GTQ
+        Estado: ${venta.estado}
+
     `;
 
     this.messageService.add({
