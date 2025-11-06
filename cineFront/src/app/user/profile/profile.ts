@@ -210,7 +210,7 @@ import { UserDTO } from '@/models/user.model';
   `],
   template: `
   <div class="max-w-7xl mx-auto p-3 md:p-6">
-    
+
     <!-- Header principal -->
     <div class="mb-4">
       <h1 class="text-3xl md:text-4xl font-bold text-color mb-2">
@@ -265,7 +265,7 @@ import { UserDTO } from '@/models/user.model';
     </p-card>
 
     <div class="grid" style="gap: 1.5rem;">
-      
+
       <!-- Columna IZQ: Banca Virtual -->
       <div class="col-12 lg:col-6">
         <!-- Balance destacado -->
@@ -296,8 +296,8 @@ import { UserDTO } from '@/models/user.model';
               </label>
               <p-inputnumber class="w-full"
                              [useGrouping]="true"
-                             mode="currency" 
-                             currency="GTQ" 
+                             mode="currency"
+                             currency="GTQ"
                              locale="es-GT"
                              [min]="0.01"
                              placeholder="0.00"
@@ -309,22 +309,22 @@ import { UserDTO } from '@/models/user.model';
                 <i class="pi pi-comment"></i>
                 Motivo del Movimiento
               </label>
-              <input pInputText 
-                     class="w-full" 
-                     [(ngModel)]="banca.motivo" 
+              <input pInputText
+                     class="w-full"
+                     [(ngModel)]="banca.motivo"
                      placeholder="Ej: Depósito inicial, pago de servicio..." />
             </div>
 
             <div class="button-group mb-3">
-              <p-button label="Acreditar" 
+              <p-button label="Acreditar"
                         icon="pi pi-plus-circle"
                         severity="success"
                         styleClass="flex-1"
                         [disabled]="!puedeMover() || loadingBanca"
                         [loading]="loadingBanca"
                         (onClick)="acreditar()" />
-              <p-button label="Debitar" 
-                        icon="pi pi-minus-circle" 
+              <p-button label="Debitar"
+                        icon="pi pi-minus-circle"
                         severity="danger"
                         styleClass="flex-1"
                         [disabled]="!puedeMover() || loadingBanca"
@@ -360,9 +360,9 @@ import { UserDTO } from '@/models/user.model';
                   <i class="pi pi-user"></i>
                   Nombre Completo
                 </label>
-                <input pInputText 
-                       class="w-full mb-2" 
-                       formControlName="nombre" 
+                <input pInputText
+                       class="w-full mb-2"
+                       formControlName="nombre"
                        placeholder="Ingresa tu nombre completo" />
                 <small class="text-red-500 block"
                        *ngIf="formNombre.controls['nombre'].touched && formNombre.controls['nombre'].invalid">
@@ -399,8 +399,8 @@ export class ProfileComponent implements OnInit {
   private _user = signal<UserDTO | null>(null);
   user = this._user.asReadonly();
 
-  formNombre = this.fb.group({ 
-    nombre: ['', [Validators.required, Validators.minLength(2)]] 
+  formNombre = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(2)]]
   });
   savingNombre = false;
 
@@ -444,9 +444,9 @@ export class ProfileComponent implements OnInit {
     this.savingNombre = true;
     this.users.updatePartial(id, { nombre }).subscribe({
       next: () => {
-        this.toast.add({ 
-          severity: 'success', 
-          summary: 'Éxito', 
+        this.toast.add({
+          severity: 'success',
+          summary: 'Éxito',
           detail: 'Nombre actualizado correctamente',
           life: 3000
         });
@@ -454,9 +454,9 @@ export class ProfileComponent implements OnInit {
         this.savingNombre = false;
       },
       error: (err) => {
-        this.toast.add({ 
-          severity: 'error', 
-          summary: 'Error', 
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error',
           detail: err?.error?.message || 'No se pudo actualizar el nombre',
           life: 4000
         });
@@ -466,9 +466,9 @@ export class ProfileComponent implements OnInit {
   }
 
   puedeMover() {
-    return !!this.user() && 
-           !!this.banca.monto && 
-           this.banca.monto > 0 && 
+    return !!this.user() &&
+           !!this.banca.monto &&
+           this.banca.monto > 0 &&
            !!(this.banca.motivo || '').trim();
   }
 
@@ -476,24 +476,24 @@ export class ProfileComponent implements OnInit {
     if (!this.puedeMover()) return;
     this.loadingBanca = true;
     const id = this.user()!.id;
-    this.users.acreditarBanca(id, { 
-      monto: this.banca.monto!, 
-      motivo: this.banca.motivo.trim() 
+    this.users.acreditarBanca(id, {
+      monto: this.banca.monto!,
+      motivo: this.banca.motivo.trim()
     }).subscribe({
       next: () => {
-        this.toast.add({ 
-          severity: 'success', 
-          summary: 'Acreditación Exitosa', 
+        this.toast.add({
+          severity: 'success',
+          summary: 'Acreditación Exitosa',
           detail: `Se acreditaron ${this.banca.monto} GTQ a tu cuenta`,
           life: 3000
         });
-        this.resetBanca(); 
+        this.resetBanca();
         this.refreshUser();
       },
       error: (e) => {
-        this.toast.add({ 
-          severity: 'error', 
-          summary: 'Error al Acreditar', 
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error al Acreditar',
           detail: e?.error?.message || 'No se pudo realizar la acreditación',
           life: 4000
         });
@@ -506,24 +506,24 @@ export class ProfileComponent implements OnInit {
     if (!this.puedeMover()) return;
     this.loadingBanca = true;
     const id = this.user()!.id;
-    this.users.debitarBanca(id, { 
-      monto: this.banca.monto!, 
-      motivo: this.banca.motivo.trim() 
+    this.users.debitarBanca(id, {
+      monto: this.banca.monto!,
+      motivo: this.banca.motivo.trim()
     }).subscribe({
       next: () => {
-        this.toast.add({ 
-          severity: 'success', 
-          summary: 'Débito Exitoso', 
+        this.toast.add({
+          severity: 'success',
+          summary: 'Débito Exitoso',
           detail: `Se debitaron ${this.banca.monto} GTQ de tu cuenta`,
           life: 3000
         });
-        this.resetBanca(); 
+        this.resetBanca();
         this.refreshUser();
       },
       error: (e) => {
-        this.toast.add({ 
-          severity: 'error', 
-          summary: 'Error al Debitar', 
+        this.toast.add({
+          severity: 'error',
+          summary: 'Error al Debitar',
           detail: e?.error?.message || 'No se pudo realizar el débito',
           life: 4000
         });

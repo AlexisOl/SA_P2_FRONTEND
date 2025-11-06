@@ -1,0 +1,189 @@
+<div class="venta-snacks-container">
+  <p-card header="Snacks">
+
+    <!-- Sección de filtros y selección -->
+    <div class="form-section">
+      <div class="p-fluid p-formgrid p-grid">
+
+        <!-- Selección de Cine -->
+        <!-- Selección de Cine -->
+        <div class="p-field p-col-12 p-md-6">
+          <label for="cineSelect" class="font-semibold block mb-2">
+            <i class="pi pi-video mr-2"></i>
+            Seleccionar Cine <span class="text-red-500">*</span>
+          </label>
+          <p-select
+            id="cineSelect"
+            [options]="cines"
+            [(ngModel)]="cineSeleccionado"
+            (onChange)="onCineChange()"
+            optionLabel="nombre"
+            placeholder="Seleccione un cine"
+            [filter]="true"
+            [showClear]="true"
+            styleClass="w-full">
+            <ng-template #item let-cine>
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-video"></i>
+                <div>
+                  <div>{{ cine.nombre }}</div>
+                  <small class="text-color-secondary">{{ cine.direccion }}</small>
+                </div>
+              </div>
+            </ng-template>
+          </p-select>
+        </div>
+
+        <!-- Selección de Usuario (si es necesario) -->
+        <div class="p-field p-col-12 p-md-6">
+          <label for="usuario">Usuario *</label>
+          <span class="p-float-label">{{ userDto?.nombre }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Catálogo de Snacks -->
+    <div class="snacks-section" *ngIf="cineSeleccionado">
+      <h3>Catálogo de Snacks</h3>
+
+      <p-progressSpinner *ngIf="cargandoSnacks"
+                         [style]="{width: '50px', height: '50px'}">
+      </p-progressSpinner>
+
+      <div class="snacks-grid" *ngIf="!cargandoSnacks && snacksDisponibles.length > 0">
+        <div *ngFor="let snack of snacksDisponibles" class="snack-card">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="snack-image">
+                <i class="pi pi-shopping-bag" ></i>
+              </div>
+            </ng-template>
+
+            <div class="snack-info">
+              <h4>{{ snack.nombre }}</h4>
+              <div class="snack-precio">
+                <span class="precio">{{ snack.precio | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+
+              </div>
+            </div>
+
+            <ng-template pTemplate="footer">
+              <div class="snack-actions">
+                <p-inputNumber
+                  [(ngModel)]="snack.cantidadSeleccionada"
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  inputId="horizontal"
+                  spinnerMode="horizontal"
+                  [step]="1"
+                  [min]="0"
+                  decrementButtonClass="p-button-danger"
+                  incrementButtonClass="p-button-success"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                  (onInput)="calcularTotal()">
+                </p-inputNumber>
+
+                <p-button
+                  label="Agregar"
+                  icon="pi pi-cart-plus"
+                  [disabled]="!snack.cantidadSeleccionada || snack.cantidadSeleccionada <= 0"
+                  (onClick)="agregarAlCarrito(snack)"
+                  styleClass="p-button-sm">
+                </p-button>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      </div>
+
+      <p-message
+        *ngIf="!cargandoSnacks && snacksDisponibles.length === 0"
+        severity="info"
+        text="No hay snacks disponibles para este cine">
+      </p-message>
+    </div>
+
+    <p-divider *ngIf="carrito.length > 0"></p-divider>
+
+    <!-- Carrito de Compras -->
+    <div class="carrito-section" *ngIf="carrito.length > 0">
+      <h3>Carrito de Compras</h3>
+
+      <p-table [value]="carrito" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Snack</th>
+            <th>Precio Unit.</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th style="width: 100px">Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{ item.snack.nombre }}</td>
+            <td>{{ item.snack.precio | currency:'GTQ':'symbol-narrow':'1.2-2' }}</td>
+            <td>
+              <p-inputNumber
+                [(ngModel)]="item.cantidad"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                [step]="1"
+                [min]="1"
+                [max]="item.snack.stock"
+                [size]="'large'"
+                (onInput)="calcularTotal()">
+              </p-inputNumber>
+            </td>
+            <td>
+              <strong>{{ item.subtotal | currency:'GTQ':'symbol-narrow':'1.2-2' }}</strong>
+            </td>
+            <td>
+              <p-button
+                icon="pi pi-trash"
+                styleClass="p-button-danger p-button-sm"
+                (onClick)="eliminarDelCarrito(item)"
+                pTooltip="Eliminar">
+              </p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="total-section">
+            <span class="total-label">Total a Pagar:</span>
+            <span class="total-amount">{{ totalVenta | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+          </div>
+        </ng-template>
+      </p-table>
+
+      <div class="acciones-carrito">
+        <p-button
+          label="Vaciar Carrito"
+          icon="pi pi-trash"
+          styleClass="p-button-danger p-button-outlined"
+          (onClick)="vaciarCarrito()">
+        </p-button>
+
+        <p-button
+          label="Procesar Venta"
+          icon="pi pi-check"
+          styleClass="p-button-success"
+          [loading]="procesandoVenta"
+          [disabled]="!validarVenta()"
+          (onClick)="procesarVenta()">
+        </p-button>
+      </div>
+    </div>
+
+  </p-card>
+</div>
+
+<!-- Toast para notificaciones -->
+<p-toast position="top-right"></p-toast>
+
+<!-- Diálogo de confirmación -->
+<p-confirmDialog></p-confirmDialog>
