@@ -1,0 +1,281 @@
+<div class="venta-boletos-container">
+  <p-toast position="top-right"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header con información de la función -->
+  <p-card *ngIf="datosReservacion" styleClass="mb-4">
+    <ng-template pTemplate="header">
+      <div class="p-3 bg-primary">
+        <h2 class="m-0 text-white">
+          <i class="pi pi-ticket mr-2"></i>
+          Compra de Boletos
+        </h2>
+      </div>
+    </ng-template>
+
+    <div class="grid">
+      <div class="col-12 md:col-6">
+        <div class="info-item">
+          <i class="pi pi-video mr-2 text-primary"></i>
+          <span class="font-semibold">Película:</span>
+          <span class="ml-2">{{ datosReservacion.peliculaTitulo }}</span>
+        </div>
+        <div class="info-item">
+          <i class="pi pi-building mr-2 text-primary"></i>
+          <span class="font-semibold">Cine:</span>
+          <span class="ml-2">{{ datosReservacion.cineNombre }}</span>
+        </div>
+        <div class="info-item">
+          <i class="pi pi-home mr-2 text-primary"></i>
+          <span class="font-semibold">Sala:</span>
+          <span class="ml-2">{{ datosReservacion.salaNombre }}</span>
+        </div>
+      </div>
+      <div class="col-12 md:col-6">
+        <div class="info-item">
+          <i class="pi pi-clock mr-2 text-primary"></i>
+          <span class="font-semibold">Horario:</span>
+          <span class="ml-2">{{ datosReservacion.horario | date:'short' }}</span>
+        </div>
+        <div class="info-item">
+          <i class="pi pi-dollar mr-2 text-primary"></i>
+          <span class="font-semibold">Precio por boleto:</span>
+          <span class="ml-2">{{ datosReservacion.precio | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+        </div>
+        <div class="info-item" *ngIf="mejorPromocion">
+          <i class="pi pi-tag mr-2 text-green-500"></i>
+          <span class="font-semibold text-green-500">Promoción Aplicable:</span>
+          <p-chip
+            [label]="mejorPromocion.nombre + ' - ' + mejorPromocion.porcentajeDescuento + '% OFF'"
+            styleClass="ml-2 bg-green-100 text-green-700">
+          </p-chip>
+        </div>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Sección de selección de asientos -->
+  <p-card header="Selección de Asientos" styleClass="mb-4">
+    <p-progressSpinner *ngIf="cargandoAsientos" [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+
+    <div *ngIf="!cargandoAsientos && asientosDisponibles.length > 0">
+      <!-- Leyenda -->
+      <div class="leyenda-asientos mb-4">
+        <div class="flex flex-wrap gap-4 align-items-center">
+          <span class="font-semibold">
+            <i class="pi pi-info-circle mr-2"></i>
+            Leyenda:
+          </span>
+          <div class="flex align-items-center gap-2">
+            <div class="asiento-disponible-legend"></div>
+            <span>Disponible</span>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <div class="asiento-ocupado-legend"></div>
+            <span>Ocupado</span>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <div class="asiento-seleccionado-legend"></div>
+            <span>Seleccionado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pantalla -->
+      <div class="pantalla-container mb-4">
+        <div class="pantalla">
+          <i class="pi pi-desktop mr-2"></i>
+          PANTALLA
+        </div>
+      </div>
+
+      <!-- Grid de Asientos -->
+      <div class="asientos-grid">
+        <div *ngFor="let fila of filasUnicas" class="fila-asientos">
+          <div class="label-fila">{{ fila }}</div>
+          <div class="asientos-fila">
+            <div
+              *ngFor="let asiento of obtenerAsientosPorFila(fila)"
+              class="asiento"
+              [ngClass]="{
+                'asiento-disponible': asiento.disponible && !esAsientoSeleccionado(asiento),
+                'asiento-ocupado': !asiento.disponible,
+                'asiento-seleccionado': esAsientoSeleccionado(asiento)
+              }"
+              (click)="toggleSeleccionAsiento(asiento)"
+              [pTooltip]="obtenerTooltipAsiento(asiento)"
+              tooltipPosition="top">
+              <span class="asiento-numero">{{ asiento.columna }}</span>
+              <i *ngIf="!asiento.disponible" class="pi pi-lock asiento-icono"></i>
+              <i *ngIf="esAsientoSeleccionado(asiento)" class="pi pi-check asiento-icono"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de asientos seleccionados -->
+      <div class="mt-4" *ngIf="asientosSeleccionados.length > 0">
+        <p-divider></p-divider>
+        <div class="flex justify-content-between align-items-center">
+          <div>
+            <span class="font-semibold">Asientos seleccionados: </span>
+            <p-chip
+              *ngFor="let asiento of asientosSeleccionados"
+              [label]="asiento.fila + asiento.columna"
+              styleClass="ml-2"
+              [removable]="true"
+              (onRemove)="toggleSeleccionAsiento(asiento)">
+            </p-chip>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-color-secondary">Subtotal Boletos</div>
+            <div class="text-2xl font-bold text-primary">
+              {{ calcularSubtotalBoletos() | currency:'GTQ':'symbol-narrow':'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p-message
+      *ngIf="!cargandoAsientos && asientosDisponibles.length === 0"
+      severity="info"
+      text="No hay asientos disponibles para esta función">
+    </p-message>
+  </p-card>
+
+  <!-- Sección de Snacks -->
+  <p-card header="Agregar Snacks (Opcional)" styleClass="mb-4">
+    <p-progressSpinner *ngIf="cargandoSnacks" [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+
+    <div class="snacks-grid" *ngIf="!cargandoSnacks && snacksDisponibles.length > 0">
+      <div *ngFor="let snack of snacksDisponibles" class="snack-card">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="snack-image">
+              <i class="pi pi-shopping-bag"></i>
+            </div>
+          </ng-template>
+
+          <div class="snack-info">
+            <h4>{{ snack.nombre }}</h4>
+            <div class="snack-tipo mb-2">
+              <p-tag [value]="snack.tipo" severity="info"></p-tag>
+            </div>
+            <div class="snack-precio">
+              <span class="precio">{{ snack.precio | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <ng-template pTemplate="footer">
+            <div class="snack-actions">
+              <p-inputNumber
+                [(ngModel)]="snack.cantidadSeleccionada"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                [step]="1"
+                [min]="0"
+                decrementButtonClass="p-button-danger"
+                incrementButtonClass="p-button-success"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                (onInput)="calcularTotales()">
+              </p-inputNumber>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+
+    <p-message
+      *ngIf="!cargandoSnacks && snacksDisponibles.length === 0"
+      severity="info"
+      text="No hay snacks disponibles para este cine">
+    </p-message>
+  </p-card>
+
+  <!-- Resumen de la compra -->
+  <p-card header="Resumen de Compra" styleClass="mb-4" *ngIf="asientosSeleccionados.length > 0">
+    <div class="resumen-compra">
+      <!-- Boletos -->
+      <div class="resumen-item">
+        <span>Boletos ({{ asientosSeleccionados.length }})</span>
+        <span class="font-semibold">{{ calcularSubtotalBoletos() | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+      </div>
+
+      <!-- Snacks -->
+      <div class="resumen-item" *ngIf="tieneSnacksSeleccionados()">
+        <span>Snacks</span>
+        <span class="font-semibold">{{ calcularSubtotalSnacks() | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+      </div>
+
+      <!-- Lista de snacks -->
+      <div class="ml-4" *ngIf="tieneSnacksSeleccionados()">
+        <div class="resumen-snack-item" *ngFor="let snack of snacksConCantidad()">
+          <span class="text-sm text-color-secondary">
+            {{ snack.nombre }} x{{ snack.cantidadSeleccionada }}
+          </span>
+          <span class="text-sm">
+            {{ (snack.precio * snack.cantidadSeleccionada!) | currency:'GTQ':'symbol-narrow':'1.2-2' }}
+          </span>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Subtotal -->
+      <div class="resumen-item">
+        <span class="font-semibold">Subtotal</span>
+        <span class="font-semibold">{{ calcularSubtotal() | currency:'GTQ':'symbol-narrow':'1.2-2' }}</span>
+      </div>
+
+      <!-- Descuento por promoción -->
+      <div class="resumen-item text-green-600" *ngIf="mejorPromocion">
+        <span>
+          <i class="pi pi-tag mr-2"></i>
+          Descuento ({{ mejorPromocion.porcentajeDescuento }}%)
+        </span>
+        <span class="font-semibold">
+          -{{ calcularDescuento() | currency:'GTQ':'symbol-narrow':'1.2-2' }}
+        </span>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Total -->
+      <div class="resumen-item total">
+        <span class="text-2xl font-bold">Total</span>
+        <span class="text-2xl font-bold text-primary">
+          {{ calcularTotal() | currency:'GTQ':'symbol-narrow':'1.2-2' }}
+        </span>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex justify-content-end gap-2 mt-4">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          styleClass="p-button-secondary p-button-outlined"
+          (onClick)="cancelarCompra()">
+        </p-button>
+        <p-button
+          label="Procesar Compra"
+          icon="pi pi-check"
+          styleClass="p-button-success"
+          [loading]="procesandoVenta"
+          [disabled]="!validarVenta()"
+          (onClick)="procesarVenta()">
+        </p-button>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Mensaje cuando no hay asientos seleccionados -->
+  <p-card *ngIf="asientosSeleccionados.length === 0 && !cargandoAsientos">
+    <div class="flex flex-column align-items-center justify-content-center p-5">
+      <i class="pi pi-info-circle text-6xl text-color-secondary mb-3"></i>
+      <p class="text-xl text-color-secondary mb-2">Selecciona al menos un asiento</p>
+      <p class="text-sm text-color-secondary">Haz clic en los asientos disponibles para seleccionarlos</p>
+    </div>
+  </p-card>
+</div>

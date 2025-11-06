@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -13,6 +13,7 @@ import { SalaServicio } from '@/services/sala-servicio.service';
 import { CineServiceService } from '@/services/cine-service.service';
 
 import { FormsModule } from '@angular/forms';
+import {Horario} from '@/models/horario';
 
 type Clasificacion = 'A' | 'B' | 'B12' | 'B15' | 'C';
 
@@ -163,6 +164,9 @@ interface HorarioVM {
                   <p-tag [value]="h.activo ? 'ACTIVO' : 'INACTIVO'"
                          [severity]="h.activo ? 'success' : 'danger'"></p-tag>
                 </div>
+                <div class="flex items-center justify-between">
+                  <p-button label="Comprar" severity="info"  (onClick)="comprarBoletos(h)" />
+                </div>
               </div>
             </div>
           </div>
@@ -186,6 +190,7 @@ export class MovieDetailComponent implements OnInit {
   private horariosSvc = inject(HorarioService);
   private salasSvc = inject(SalaServicio);
   private cinesSvc = inject(CineServiceService);
+  private router = inject(Router);
 
   // Estado
   movie = signal<MovieVM | null>(null);
@@ -327,5 +332,23 @@ export class MovieDetailComponent implements OnInit {
   nombreSala(cineId?: string, salaId?: string): string {
     if (!cineId || !salaId) return '-';
     return this.salaMaps[cineId]?.[salaId] ?? salaId;
+  }
+
+  // En tu componente de cartelera o detalle de película
+  comprarBoletos(horario: HorarioVM) {
+    console.log('Comprando boletos para horario:', horario, this.movie());
+    this.router.navigate(['/home/ventas/boletos'], {
+      queryParams: {
+        peliculaId: this.movie()?.id,
+        peliculaTitulo: this.movie()?.titulo,
+        cineId: horario.cinemaId,
+        cineNombre: this.nombreCine(horario.cinemaId),
+        salaId: horario.salaId,
+        salaNombre: this.nombreSala(horario.cinemaId, horario.salaId),
+        funcionId: horario.id,
+        horario: horario.inicio,
+        precio: horario.precio
+      }
+    });
   }
 }
