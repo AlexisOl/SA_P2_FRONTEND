@@ -24,6 +24,7 @@ import { Checkbox } from 'primeng/checkbox';
 import { GalleriaModule } from 'primeng/galleria';
 import { PropiedadAnuncioServiceService } from '@/services/propiedad-anuncio-service.service';
 import { AlertaServiceService } from '@/services/alerta-service.service';
+import { BloqueoCineServiceService } from '@/services/bloqueo-cine-service.service';
 
 @Component({
   selector: 'app-salas-global',
@@ -44,10 +45,11 @@ export class SalasGlobal implements OnInit{
   CineServicio = inject(CineServiceService)
   propiedadAnuncioServicio = inject(PropiedadAnuncioServiceService)
   alertaServicio = inject(AlertaServiceService)
+  bloqueoServicio = inject(BloqueoCineServiceService)
 
   visible: boolean = false;
   visibleNuevaSala: boolean = false;
-  visibleReservacion: boolean = false;
+  visibleBloqueo: boolean = false;
   listadoComentarios:[] =[]
 
 
@@ -113,6 +115,15 @@ export class SalasGlobal implements OnInit{
 
   ngOnInit(): void {
     this.idCine = this.route.snapshot.paramMap.get('id')!;
+
+
+
+    this.bloqueoServicio.verBloqueoActualCine(this.idCine).subscribe(
+           (next: any) => {
+            this.visibleBloqueo = next
+      }
+    )
+
 
     this.propiedadAnuncioServicio.listarAnunciosFecha(this.formatDate(new Date(Date.now())),this.formatDate(new Date(Date.now()))).subscribe(
            (next: any) => {
@@ -269,5 +280,10 @@ cambiarVisibilidadCalificaciones(id: string) {
       }
  
   );
+}
+
+
+generarBloqueo(){
+  
 }
 }

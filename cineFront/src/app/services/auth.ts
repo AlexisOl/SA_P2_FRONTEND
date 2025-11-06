@@ -97,7 +97,7 @@ export class AuthService {
   }
 
   // ---------- Usuario actual ----------
-  private getUserIdFromToken(): string | null {
+  public getUserIdFromToken(): string | null {
     const t = this.token;
     if (!t) return null;
     try {

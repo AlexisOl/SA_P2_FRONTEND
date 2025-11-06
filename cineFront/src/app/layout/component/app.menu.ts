@@ -46,6 +46,30 @@ export class AppMenu {
                     ]
                   },
                   {
+    label: 'Anuncios',
+                    icon: 'pi pi-address-book',
+                    items: [
+                      {
+                        label: 'Lista de anuncios',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/home/anuncios']
+                      },
+             
+                    ]
+                  },
+                                  {
+    label: 'Reportes',
+                    icon: 'pi pi-chart-bar',
+                    items: [
+                      {
+                        label: 'Reportes generales',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/home/reportes']
+                      },
+             
+                    ]
+                  },
+                  {
                     label: 'Calificaciones',
                     icon: 'pi pi-fw pi-star-fill',
                     items: [

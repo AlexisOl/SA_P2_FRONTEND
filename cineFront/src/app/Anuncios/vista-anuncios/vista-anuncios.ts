@@ -2,6 +2,7 @@ import { anuncios, MaterialAnuncio, PropiedadAnuncio } from '@/models/Anuncios';
 import { ValidacionesSala, MatrizAsientos, sala } from '@/models/Cine';
 import { AlertaServiceService } from '@/services/alerta-service.service';
 import { AnuncioServiceService } from '@/services/anuncio-service.service';
+import { AuthService } from '@/services/auth';
 import { CineServiceService } from '@/services/cine-service.service';
 import { MaterialAnuncioServiceService } from '@/services/material-anuncio-service.service';
 import { PropiedadAnuncioServiceService } from '@/services/propiedad-anuncio-service.service';
@@ -46,6 +47,7 @@ export class VistaAnuncios implements OnInit {
   anuncioServicio = inject(MaterialAnuncioServiceService)
   propiedadAnuncioServicio = inject(PropiedadAnuncioServiceService)
   AlertaServicio = inject(AlertaServiceService)
+  authServicio = inject(AuthService) 
 
   visible: boolean = false;
   visibleNuevoAnuncio: boolean = false;
@@ -193,10 +195,11 @@ export class VistaAnuncios implements OnInit {
 
   generarPropiedad(){
 
+    
     const nuevaPropiedad : PropiedadAnuncio = {
       fecha: new Date(Date.now()),
       fechaFin: new Date(Date.now()),
-      usuario: "7e2398ef-32b1-4351-b432-52a06e8c5a16",
+      usuario: this.authServicio.getUserIdFromToken(),
       anuncio: this.idAnuncioSeleccionado,
       vigencia: this.vigencia,
       estado: "PENDIENTE"

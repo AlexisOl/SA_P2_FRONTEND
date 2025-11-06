@@ -6,6 +6,7 @@ import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 import {LandingComponent} from '@/pages/landing/components/landing/landing.component';
 import { CategoriesCrudComponent } from '@/peliculas/categoria/categoria';
+import { ReportesGenerales } from '@/Reportes/reportes-generales/reportes-generales';
 
 export const appRoutes: Routes = [
 
@@ -21,6 +22,7 @@ export const appRoutes: Routes = [
             { path: 'cine', loadChildren: () => import('./app/Cine/cine.routes') },
             { path: 'promocion', loadChildren: () => import('./app/promocion/promocion.route') },
             { path: 'anuncios', loadChildren: () => import('./app/Anuncios/anuncios.routes') },
+            { path: 'reportes', component: ReportesGenerales },
             { path: 'calificacion', loadChildren: () => import('./app/calificaciones/calificacion.route') },
 
         ]

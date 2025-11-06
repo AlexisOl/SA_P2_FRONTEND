@@ -30,8 +30,24 @@
           <span class="font-semibold w-32">Cartera:</span>
           <span>{{ this.cineEspecifico.cartera }}</span>
         </div>
-        <div class="flex">
-          <span class="font-semibold w-32">Ver dulceria del cine:</span>
+        <div class="flex grid-cols-2">
+          <span class="font-semibold w-32">    Bloqueo actual:</span>
+          <span>
+            @if (!this.visibleBloqueo) {
+    <p-button label="Realizar Bloqueo de anuncios"  iconPos="right"
+            severity="danger"
+            (onClick)="generarBloqueo()"
+            >
+            </p-button>
+            } @else {
+          <span class="font-bold w-96">    Existe un bloqueo</span>
+
+            }
+        
+          </span>
+            <hr/>
+
+            <span class="font-semibold w-32">Ver dulceria del cine:</span>
           <span>
             <p-button label="Ver información" icon="pi pi-search" iconPos="right">
 
@@ -44,6 +60,7 @@
 
       </div>
     </p-fieldset>
+            @if (!this.visibleBloqueo) {
 
     <div class="card">
       <p-galleria [value]="anuncios" [autoPlay]="true" [circular]="true" styleClass="shadow-lg" [showThumbnails]="false"
@@ -67,7 +84,7 @@
 
       </p-galleria>
     </div>
-
+  }
 
     <!-- Panel LISTADO -->
     <div class="h-full w-full mb-2">
@@ -208,6 +225,7 @@
 
   </div>
   <!-- COLUMNA 2: GALERÍA DE ANUNCIOS -->
+            @if (!this.visibleBloqueo) {
 
   <div class="lg:col-span-1">
     <p-galleria [value]="anuncios" [autoPlay]="true" [circular]="true" [showThumbnails]="false"
@@ -229,6 +247,7 @@
       </ng-template>
     </p-galleria>
   </div>
+}
 
 </div>
 

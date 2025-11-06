@@ -1,0 +1,73 @@
+<div class="card mt-3 p-4">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <!-- Fecha Inicio -->
+    <div>
+      <label class="font-semibold">Fecha Inicio</label>
+      <input
+        type="datetime-local"
+        [(ngModel)]="fechaInicio"
+        class="w-full p-inputtext p-2 border rounded"
+      />
+    </div>
+
+    <!-- Fecha Fin -->
+    <div>
+      <label class="font-semibold">Fecha Fin</label>
+      <input
+        type="datetime-local"
+        [(ngModel)]="fechaFin"
+        class="w-full p-inputtext p-2 border rounded"
+      />
+    </div>
+
+        <div class="flex">
+      <span class="font-semibold w-32">Saldos de la empresa:</span>
+                 <p-button
+                                        icon="pi pi-file-pdf"
+                                        class="flex-auto md:flex-initial whitespace-nowrap"
+                                        label="Descargue los Saldos"
+                                        (click)="generarFacturaPDF()"
+                                         [outlined]="true"
+                                    />
+    </div>
+    <!-- Botón Filtrar -->
+    <div class="flex items-end">
+      <p-button
+        label="Filtrar"
+        icon="pi pi-filter"
+        (onClick)="filtrarPorRango()"
+        [loading]="loading"
+        class="w-full"
+      />
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <p-table
+    #dt
+    [value]="saldoFiltrado.length > 0 ? saldoFiltrado : saldoEmpresa"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    stripedRows
+    [tableStyle]="{'min-width': '40rem'}"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>No.</th>
+        <th>Identificador de Sala</th>
+        <th>Fin Semana</th>
+        <th>Comentario</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
+      <tr>
+        <td>{{ rowIndex + 1 }}</td>
+        <td class="font-semibold">{{ product.salaId }}</td>
+        <td>{{ product.fecha | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ product.comentario  }}</td>
+
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

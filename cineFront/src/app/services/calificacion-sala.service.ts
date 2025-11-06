@@ -86,4 +86,10 @@ export class CalificacionSalaService {
     const filtro: FiltroCalificacionSalaDTO = { puntuacionMinima, puntuacionMaxima };
     return this.listarCalificaciones(filtro);
   }
+
+
+    listarCalificacionesPorRangoFecha(fechaInicio: string, fechaFin: string): Observable<ResponseCalificacionSalaDTO[]> {
+    const filtro: FiltroCalificacionSalaDTO = { fechaInicio, fechaFin };
+    return this.listarCalificaciones(filtro);
+  }
 }

@@ -24,7 +24,7 @@ export interface PropiedadAnuncio {
      id?:String;
      fecha:Date;
      fechaFin:Date;
-     usuario:String;
+     usuario:String|null;
      anuncio:String;
      vigencia:String;
      estado:String;
