@@ -44,6 +44,13 @@ export const appRoutes: Routes = [
             { path: '', loadChildren: () => import('./app/user/user.routes') },
         ]
     },
+    {
+        path: 'report',
+        component: AppLayout,
+        children: [
+            { path: '', loadChildren: () => import('./app/Reportes/reportes.routes') },
+        ]
+    },
 
 
 

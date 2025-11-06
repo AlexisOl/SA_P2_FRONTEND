@@ -1,0 +1,206 @@
+<div class="container mx-auto p-4 lg:p-6">
+      <h2 class="text-2xl font-bold mb-2">
+        Reporte: Películas proyectadas por sala
+      </h2>
+      <p class="text-color-secondary mb-4">
+        Seleccione un rango y, opcionalmente, filtre por cine y sala.
+      </p>
+
+      <!-- FILTROS -->
+      <div class="card p-4 mb-4 reporte-toolbar">
+        <div class="toolbar-header">
+          <div class="title">
+            <i class="pi pi-sliders-h mr-2"></i>
+            Filtros
+          </div>
+          <div class="actions gap-2">
+            <p-tag
+              [value]="filtros.soloActivos ? 'Solo activos' : 'Todos'"
+              [severity]="filtros.soloActivos ? 'success' : 'secondary'"
+            />
+            <p-button
+              [label]="filtros.soloActivos ? 'Mostrar todos' : 'Solo activos'"
+              icon="pi pi-filter"
+              (onClick)="filtros.soloActivos = !filtros.soloActivos"
+              [text]="true"
+            />
+          </div>
+        </div>
+
+        <div class="toolbar-grid">
+          <!-- Desde -->
+          <div class="field">
+            <label class="field-label">Desde *</label>
+            <p-datepicker
+              name="desde"
+              [(ngModel)]="filtros.desde"
+              [showIcon]="true"
+              [showTime]="true"
+              inputId="desde"
+              class="w-full"
+            />
+            <small class="hint">Fecha/hora de inicio del intervalo</small>
+          </div>
+
+          <!-- Hasta -->
+          <div class="field">
+            <label class="field-label">Hasta *</label>
+            <p-datepicker
+              name="hasta"
+              [(ngModel)]="filtros.hasta"
+              [showIcon]="true"
+              [showTime]="true"
+              inputId="hasta"
+              class="w-full"
+            />
+            <small class="hint">Fecha/hora de fin del intervalo</small>
+          </div>
+
+          <!-- Cine -->
+          <div class="field">
+            <label class="field-label">Cine (opcional)</label>
+            <p-select
+              name="cineId"
+              class="w-full"
+              [options]="cines"
+              optionLabel="nombre"
+              optionValue="id"
+              placeholder="Todos"
+              [(ngModel)]="filtros.cinemaId"
+              (ngModelChange)="onChangeCine($event)"
+            />
+            <small class="hint">Filtra por cine</small>
+          </div>
+
+          <!-- Sala -->
+          <div class="field">
+            <label class="field-label">Sala (opcional)</label>
+            <p-select
+              name="salaId"
+              class="w-full"
+              [options]="salas"
+              optionLabel="nombre"
+              optionValue="id"
+              placeholder="Todas"
+              [disabled]="!salas.length"
+              [(ngModel)]="filtros.salaId"
+            />
+            <small class="hint">Se habilita al elegir un cine</small>
+          </div>
+        </div>
+
+        <div class="toolbar-footer">
+          <div class="quick">
+            <span class="quick-label">Rangos rápidos:</span>
+            <p-button
+              label="Hoy"
+              size="small"
+              [text]="true"
+              (onClick)="setQuickRange('today')"
+            />
+            <p-button
+              label="Últimos 7 días"
+              size="small"
+              [text]="true"
+              (onClick)="setQuickRange('7d')"
+            />
+            <p-button
+              label="Este mes"
+              size="small"
+              [text]="true"
+              (onClick)="setQuickRange('month')"
+            />
+          </div>
+
+          <div class="cta">
+            <p-button
+              label="Generar"
+              icon="pi pi-search"
+              (onClick)="generar()"
+              [loading]="loading"
+              severity="success"
+            />
+            <p-button
+              label="Limpiar"
+              icon="pi pi-eraser"
+              severity="secondary"
+              (onClick)="limpiar()"
+              [disabled]="loading"
+            />
+            <!-- dentro de .toolbar-footer > .cta -->
+            <p-button
+              label="PDF"
+              icon="pi pi-file-pdf"
+              severity="danger"
+              (onClick)="generarPDF()"
+              [disabled]="!rows()?.length || loading"
+            />
+          </div>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- TABLA -->
+      <div class="card">
+        <p-table
+          [value]="rows()"
+          [paginator]="true"
+          [rows]="20"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          [loading]="loading"
+          sortMode="multiple"
+          dataKey="id"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="cineNombre">
+                Cine <p-sortIcon field="cineNombre" />
+              </th>
+              <th pSortableColumn="salaNombre">
+                Sala <p-sortIcon field="salaNombre" />
+              </th>
+              <th pSortableColumn="peliculaTitulo">
+                Película <p-sortIcon field="peliculaTitulo" />
+              </th>
+              <th pSortableColumn="inicio" class="nowrap">
+                Inicio <p-sortIcon field="inicio" />
+              </th>
+              <th pSortableColumn="fin" class="nowrap">
+                Fin <p-sortIcon field="fin" />
+              </th>
+              <th>Idioma</th>
+              <th>Formato</th>
+              <th pSortableColumn="precio" class="text-right">
+                Precio <p-sortIcon field="precio" />
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-r>
+            <tr>
+              <td>{{ r.cineNombre }}</td>
+              <td>{{ r.salaNombre }}</td>
+              <td>{{ r.peliculaTitulo }}</td>
+              <td class="nowrap">{{ r.inicio | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="nowrap">{{ r.fin | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ r.idioma }}</td>
+              <td><p-tag [value]="r.formato" severity="secondary"></p-tag></td>
+              <td class="text-right">
+                {{ r.precio != null ? (r.precio | currency: 'GTQ') : '—' }}
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center text-color-secondary">
+                No hay datos para el rango y filtros seleccionados.
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <p-toast />
+    </div>

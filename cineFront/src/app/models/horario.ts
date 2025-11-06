@@ -12,6 +12,19 @@ export interface Horario {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface HorarioVM {
+  id: string;
+  peliculaId: string;
+  cinemaId: string;
+  salaId: string;
+  idioma: string;
+  formato: string;
+  inicio: string;
+  fin: string;
+  precio?: number;
+  activo: boolean;
+}
 export interface HorarioCreate {
   peliculaId: string;
   cinemaId: string;
