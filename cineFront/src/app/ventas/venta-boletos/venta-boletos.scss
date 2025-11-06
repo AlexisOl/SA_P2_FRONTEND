@@ -1,0 +1,544 @@
+.venta-boletos-container {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // Información de la función
+  .info-funcion {
+    margin-bottom: 1.5rem;
+
+    h3 {
+      color: #495057;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .detalle-funcion {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      background-color: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+
+      .detalle-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: #667eea;
+          font-size: 1.2rem;
+        }
+
+        .label {
+          font-weight: 600;
+          color: #6c757d;
+        }
+
+        .valor {
+          color: #2c3e50;
+          margin-left: 0.5rem;
+
+          &.precio-boleto {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Sección de asientos
+  .asientos-section {
+    margin-bottom: 1.5rem;
+
+    h3 {
+      color: #495057;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .resumen-boletos {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #e3f2fd;
+      border-radius: 6px;
+      border-left: 4px solid #1976d2;
+
+      .item-resumen {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1rem;
+
+        span:first-child {
+          font-weight: 600;
+          color: #495057;
+        }
+
+        .monto {
+          font-weight: bold;
+          color: #1976d2;
+        }
+      }
+    }
+  }
+
+  // Sección de snacks
+  .snacks-section {
+    margin-top: 1.5rem;
+
+    h3 {
+      color: #495057;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .snacks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+
+      .snack-card {
+        height: 100%;
+
+        ::ng-deep .p-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s, box-shadow 0.2s;
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          .p-card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .p-card-content {
+            flex: 1;
+          }
+        }
+
+        .snack-image {
+          height: 150px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+
+          i {
+            font-size: 3rem;
+          }
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        .snack-info {
+          h4 {
+            margin: 0 0 0.5rem 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+          }
+
+          .snack-tipo {
+            margin-bottom: 0.5rem;
+
+            .badge {
+              display: inline-block;
+              padding: 0.25rem 0.5rem;
+              background-color: #e3f2fd;
+              color: #1976d2;
+              border-radius: 4px;
+              font-size: 0.85rem;
+              font-weight: 500;
+            }
+          }
+
+          .snack-precio {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+
+            .precio {
+              font-size: 1.25rem;
+              font-weight: bold;
+              color: #28a745;
+            }
+          }
+        }
+
+        .snack-actions {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+
+          ::ng-deep .p-inputnumber {
+            flex: 1;
+          }
+
+          ::ng-deep .p-button {
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+
+  // Carrito de snacks
+  .carrito-snacks-section {
+    margin-top: 1.5rem;
+
+    h3 {
+      color: #495057;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+  }
+
+  // Promoción
+  .promocion-section {
+    margin: 1.5rem 0;
+
+    .promocion-info {
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+
+      i {
+        font-size: 1.5rem;
+      }
+
+      strong {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+
+  // Resumen total
+  .resumen-total {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+
+    .resumen-detalle {
+      .item-resumen {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        font-size: 1rem;
+
+        span:first-child {
+          font-weight: 500;
+          color: #495057;
+
+          &.descuento {
+            color: #dc3545;
+          }
+        }
+
+        .monto {
+          font-weight: 600;
+          color: #2c3e50;
+
+          &.descuento {
+            color: #dc3545;
+          }
+        }
+
+        &.total {
+          margin-top: 0.5rem;
+          padding-top: 1rem;
+          border-top: 2px solid #dee2e6;
+
+          .total-label {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2c3e50;
+          }
+
+          .total-amount {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #28a745;
+          }
+        }
+      }
+    }
+  }
+
+  // Acciones de venta
+  .acciones-venta {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  // Estilos globales de PrimeNG
+  ::ng-deep {
+    .p-card-header {
+      padding: 0;
+      border-bottom: none;
+    }
+
+    .p-datatable {
+      .p-datatable-thead > tr > th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+      }
+    }
+
+    .p-inputnumber-input {
+      text-align: center;
+    }
+
+    .p-select {
+      .p-select-label {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .text-muted {
+      color: #6c757d;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 992px) {
+  .venta-boletos-container {
+    .info-funcion .detalle-funcion {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .snacks-section .snacks-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .venta-boletos-container {
+    padding: 0.5rem;
+
+    .info-funcion .detalle-funcion {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .snacks-section .snacks-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .acciones-venta {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .resumen-total {
+      padding: 1rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .venta-boletos-container {
+    .resumen-total .resumen-detalle .item-resumen {
+      font-size: 0.9rem;
+
+      &.total {
+        .total-label {
+          font-size: 1.1rem;
+        }
+
+        .total-amount {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+}
+
+.asiento-sala-container {
+  padding: 0;
+  margin: 0;
+}
+
+// Pantalla del cine
+.pantalla-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.pantalla {
+  background: linear-gradient(to bottom, #374151, #1f2937);
+  color: white;
+  padding: 1rem 4rem;
+  border-radius: 0 0 50px 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
+
+// Grid de asientos
+.asientos-grid {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.fila-asientos {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.label-fila {
+  min-width: 40px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #374151;
+  text-align: center;
+}
+
+.asientos-fila {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// Estilos de asientos
+.asiento {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.asiento-disponible {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: 2px solid #059669;
+
+  &:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  }
+}
+
+.asiento-ocupado {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: 2px solid #dc2626;
+  cursor: not-allowed;
+
+  &:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.asiento-seleccionado {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: 2px solid #2563eb;
+  transform: scale(1.1);
+
+  &:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  }
+}
+
+.asiento-numero {
+  position: relative;
+  z-index: 1;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .asiento {
+    width: 38px;
+    height: 38px;
+    font-size: 0.8rem;
+  }
+
+  .label-fila {
+    min-width: 30px;
+    font-size: 1rem;
+  }
+
+  .pantalla {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    min-width: 200px;
+  }
+
+  .asientos-fila {
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .asiento {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+
+  .label-fila {
+    min-width: 25px;
+    font-size: 0.9rem;
+  }
+}

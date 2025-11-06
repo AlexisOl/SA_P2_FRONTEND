@@ -1,204 +1,345 @@
-.venta-snacks-container {
+.venta-boletos-container {
   padding: 1rem;
   max-width: 1400px;
   margin: 0 auto;
 
-  .form-section {
-    margin-bottom: 1.5rem;
+  // Información de la función
+  .info-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+
+    i {
+      font-size: 1.1rem;
+    }
   }
 
-  .snacks-section {
-    margin-top: 1.5rem;
+  // Leyenda de asientos
+  .leyenda-asientos {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
 
-    h3 {
-      color: #495057;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
+  .asiento-disponible-legend,
+  .asiento-ocupado-legend,
+  .asiento-seleccionado-legend {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .asiento-disponible-legend {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: 2px solid #059669;
+  }
+
+  .asiento-ocupado-legend {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: 2px solid #dc2626;
+  }
+
+  .asiento-seleccionado-legend {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: 2px solid #2563eb;
+  }
+
+  // Pantalla del cine
+  .pantalla-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .pantalla {
+    background: linear-gradient(to bottom, #374151, #1f2937);
+    color: white;
+    padding: 1rem 4rem;
+    border-radius: 0 0 50px 50px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 300px;
+  }
+
+  // Grid de asientos
+  .asientos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  .fila-asientos {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .label-fila {
+    min-width: 40px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #374151;
+    text-align: center;
+  }
+
+  .asientos-fila {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  // Estilos de asientos
+  .asiento {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
+  }
 
-    .snacks-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
+  .asiento-disponible {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: 2px solid #059669;
 
-      .snack-card {
+    &:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+  }
+
+  .asiento-ocupado {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border: 2px solid #dc2626;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .asiento-seleccionado {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: 2px solid #2563eb;
+    transform: scale(1.1);
+
+    &:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+  }
+
+  .asiento-numero {
+    position: relative;
+    z-index: 1;
+  }
+
+  .asiento-icono {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.7rem;
+    z-index: 2;
+  }
+
+  // Snacks
+  .snacks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+
+    .snack-card {
+      height: 100%;
+
+      ::ng-deep .p-card {
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
 
-        ::ng-deep .p-card {
-          height: 100%;
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .p-card-body {
+          flex: 1;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s, box-shadow 0.2s;
-
-          &:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          }
-
-          .p-card-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-          }
-
-          .p-card-content {
-            flex: 1;
-          }
         }
 
-        .snack-image {
-          height: 150px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
+        .p-card-content {
+          flex: 1;
+        }
+      }
 
-          i {
-            font-size: 3rem;
-          }
+      .snack-image {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
 
-          img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
+        i {
+          font-size: 2.5rem;
+        }
+      }
+
+      .snack-info {
+        h4 {
+          margin: 0 0 0.5rem 0;
+          color: #2c3e50;
+          font-size: 1rem;
         }
 
-        .snack-info {
-          h4 {
-            margin: 0 0 0.5rem 0;
-            color: #2c3e50;
-            font-size: 1.1rem;
-          }
-
-          .snack-descripcion {
-            color: #6c757d;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            min-height: 40px;
-          }
-
-          .snack-precio {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-
-            .precio {
-              font-size: 1.25rem;
-              font-weight: bold;
-              color: #28a745;
-            }
-
-            .stock {
-              font-size: 0.85rem;
-              padding: 0.25rem 0.5rem;
-              background-color: #e3f2fd;
-              color: #1976d2;
-              border-radius: 4px;
-              font-weight: 500;
-
-              &.sin-stock {
-                background-color: #ffebee;
-                color: #c62828;
-              }
-            }
-          }
+        .snack-tipo {
+          margin-bottom: 0.5rem;
         }
 
-        .snack-actions {
-          display: flex;
-          gap: 0.5rem;
-          align-items: center;
-
-          ::ng-deep .p-inputnumber {
-            flex: 1;
+        .snack-precio {
+          .precio {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
           }
+        }
+      }
 
-          ::ng-deep .p-button {
-            white-space: nowrap;
-          }
+      .snack-actions {
+        display: flex;
+        justify-content: center;
+
+        ::ng-deep .p-inputnumber {
+          width: 100%;
         }
       }
     }
   }
 
-  .carrito-section {
-    margin-top: 2rem;
-
-    h3 {
-      color: #495057;
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-
-    .total-section {
+  // Resumen de compra
+  .resumen-compra {
+    .resumen-item {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-      background-color: #f8f9fa;
-      border-radius: 4px;
+      padding: 0.75rem 0;
+      font-size: 1rem;
 
-      .total-label {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #495057;
-      }
-
-      .total-amount {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #28a745;
+      &.total {
+        padding: 1rem 0;
+        border-top: 2px solid #e5e7eb;
+        margin-top: 0.5rem;
       }
     }
 
-    .acciones-carrito {
+    .resumen-snack-item {
       display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-  }
-
-  ::ng-deep {
-    .p-card-header {
-      padding: 0;
-      border-bottom: none;
-    }
-
-    .p-datatable {
-      .p-datatable-thead > tr > th {
-        background-color: #f8f9fa;
-        color: #495057;
-        font-weight: 600;
-      }
-    }
-
-    .p-inputnumber-input {
-      text-align: center;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.25rem 0;
+      margin-bottom: 0.25rem;
     }
   }
 }
 
 // Responsive
 @media (max-width: 768px) {
-  .venta-snacks-container {
-    .snacks-section .snacks-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  .venta-boletos-container {
+    padding: 0.5rem;
+
+    .asiento {
+      width: 38px;
+      height: 38px;
+      font-size: 0.8rem;
+    }
+
+    .label-fila {
+      min-width: 30px;
+      font-size: 1rem;
+    }
+
+    .pantalla {
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+
+    .asientos-fila {
+      gap: 0.3rem;
+    }
+
+    .snacks-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1rem;
     }
 
-    .carrito-section .acciones-carrito {
-      flex-direction: column;
-
-      button {
-        width: 100%;
-      }
+    .info-item {
+      font-size: 0.85rem;
+      flex-wrap: wrap;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .venta-boletos-container {
+    .asiento {
+      width: 32px;
+      height: 32px;
+      font-size: 0.7rem;
+    }
+
+    .label-fila {
+      min-width: 25px;
+      font-size: 0.9rem;
+    }
+
+    .asiento-icono {
+      font-size: 0.6rem;
+    }
+
+    .snacks-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.venta-boletos-container {
+  ::ng-deep .p-card {
+    animation: fadeIn 0.3s ease-out;
   }
 }
