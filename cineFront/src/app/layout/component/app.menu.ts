@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { AuthService } from '@/services/auth';
 
 @Component({
     selector: 'app-menu',
@@ -18,7 +19,14 @@ import { AppMenuitem } from './app.menuitem';
 export class AppMenu {
     model: MenuItem[] = [];
 
+
+    constructor(private auth: AuthService, private router: Router) {}
+
     ngOnInit() {
+
+      const isAdmin   = this.auth.hasRole('ADMIN');
+      const isCliente = this.auth.hasRole('CLIENTE');
+      const isLogged  = !!this.auth.token;
         this.model = [
             {
                 label: 'Menu',
@@ -114,22 +122,25 @@ export class AppMenu {
   items: [
     {
       label: 'Gestión de películas',
-      icon: 'pi pi-fw pi-film', // 🎞️ Representa una película
-      routerLink: ['/peliculas']
+      icon: 'pi pi-fw pi-film', 
+      routerLink: ['/peliculas'],
+      visible: isAdmin 
     },
     {
       label: 'Categorías',
-      icon: 'pi pi-fw pi-tags', // 🏷️ Representa categorías o etiquetas
-      routerLink: ['/peliculas/categorias']
+      icon: 'pi pi-fw pi-tags', 
+      routerLink: ['/peliculas/categorias'],
+      visible: isAdmin 
+      
     },
     {
       label: 'Gestión de funciones',
-      icon: 'pi pi-fw pi-calendar-clock', // 🕒 Representa horarios o funciones
+      icon: 'pi pi-fw pi-calendar-clock', 
       routerLink: ['/peliculas/horarios']
     },
     {
       label: 'Cartelera',
-      icon: 'pi pi-fw pi-ticket', // 🎟️ Representa la cartelera o boletos
+      icon: 'pi pi-fw pi-ticket', 
       routerLink: ['/peliculas/listado']
     }
   ]
@@ -141,7 +152,8 @@ export class AppMenu {
     {
       label: 'Gestión de usuarios',
       icon: 'pi pi-fw pi-users',
-      routerLink: ['/user/register']
+      routerLink: ['/user/register'],
+      visible: isLogged
     },
     {
       label: 'Mi perfil',
@@ -198,7 +210,12 @@ export class AppMenu {
                                 label: 'Access Denied',
                                 icon: 'pi pi-fw pi-lock',
                                 routerLink: ['/auth/access']
-                            }
+                            },
+                            {
+                                label: 'Registrarse',
+                                icon: 'pi pi-fw pi-lock',
+                                routerLink: ['/auth/register-cliente']
+                            },
                         ]
                     },
                     {

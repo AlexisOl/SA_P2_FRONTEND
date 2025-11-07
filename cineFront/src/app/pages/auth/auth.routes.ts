@@ -17,6 +17,6 @@ export default [
     { path: 'register', component: RegisterComponent },
     { path: 'perfil', component: ProfileComponent },
     { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'reset-password/:token', component: ResetPasswordComponent },
+    { path: 'reset-password/:token', component: ResetPasswordComponent },
 
 ] as Routes;

@@ -37,8 +37,6 @@ export class AuthService {
 
   // ---------- Auth ----------
   register(dto: RegisterDTO) {
-  // Si tu API sí devuelve el usuario, esto sigue funcionando.
-  // Si devuelve vacío, res.body será null y lo toleramos.
   return this.http.post<UserDTO>(`${BASE_URL}/v1/auth/register`, dto, {
     observe: 'response'
   }).pipe(
@@ -133,9 +131,10 @@ export class AuthService {
   // src/app/services/auth.service.ts (añade estas helpers)
   get roleFromToken():
     | 'ADMIN'
+    | 'ADMIN_CINE'
     | 'CLIENTE'
-    | 'EMPLEADO_REST'
-    | 'EMPLEADO_HOTEL'
+    | 'EMPLEADO_CINE'
+    | 'CLIENTE_ANUNCIOS'
     | null {
     const t = this.token;
     if (!t) return null;
