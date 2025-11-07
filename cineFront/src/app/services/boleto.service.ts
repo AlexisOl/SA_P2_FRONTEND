@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import {environment} from '../../environments/environment';
-import {ResponseBoletoDTO} from '@/models/boleto.model';
+import {ResponseBoletoDetalladoDTO, ResponseBoletoDTO} from '@/models/boleto.model';
 
 const baseUrl = environment.URL_GATEWAY + '/api/ventas/boletos';
 
@@ -15,8 +15,8 @@ export class BoletoService {
     private http: HttpClient
   ) { }
 
-  listarBoletosPorVenta(idVenta: string): Observable<ResponseBoletoDTO[]> {
-    return this.http.get<ResponseBoletoDTO[]>(`${baseUrl}/venta/${idVenta}`).pipe(
+  listarBoletosPorVenta(idVenta: string): Observable<ResponseBoletoDetalladoDTO[]> {
+    return this.http.get<ResponseBoletoDetalladoDTO[]>(`${baseUrl}/venta/${idVenta}`).pipe(
       catchError((error: HttpErrorResponse) => throwError(() => error))
     );
   }

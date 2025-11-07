@@ -1,0 +1,239 @@
+<div class="mis-boletos-container">
+  <p-toast position="top-right"></p-toast>
+
+  <!-- Header -->
+  <p-card styleClass="mb-4 header-card">
+    <ng-template pTemplate="header">
+      <div class="p-3 bg-gradient-primary">
+        <h2 class="m-0 text-white flex align-items-center">
+          <i class="pi pi-ticket mr-3 text-4xl"></i>
+          Mis Boletos
+        </h2>
+        <p class="text-white text-sm mt-2 mb-0 opacity-90">
+          Revisa y descarga tus boletos de cine
+        </p>
+      </div>
+    </ng-template>
+  </p-card>
+
+  <!-- Selector de Compras -->
+  <p-card header="Selecciona una Compra" styleClass="mb-4">
+    <p-progressSpinner
+      *ngIf="cargandoVentas"
+      [style]="{width: '50px', height: '50px'}">
+    </p-progressSpinner>
+
+    <div *ngIf="!cargandoVentas && ventasOptions.length > 0">
+      <div class="grid">
+        <div class="col-12 md:col-8">
+          <label for="ventaSelect" class="font-semibold block mb-2">
+            <i class="pi pi-shopping-cart mr-2 text-primary"></i>
+            Historial de Compras
+          </label>
+          <p-select
+            id="ventaSelect"
+            [options]="ventasOptions"
+            [(ngModel)]="ventaSeleccionada"
+            (onChange)="onVentaChange()"
+            optionLabel="label"
+            placeholder="Selecciona una compra"
+            [filter]="true"
+            [showClear]="false"
+            styleClass="w-full">
+<!--            <ng-template #item let-venta>-->
+<!--              <div class="flex align-items-center  py-2">-->
+<!--                <div class="flex-1">-->
+<!--                  <div class="font-semibold">-->
+<!--                    {{ venta.fecha | date:'short':'':'es-GT' }}-->
+<!--                  </div>-->
+<!--                  <small class="text-color-secondary">-->
+<!--                    Total: {{ venta.total | currency:'GTQ':'symbol-narrow':'1.2-2' }}-->
+<!--                  </small>-->
+<!--                </div>-->
+<!--                <i class="pi pi-chevron-right text-color-secondary"></i>-->
+<!--              </div>-->
+<!--            </ng-template>-->
+          </p-select>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <div class="info-box p-3 border-round">
+            <div class="text-sm text-color-secondary mb-1">Total de Compras</div>
+            <div class="text-2xl font-bold text-primary">
+              {{ ventasOptions.length }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3" *ngIf="ventaSeleccionada">
+        <p-divider></p-divider>
+        <div class="flex align-items-center gap-2">
+          <i class="pi pi-info-circle text-primary"></i>
+          <span class="text-color-secondary">
+            Mostrando boletos de la compra del
+            <strong>{{ ventaSeleccionada.fecha | date:'short':'':'es-GT' }}</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <p-message
+      *ngIf="!cargandoVentas && ventasOptions.length === 0"
+      severity="info"
+      text="No tienes compras registradas. ¡Compra tu primer boleto!">
+    </p-message>
+  </p-card>
+
+  <!-- Loading Boletos -->
+  <div *ngIf="cargandoBoletos" class="text-center p-5">
+    <p-progressSpinner [style]="{width: '60px', height: '60px'}"></p-progressSpinner>
+    <p class="mt-3 text-color-secondary">Cargando tus boletos...</p>
+  </div>
+
+  <!-- Grid de Boletos -->
+  <div class="boletos-grid" *ngIf="!cargandoBoletos && boletos.length > 0">
+    <div *ngFor="let boleto of boletos" class="boleto-wrapper">
+      <!-- Ticket Container para captura -->
+      <div [id]="'boleto-' + boleto.boletoId" class="ticket-container">
+
+        <!-- Header del Ticket -->
+        <div class="ticket-header">
+          <div class="ticket-logo">
+            <i class="pi pi-video"></i>
+            <span>CINEMA</span>
+          </div>
+          <p-tag
+            [value]="getEstadoBoleto(boleto.fechaHoraInicio).texto"
+            [severity]="getSeverity(boleto.fechaHoraInicio)">
+          </p-tag>
+        </div>
+
+        <!-- Película -->
+        <div class="ticket-movie">
+          <h3 class="movie-title">{{ boleto.peliculaTitulo }}</h3>
+          <div class="movie-details">
+            <p-chip
+              [label]="boleto.idioma"
+              icon="pi pi-language"
+              styleClass="mr-2">
+            </p-chip>
+            <p-chip
+              [label]="boleto.formato"
+              icon="pi pi-desktop"
+              styleClass="mr-2">
+            </p-chip>
+            <p-chip
+              [label]="calcularDuracionFormato(boleto.peliculaDuracion)"
+              icon="pi pi-clock">
+            </p-chip>
+          </div>
+        </div>
+
+        <p-divider styleClass="my-3"></p-divider>
+
+        <!-- Información de la Función -->
+        <div class="ticket-info">
+          <div class="info-row">
+            <div class="info-item">
+              <i class="pi pi-calendar text-primary"></i>
+              <div>
+                <small class="label">Fecha</small>
+                <div class="value">{{ formatearFecha(boleto.fechaHoraInicio) }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-item">
+              <i class="pi pi-clock text-primary"></i>
+              <div>
+                <small class="label">Hora</small>
+                <div class="value">{{ formatearHora(boleto.fechaHoraInicio) }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-item half">
+              <i class="pi pi-home text-primary"></i>
+              <div>
+                <small class="label">Sala</small>
+                <div class="value">{{ boleto.salaId.substring(0, 8) }}...</div>
+              </div>
+            </div>
+            <div class="info-item half">
+              <i class="pi pi-tag text-primary"></i>
+              <div>
+                <small class="label">Asiento</small>
+                <div class="value seat-number">{{ boleto.fila }}{{ boleto.columna }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-item">
+              <i class="pi pi-money-bill text-primary"></i>
+              <div>
+                <small class="label">Precio</small>
+                <div class="value price">{{ boleto.precio | currency:'GTQ':'symbol-narrow':'1.2-2' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p-divider styleClass="my-3"></p-divider>
+
+        <!-- Código QR y Código de Barras -->
+        <div class="ticket-codes">
+          <div class="codigo-barras">
+            <div class="barras">
+              <span *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]"></span>
+            </div>
+            <div class="codigo-texto">{{ boleto.codigoBoleto }}</div>
+          </div>
+
+          <div class="ticket-id">
+            <small class="text-color-secondary">ID: {{ boleto.boletoId.substring(0, 8) }}...</small>
+          </div>
+        </div>
+
+        <!-- Footer del Ticket -->
+        <div class="ticket-footer">
+          <small>Presenta este boleto en la entrada</small>
+        </div>
+      </div>
+
+      <!-- Botón de descarga (fuera del ticket para captura) -->
+      <div class="ticket-actions">
+        <p-button
+          label="Descargar Boleto"
+          icon="pi pi-download"
+          styleClass="w-full"
+          [loading]="descargandoBoleto[boleto.boletoId]"
+          (onClick)="descargarBoleto(boleto)"
+          severity="success">
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin boletos para la venta seleccionada -->
+  <p-card *ngIf="!cargandoBoletos && boletos.length === 0 && ventaSeleccionada">
+    <div class="flex flex-column align-items-center justify-content-center p-5">
+      <i class="pi pi-inbox text-6xl text-color-secondary mb-3"></i>
+      <p class="text-xl text-color-secondary mb-2">No hay boletos en esta compra</p>
+      <p class="text-sm text-color-secondary">Selecciona otra compra del historial</p>
+    </div>
+  </p-card>
+
+  <!-- Estado inicial - sin venta seleccionada -->
+  <p-card *ngIf="!cargandoVentas && !cargandoBoletos && !ventaSeleccionada && ventasOptions.length > 0">
+    <div class="flex flex-column align-items-center justify-content-center p-5">
+      <i class="pi pi-ticket text-6xl text-primary mb-3"></i>
+      <p class="text-xl text-color-secondary mb-2">Selecciona una compra</p>
+      <p class="text-sm text-color-secondary">Elige una compra del historial para ver tus boletos</p>
+    </div>
+  </p-card>
+
+</div>
