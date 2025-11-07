@@ -20,7 +20,6 @@ import { registerLocaleData } from '@angular/common';
 import localeEsGT from '@angular/common/locales/es-GT';
 import localeEsGTExtra from '@angular/common/locales/extra/es-GT';
 
-// Registra los datos del locale
 registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
 
 @Component({
@@ -40,24 +39,16 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
         border: none !important;
         overflow: hidden;
       }
-
-      .profile-header-card .p-card-body {
-        padding: 2rem;
-      }
+      .profile-header-card .p-card-body { padding: 2rem; }
 
       .user-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
+        width: 100px; height: 100px; border-radius: 50%;
         background: rgba(255, 255, 255, 0.2);
         border: 4px solid white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        font-weight: bold;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; font-weight: bold;
         margin: 0 auto 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
 
       .info-grid {
@@ -68,151 +59,87 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
       }
 
       .info-box {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255,255,255,0.1);
         backdrop-filter: blur(10px);
         padding: 1rem;
         border-radius: 12px;
-        transition: all 0.3s ease;
+        transition: all .3s ease;
       }
-
       .info-box:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255,255,255,0.15);
         transform: translateY(-2px);
       }
 
-      .info-box-icon {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        opacity: 0.9;
-      }
-
-      .info-box-label {
-        font-size: 0.875rem;
-        opacity: 0.85;
-        margin-bottom: 0.25rem;
-      }
-
-      .info-box-value {
-        font-size: 1rem;
-        font-weight: 600;
-        word-break: break-all;
-      }
+      .info-box-icon { font-size: 1.5rem; margin-bottom: .5rem; opacity:.9; }
+      .info-box-label { font-size:.875rem; opacity:.85; margin-bottom:.25rem; }
+      .info-box-value { font-size:1rem; font-weight:600; word-break:break-all; }
 
       .balance-card {
         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        color: white;
-        border: none !important;
-        text-align: center;
+        color: white; border:none !important; text-align:center;
       }
-
-      .balance-card .p-card-body {
-        padding: 2rem;
-      }
-
+      .balance-card .p-card-body { padding:2rem; }
       .balance-amount {
-        font-size: 3rem;
-        font-weight: bold;
-        margin: 1rem 0;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size:3rem; font-weight:bold; margin:1rem 0;
+        text-shadow:0 2px 4px rgba(0,0,0,0.1);
       }
 
       .action-card {
-        border-radius: 16px;
-        border: 1px solid #e9ecef;
-        transition: all 0.3s ease;
+        border-radius:16px;
+        border:1px solid #e9ecef;
+        transition:all .3s ease;
       }
-
-      .action-card:hover {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      }
+      .action-card:hover { box-shadow:0 8px 24px rgba(0,0,0,0.1); }
 
       .card-header-custom {
-        padding: 1.5rem;
-        border-bottom: 1px solid #e9ecef;
+        padding:1.5rem;
+        border-bottom:1px solid #e9ecef;
       }
-
       .card-header-custom h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
+        display:flex; align-items:center; gap:.75rem;
+        margin:0; font-size:1.5rem; font-weight:700;
       }
-
       .card-header-custom p {
-        margin: 0.5rem 0 0 0;
-        color: #6c757d;
+        margin:.5rem 0 0; color:#6c757d;
       }
 
-      .form-field {
-        margin-bottom: 1.5rem;
-      }
-
+      .form-field { margin-bottom:1.5rem; }
       .form-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #495057;
+        display:flex; align-items:center; gap:.5rem;
+        margin-bottom:.5rem;
+        font-weight:600;
+        color:#495057;
       }
 
       .p-inputtext, .p-inputnumber input {
-        border-radius: 8px;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
+        border-radius:8px;
+        border:2px solid #e9ecef;
+        transition:all .3s ease;
       }
-
       .p-inputtext:focus, .p-inputnumber input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        border-color:#667eea;
+        box-shadow:0 0 0 .2rem rgba(102,126,234,.25);
       }
 
-      .p-button {
-        border-radius: 8px;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-      }
+      .p-button { border-radius:8px; font-weight:600; padding:.75rem 1.5rem; }
 
       .button-group {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+        display:flex; gap:.75rem; flex-wrap:wrap;
       }
 
       .info-message {
-        background: #e7f3ff;
-        border-left: 4px solid #2196f3;
-        padding: 1rem;
-        border-radius: 8px;
-        display: flex;
-        gap: 0.75rem;
-        align-items: start;
+        background:#e7f3ff;
+        border-left:4px solid #2196f3;
+        padding:1rem; border-radius:8px;
+        display:flex; gap:.75rem; align-items:flex-start;
       }
 
-      @media (max-width: 768px) {
-        .balance-amount {
-          font-size: 2rem;
-        }
-
-        .user-avatar {
-          width: 80px;
-          height: 80px;
-          font-size: 2rem;
-        }
-
-        .info-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .button-group {
-          flex-direction: column;
-        }
-
-        .button-group .p-button {
-          width: 100%;
-        }
+      @media (max-width:768px) {
+        .balance-amount { font-size:2rem; }
+        .user-avatar { width:80px; height:80px; font-size:2rem; }
+        .info-grid { grid-template-columns:1fr; }
+        .button-group { flex-direction:column; }
+        .button-group .p-button { width:100%; }
       }
     }
   `],
@@ -227,11 +154,13 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
       <p class="text-color-secondary">Gestiona tu información personal y banca virtual</p>
     </div>
 
-    <!-- Tarjeta de perfil con información general -->
+    <!-- Tarjeta Perfil -->
     <p-card class="profile-header-card mb-4">
       <div class="text-center">
         <div class="user-avatar">{{ getInitials() }}</div>
-        <h2 class="text-2xl md:text-3xl font-bold mb-2">{{ user()?.nombre || 'Usuario' }}</h2>
+        <h2 class="text-2xl md:text-3xl font-bold mb-2">
+          {{ user()?.nombre || 'Usuario' }}
+        </h2>
         <p-tag [value]="user()?.rol || 'CLIENTE'" [rounded]="true" severity="info"></p-tag>
       </div>
 
@@ -257,28 +186,31 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
         <div class="info-box">
           <i class="pi pi-calendar info-box-icon"></i>
           <div class="info-box-label">Fecha de Registro</div>
-          <div class="info-box-value">{{ user()?.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div class="info-box-value">
+            {{ user()?.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
         </div>
 
         <div class="info-box">
           <i class="pi pi-circle-fill info-box-icon"></i>
           <div class="info-box-label">Estado de Cuenta</div>
           <div class="mt-2">
-            <p-tag [value]="user()?.enabled ? 'ACTIVA' : 'INACTIVA'"
-                   [severity]="user()?.enabled ? 'success' : 'danger'"
-                   [rounded]="true"/>
+            <p-tag
+              [value]="user()?.enabled ? 'ACTIVA' : 'INACTIVA'"
+              [severity]="user()?.enabled ? 'success' : 'danger'"
+              [rounded]="true">
+            </p-tag>
           </div>
         </div>
       </div>
     </p-card>
 
-    <div class="grid" style="gap: 1.5rem;">
+    <div class="grid" style="gap:1.5rem;">
 
       <!-- Columna IZQ: Banca Virtual -->
       <div class="col-12 lg:col-6">
-        <!-- Balance destacado -->
         <p-card class="balance-card mb-4">
-          <i class="pi pi-wallet" style="font-size: 3rem;"></i>
+          <i class="pi pi-wallet" style="font-size:3rem;"></i>
           <h3 class="text-xl font-semibold mt-3 mb-0">Banca Virtual</h3>
           <div class="balance-amount">
             {{ (user()?.bancaVirtual ?? 0) | currency:'GTQ':'symbol':'1.2-2':'es-GT' }}
@@ -286,7 +218,6 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
           <p class="text-sm opacity-90 m-0">Saldo disponible en tu cuenta</p>
         </p-card>
 
-        <!-- Gestión de movimientos -->
         <p-card class="action-card">
           <div class="card-header-custom">
             <h3>
@@ -299,45 +230,51 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
           <div class="p-4">
             <div class="form-field">
               <label class="form-label">
-                <i class="pi pi-dollar"></i>
-                Monto (GTQ)
+                <i class="pi pi-dollar"></i> Monto (GTQ)
               </label>
-              <p-inputnumber class="w-full"
-                             [useGrouping]="true"
-                             mode="currency"
-                             currency="GTQ"
-                             locale="es-GT"
-                             [min]="0.01"
-                             placeholder="0.00"
-                             [(ngModel)]="banca.monto" />
+              <p-inputnumber
+                class="w-full"
+                [useGrouping]="true"
+                mode="currency"
+                currency="GTQ"
+                locale="es-GT"
+                [min]="0.01"
+                placeholder="0.00"
+                [(ngModel)]="banca.monto">
+              </p-inputnumber>
             </div>
 
             <div class="form-field">
               <label class="form-label">
-                <i class="pi pi-comment"></i>
-                Motivo del Movimiento
+                <i class="pi pi-comment"></i> Motivo del Movimiento
               </label>
-              <input pInputText
-                     class="w-full"
-                     [(ngModel)]="banca.motivo"
-                     placeholder="Ej: Depósito inicial, pago de servicio..." />
+              <input
+                pInputText
+                class="w-full"
+                [(ngModel)]="banca.motivo"
+                placeholder="Ej: Depósito inicial, pago de servicio..." />
             </div>
 
             <div class="button-group mb-3">
-              <p-button label="Acreditar"
-                        icon="pi pi-plus-circle"
-                        severity="success"
-                        styleClass="flex-1"
-                        [disabled]="!puedeMover() || loadingBanca"
-                        [loading]="loadingBanca"
-                        (onClick)="acreditar()" />
-              <p-button label="Debitar"
-                        icon="pi pi-minus-circle"
-                        severity="danger"
-                        styleClass="flex-1"
-                        [disabled]="!puedeMover() || loadingBanca"
-                        [loading]="loadingBanca"
-                        (onClick)="debitar()" />
+              <p-button
+                label="Acreditar"
+                icon="pi pi-plus-circle"
+                severity="success"
+                styleClass="flex-1"
+                [disabled]="!puedeMover() || loadingBanca"
+                [loading]="loadingBanca"
+                (onClick)="acreditar()">
+              </p-button>
+
+              <p-button
+                label="Debitar"
+                icon="pi pi-minus-circle"
+                severity="danger"
+                styleClass="flex-1"
+                [disabled]="!puedeMover() || loadingBanca"
+                [loading]="loadingBanca"
+                (onClick)="debitar()">
+              </p-button>
             </div>
 
             <div class="info-message">
@@ -350,7 +287,7 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
         </p-card>
       </div>
 
-      <!-- Columna DER: Datos personales -->
+      <!-- Columna DER: Datos Personales (editable) -->
       <div class="col-12 lg:col-6">
         <p-card class="action-card">
           <div class="card-header-custom">
@@ -358,43 +295,84 @@ registerLocaleData(localeEsGT, 'es-GT', localeEsGTExtra);
               <i class="pi pi-user-edit text-primary"></i>
               Datos Personales
             </h3>
-            <p>Actualiza tu información personal</p>
+            <p>Actualiza tu nombre, correo y DPI</p>
           </div>
 
           <div class="p-4">
-            <form [formGroup]="formNombre" (ngSubmit)="saveNombre()">
+            <form [formGroup]="formDatos" (ngSubmit)="saveDatos()">
+
+              <!-- Nombre -->
               <div class="form-field">
                 <label class="form-label">
-                  <i class="pi pi-user"></i>
-                  Nombre Completo
+                  <i class="pi pi-user"></i> Nombre Completo
                 </label>
-                <input pInputText
-                       class="w-full mb-2"
-                       formControlName="nombre"
-                       placeholder="Ingresa tu nombre completo" />
-                <small class="text-red-500 block"
-                       *ngIf="formNombre.controls['nombre'].touched && formNombre.controls['nombre'].invalid">
+                <input
+                  pInputText
+                  class="w-full"
+                  formControlName="nombre"
+                  placeholder="Ingresa tu nombre completo" />
+                <small
+                  class="text-red-500 block"
+                  *ngIf="formDatos.controls['nombre'].touched && formDatos.controls['nombre'].invalid">
                   <i class="pi pi-exclamation-circle mr-1"></i>
                   El nombre debe tener al menos 2 caracteres.
                 </small>
               </div>
 
+              <!-- Email -->
+              <div class="form-field">
+                <label class="form-label">
+                  <i class="pi pi-envelope"></i> Correo electrónico
+                </label>
+                <input
+                  pInputText
+                  class="w-full"
+                  type="email"
+                  formControlName="email"
+                  placeholder="correo@ejemplo.com" />
+                <small
+                  class="text-red-500 block"
+                  *ngIf="formDatos.controls['email'].touched && formDatos.controls['email'].invalid">
+                  <i class="pi pi-exclamation-circle mr-1"></i>
+                  Ingresa un correo válido.
+                </small>
+              </div>
+
+              <!-- DPI -->
+              <div class="form-field">
+                <label class="form-label">
+                  <i class="pi pi-credit-card"></i> DPI
+                </label>
+                <input
+                  pInputText
+                  class="w-full"
+                  formControlName="dpi"
+                  placeholder="13 dígitos" />
+                <small
+                  class="text-red-500 block"
+                  *ngIf="formDatos.controls['dpi'].touched && formDatos.controls['dpi'].invalid">
+                  <i class="pi pi-exclamation-circle mr-1"></i>
+                  El DPI debe contener exactamente 13 dígitos.
+                </small>
+              </div>
+
               <div class="button-group">
-                <p-button type="submit"
-                          label="Guardar Cambios"
-                          icon="pi pi-check"
-                          styleClass="w-full"
-                          [disabled]="formNombre.invalid || savingNombre"
-                          [loading]="savingNombre"/>
+                <p-button
+                  type="submit"
+                  label="Guardar Cambios"
+                  icon="pi pi-check"
+                  styleClass="w-full"
+                  [disabled]="formDatos.invalid || savingDatos"
+                  [loading]="savingDatos">
+                </p-button>
               </div>
             </form>
           </div>
         </p-card>
       </div>
-
     </div>
 
-    <p-toast position="top-right"/>
+    <p-toast position="top-right"></p-toast>
   </div>
   `
 })
@@ -407,24 +385,35 @@ export class ProfileComponent implements OnInit {
   private _user = signal<UserDTO | null>(null);
   user = this._user.asReadonly();
 
-  formNombre = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(2)]]
+  // Nuevo form para nombre + email + dpi
+  formDatos = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(2)]],
+    email: ['', [Validators.required, Validators.email]],
+    dpi: ['', [Validators.required, Validators.pattern(/^[0-9]{13}$/)]],
   });
-  savingNombre = false;
+  savingDatos = false;
 
   banca = { monto: null as number | null, motivo: '' };
   loadingBanca = false;
 
   ngOnInit(): void {
+    // si ya hay usuario en el servicio, tomarlo
     this.auth.currentUser$.subscribe(u => {
       if (u) {
         this._user.set(u as any);
-        this.formNombre.patchValue({ nombre: u.nombre || '' });
-        console.log(u.bancaVirtual);
-        
+        this.patchFormDatos(u);
       }
     });
+    // refrescar desde backend
     this.refreshUser();
+  }
+
+  private patchFormDatos(u: UserDTO) {
+    this.formDatos.patchValue({
+      nombre: u.nombre || '',
+      email: u.email || '',
+      dpi: u.dpi || '',
+    });
   }
 
   getInitials(): string {
@@ -440,41 +429,47 @@ export class ProfileComponent implements OnInit {
     this.auth.fetchAndCacheUser().subscribe(u => {
       if (u) {
         this._user.set(u as any);
-        this.formNombre.patchValue({ nombre: u.nombre || '' });
+        this.patchFormDatos(u);
       }
     });
   }
 
-  saveNombre() {
-    if (this.formNombre.invalid || !this.user() || this.savingNombre) return;
-    const id = this.user()!.id;
-    const nombre = (this.formNombre.value.nombre || '').trim();
-    if (!nombre) return;
+  // Guardar datos personales
+  saveDatos() {
+    if (this.formDatos.invalid || !this.user() || this.savingDatos) return;
 
-    this.savingNombre = true;
-    this.users.updatePartial(id, { nombre }).subscribe({
+    const id = this.user()!.id;
+    const { nombre, email, dpi } = this.formDatos.value;
+
+    this.savingDatos = true;
+    this.users.updatePartial(id, {
+      nombre: (nombre || '').trim(),
+      email: (email || '').trim(),
+      dpi: (dpi || '').trim(),
+    }).subscribe({
       next: () => {
         this.toast.add({
           severity: 'success',
-          summary: 'Éxito',
-          detail: 'Nombre actualizado correctamente',
+          summary: 'Datos actualizados',
+          detail: 'Tu información personal ha sido actualizada correctamente',
           life: 3000
         });
         this.refreshUser();
-        this.savingNombre = false;
+        this.savingDatos = false;
       },
       error: (err) => {
         this.toast.add({
           severity: 'error',
           summary: 'Error',
-          detail: err?.error?.message || 'No se pudo actualizar el nombre',
+          detail: err?.error?.message || 'No se pudieron actualizar los datos',
           life: 4000
         });
-        this.savingNombre = false;
+        this.savingDatos = false;
       }
     });
   }
 
+  // --- Banca virtual ---
   puedeMover() {
     return !!this.user() &&
            !!this.banca.monto &&
@@ -486,6 +481,7 @@ export class ProfileComponent implements OnInit {
     if (!this.puedeMover()) return;
     this.loadingBanca = true;
     const id = this.user()!.id;
+
     this.users.acreditarBanca(id, {
       monto: this.banca.monto!,
       motivo: this.banca.motivo.trim()
@@ -516,6 +512,7 @@ export class ProfileComponent implements OnInit {
     if (!this.puedeMover()) return;
     this.loadingBanca = true;
     const id = this.user()!.id;
+
     this.users.debitarBanca(id, {
       monto: this.banca.monto!,
       motivo: this.banca.motivo.trim()

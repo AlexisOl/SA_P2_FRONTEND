@@ -70,7 +70,7 @@ export class LoginComponent {
             detail: 'Inicio de sesión correcto',
             life: 2500,
           });
-          this.router.navigateByUrl('/');
+          this.router.navigateByUrl('/home');
         },
         error: (err) => {
           const detalle =

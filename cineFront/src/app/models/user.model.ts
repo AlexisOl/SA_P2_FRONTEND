@@ -1,4 +1,4 @@
-export type Rol = 'ADMIN' | 'CLIENTE' | 'EMPLEADO_REST' | 'EMPLEADO_HOTEL';
+export type Rol = 'ADMIN' |'ADMIN_CINE' | 'CLIENTE' | 'EMPLEADO_CINE' | 'CLIENTE_ANUNCIOS';
 
 export interface JwtClaims {
     sub: string;

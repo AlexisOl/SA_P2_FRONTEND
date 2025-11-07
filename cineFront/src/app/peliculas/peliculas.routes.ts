@@ -30,8 +30,8 @@ export default [
     component: MoviesListComponent,
   },
   { path: 'horarios', component: HorariosGestionComponent,
-    //canMatch: [authGuard, roleMatchGuard],
-   // data: { roles: ['ADMIN'] }
+    canMatch: [authGuard, roleMatchGuard],
+    data: { roles: ['ADMIN','ADMIN_CINE','EMPLEADO_CINE'] }
    },
   { path: ':id', component: MovieDetailComponent },
 ] as Routes;
