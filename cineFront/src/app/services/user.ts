@@ -34,7 +34,7 @@ export class UsersService {
         console.log(this.http.get<UserDTO[]>(BASE, { params }));
         const fullUrl = `${BASE}?${params.toString()}`;
   console.log('Llamando a:', fullUrl);
-        
+
         return this.http.get<UserDTO[]>(BASE, { params });
     }
 
