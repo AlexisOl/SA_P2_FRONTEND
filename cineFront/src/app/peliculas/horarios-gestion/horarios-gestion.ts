@@ -29,7 +29,7 @@ import { MovieService } from '../services/movie.service'; // ya lo tienes
 import { SalaServicio } from '@/services/sala-servicio.service';
 import { Sala } from '@/models/horario';
 import { CineServiceService } from '@/services/cine-service.service';
-import { cine } from '@/models/Cine';
+import {cine, sala} from '@/models/Cine';
 //import { Sala, SalaService } from '../services/sala.service';
 
 // Interfaces mínimas para tus datos existentes
@@ -79,7 +79,7 @@ export interface MovieMin {
       class="mb-4"
       style="background: var(--surface-card); padding: 1.5rem; border-radius: 6px;"
     >
-   
+
       <!-- Primera fila -->
       <div
         style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;"
@@ -278,6 +278,7 @@ export interface MovieMin {
       placeholder="Selecciona sala"
       [disabled]="!sel.cinemaId || !salas.length"
       [style]="{ width: '100%' }"
+      (onChange)="onChangeSala()"
       appendTo="body"
     />
   </div>
@@ -525,6 +526,8 @@ export class HorariosGestionComponent implements OnInit {
   }
 
   // CRUD
+  fila: number = 10;
+  columna: number = 10;
  newHorario() {
   if (!this.sel.peliculaId || !this.sel.cinemaId) {
     this.toast.add({
@@ -603,6 +606,8 @@ edit(h: Horario) {
       inicio: this.toApiLocal(this.formInicio!),
       fin: this.toApiLocal(this.formFin!),
       precio: Number(this.form.precio ?? 0),
+      fila: this.fila,
+      columna: this.columna
     };
 
     const req = this.form.id
@@ -665,11 +670,13 @@ onDialogChangeCine() {
 }
 
 // Carga salas para un cine específico y ejecuta un callback opcional al terminar
+  salaLis: sala[] = [];
 private ensureSalasLoaded(cinemaId: string, done?: () => void) {
   this.salas = [];
   this.salaMap = {};
   this.salasSvc.listarSalasId(cinemaId).subscribe({
     next: (salas: any) => {
+      this.salaLis = salas as sala[];
       this.salas = (salas || []).map((s: any) => ({
         id: String(s.id),
         nombre: s.nombre || s.name || `Sala ${s.id}`,
@@ -686,4 +693,11 @@ private ensureSalasLoaded(cinemaId: string, done?: () => void) {
     }
   });
 }
+
+  protected onChangeSala() {
+    const salaEncontrada = this.salaLis.find(s => s.id === this.sel.salaId);
+    if (!salaEncontrada) return;
+    this.fila = Number(salaEncontrada.matrizAsientos.filas);
+    this.columna = Number(salaEncontrada.matrizAsientos.columnas);
+  }
 }

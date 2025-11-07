@@ -22,8 +22,8 @@ export class AsientoService {
   }
 
 
-  listarAsientosPorSala(salaId: string): Observable<ResponseAsientoDTO[]> {
-    return this.http.get<ResponseAsientoDTO[]>(`${baseUrl}/sala/${salaId}`).pipe(
+  listarAsientosPorSala(salaId: string, funcionId: string): Observable<ResponseAsientoDTO[]> {
+    return this.http.get<ResponseAsientoDTO[]>(`${baseUrl}/sala/${salaId}/${funcionId}`).pipe(
       catchError((error: HttpErrorResponse) => throwError(() => error))
     );
   }

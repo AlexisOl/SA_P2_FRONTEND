@@ -181,7 +181,7 @@ export class VentaBoletos implements OnInit {
     if (!this.datosReservacion) return;
 
     this.cargandoAsientos = true;
-    this.asientoService.listarAsientosPorSala(this.datosReservacion.salaId).subscribe({
+    this.asientoService.listarAsientosPorSala(this.datosReservacion.salaId, this.datosReservacion.funcionId).subscribe({
       next: (asientos) => {
         this.asientosDisponibles = asientos;
         this.cargandoAsientos = false;

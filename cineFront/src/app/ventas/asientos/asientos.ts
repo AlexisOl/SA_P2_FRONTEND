@@ -184,7 +184,7 @@ console.log('Seleccionado', this.cineSeleccionado, event.value);
     }
 
     this.loading = true;
-    this.asientoService.listarAsientosPorSala(this.salaIdSeleccionada).subscribe({
+    this.asientoService.listarAsientosPorSala(this.salaIdSeleccionada, "00000000-0000-0000-0000-000000000000").subscribe({
       next: (asientos) => {
         this.asientos = asientos;
         this.asientosSeleccionados = [];
