@@ -98,6 +98,11 @@ export class AppMenu {
                     routerLink: ['/home/ventas/snack']
                   },
                   {
+                    label: 'Mis boletos',
+                    icon: 'pi pi-fw pi-ticket',
+                    routerLink: ['/home/ventas/mis-boletos']
+                  },
+                  {
   label: 'Películas',
   icon: 'pi pi-fw pi-video', // 🎬 Ícono principal del módulo de películas
   items: [

@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '@/services/auth';
 
-import { RouterModule } from '@angular/router'; 
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -70,7 +70,7 @@ export class LoginComponent {
             detail: 'Inicio de sesión correcto',
             life: 2500,
           });
-          this.router.navigateByUrl('/');
+          this.router.navigateByUrl('/home');
         },
         error: (err) => {
           const detalle =
