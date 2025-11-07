@@ -40,19 +40,19 @@
             [filter]="true"
             [showClear]="false"
             styleClass="w-full">
-            <ng-template #item let-venta>
-              <div class="flex align-items-center justify-content-between py-2">
-                <div class="flex-1">
-                  <div class="font-semibold">
-                    {{ venta.fecha | date:'short':'':'es-GT' }}
-                  </div>
-                  <small class="text-color-secondary">
-                    Total: {{ venta.total | currency:'GTQ':'symbol-narrow':'1.2-2' }}
-                  </small>
-                </div>
-                <i class="pi pi-chevron-right text-color-secondary"></i>
-              </div>
-            </ng-template>
+<!--            <ng-template #item let-venta>-->
+<!--              <div class="flex align-items-center  py-2">-->
+<!--                <div class="flex-1">-->
+<!--                  <div class="font-semibold">-->
+<!--                    {{ venta.fecha | date:'short':'':'es-GT' }}-->
+<!--                  </div>-->
+<!--                  <small class="text-color-secondary">-->
+<!--                    Total: {{ venta.total | currency:'GTQ':'symbol-narrow':'1.2-2' }}-->
+<!--                  </small>-->
+<!--                </div>-->
+<!--                <i class="pi pi-chevron-right text-color-secondary"></i>-->
+<!--              </div>-->
+<!--            </ng-template>-->
           </p-select>
         </div>
 
