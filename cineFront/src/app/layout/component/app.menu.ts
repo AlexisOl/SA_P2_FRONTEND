@@ -62,6 +62,17 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-list',
                         routerLink: ['/home/reportes']
                       },
+
+                      {
+                        label: 'Reportes Peliculas por sala',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/report/reportes-peliculas-sala']
+                      },
+                      {
+                        label: 'Top 5 salas',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/report/reportes-top-salas']
+                      },
              
                     ]
                   },

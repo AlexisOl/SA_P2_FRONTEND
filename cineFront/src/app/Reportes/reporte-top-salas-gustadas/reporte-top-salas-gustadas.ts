@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 // PDF
-import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 (<any>pdfMake).addVirtualFileSystem(pdfFonts);
@@ -24,7 +24,6 @@ import { MessageService } from 'primeng/api';
 import { CalificacionSalaService } from '@/services/calificacion-sala.service';
 import { SalaServicio } from '@/services/sala-servicio.service';
 import { CineServiceService } from '@/services/cine-service.service';
-
 
 interface Calificacion {
   calificacionId: string;
@@ -77,202 +76,7 @@ interface TopSalaRow {
       }
     `,
   ],
-  template: `
-    <div class="container mx-auto p-4 lg:p-6">
-      <h2 class="text-2xl font-bold mb-2">Reporte: 5 salas más gustadas</h2>
-      <p class="text-color-secondary mb-4">
-        El ranking se calcula por promedio de puntuación (1–5) dentro del rango
-        seleccionado. Puedes filtrar por una sala específica.
-      </p>
-
-      <!-- FILTROS -->
-      <div class="card p-4 mb-4 toolbar">
-        <div class="grid" style="row-gap:12px; column-gap:12px;">
-          <div class="col-12 md:col-3">
-            <label class="font-semibold block mb-2">Desde *</label>
-            <p-datepicker
-              [(ngModel)]="filtros.desde"
-              [showIcon]="true"
-              [showTime]="true"
-              class="w-full"
-            />
-          </div>
-
-          <div class="col-12 md:col-3">
-            <label class="font-semibold block mb-2">Hasta *</label>
-            <p-datepicker
-              [(ngModel)]="filtros.hasta"
-              [showIcon]="true"
-              [showTime]="true"
-              class="w-full"
-            />
-          </div>
-
-          <div class="col-12 md:col-3">
-            <label class="font-semibold block mb-2">Sala (opcional)</label>
-            <p-select
-              class="w-full"
-              [options]="salas"
-              optionLabel="nombre"
-              optionValue="id"
-              placeholder="Todas"
-              [(ngModel)]="filtros.salaId"
-            >
-            </p-select>
-          </div>
-
-          <div class="col-12 md:col-3 flex align-items-end gap-2">
-            <p-button
-              label="Generar"
-              icon="pi pi-search"
-              (onClick)="generar()"
-              [loading]="loading"
-            />
-            <p-button
-              label="Limpiar"
-              icon="pi pi-eraser"
-              severity="secondary"
-              (onClick)="limpiar()"
-              [disabled]="loading"
-            />
-            <p-button
-  label="PDF"
-  icon="pi pi-file-pdf"
-  severity="danger"
-  (onClick)="generarPDF()"
-  [disabled]="!rows().length || loading"
-/>
-          </div>
-        </div>
-      </div>
-
-      <p-divider></p-divider>
-
-      <!-- TABLA TOP 5 -->
-      <p-table
-        [value]="rows()"
-        dataKey="salaId"
-        [expandedRowKeys]="expandedRowKeys"
-        (onRowExpand)="onRowExpand($event)"
-        (onRowCollapse)="onRowCollapse($event)"
-        [paginator]="true"
-        [rows]="5"
-        [rowsPerPageOptions]="[5]"
-        [responsiveLayout]="'scroll'"
-      >
-        <!-- HEADER -->
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width:3rem"></th>
-            <th pSortableColumn="salaNombre">
-              Sala <p-sortIcon field="salaNombre"></p-sortIcon>
-            </th>
-            <th pSortableColumn="promedio">
-              Promedio <p-sortIcon field="promedio"></p-sortIcon>
-            </th>
-            <th pSortableColumn="total">
-              Total calificaciones <p-sortIcon field="total"></p-sortIcon>
-            </th>
-          </tr>
-        </ng-template>
-
-        <!-- BODY -->
-        <ng-template pTemplate="body" let-row>
-          <tr>
-            <td>
-              <button
-                pButton
-                type="button"
-                class="p-button-text p-button-rounded"
-                [icon]="
-                  expandedRowKeys[row.salaId]
-                    ? 'pi pi-chevron-down'
-                    : 'pi pi-chevron-right'
-                "
-                (click)="toggleRow(row)"
-              ></button>
-            </td>
-            <td class="font-medium">{{ row.salaNombre }}</td>
-            <td>
-              <p-rating
-                [readonly]="true"
-                [ngModel]="row.promedio"
-                [stars]="5"
-              ></p-rating>
-              <span class="ml-2">{{ row.promedio | number: '1.2-2' }}</span>
-            </td>
-            <td>{{ row.total }}</td>
-          </tr>
-
-          <!-- 🔽 EXPANSIÓN EN LA MISMA FILA (compatible con v17) -->
-          <tr *ngIf="expandedRowKeys[row.salaId]">
-            <td [attr.colspan]="4">
-              <div class="p-3 bg-surface-100 rounded-md mt-2">
-                <h4 class="m-0 mb-3">
-                  Calificaciones ({{ row.calificaciones?.length || 0 }})
-                </h4>
-
-                <p-table
-                  [value]="row.calificaciones || []"
-                  [paginator]="true"
-                  [rows]="5"
-                  [rowsPerPageOptions]="[5, 10]"
-                  [responsiveLayout]="'scroll'"
-                >
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th style="min-width: 10rem">Fecha</th>
-                      <th style="min-width: 12rem">Usuario</th>
-                      <th style="min-width: 10rem">Puntuación</th>
-                      <th>Comentario</th>
-                    </tr>
-                  </ng-template>
-
-                  <ng-template pTemplate="body" let-c>
-                    <tr>
-                      <td class="nowrap">
-                        {{ c.fecha | date: 'dd/MM/yyyy HH:mm' }}
-                      </td>
-                      <td>{{ c.usuarioId }}</td>
-                      <td class="nowrap">
-                        <p-rating
-                          [readonly]="true"
-                          [ngModel]="c.puntuacion"
-                          [stars]="5"
-                        ></p-rating>
-                        <span class="ml-2">{{ c.puntuacion }}</span>
-                      </td>
-                      <td style="white-space: pre-wrap">
-                        {{ c.comentario || '—' }}
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="4" class="text-center text-color-secondary">
-                        Sin calificaciones para este rango.
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4" class="text-center text-color-secondary">
-              No hay datos.
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-
-    <p-toast />
-  `,
+  templateUrl: "./reporte-top-salas-gustadas.html" ,
 })
 export class ReporteTopSalasGustadasComponent implements OnInit {
   // servicios
@@ -539,83 +343,97 @@ export class ReporteTopSalasGustadasComponent implements OnInit {
     console.log('[onRowCollapse]', e?.data?.salaId);
   }
   generarPDF() {
-  const rows = this.rows();
-  if (!rows.length) {
-    this.toast.add({ severity: 'info', summary: 'PDF', detail: 'No hay datos para exportar.' });
-    return;
-  }
-  const doc = this.buildDocDefinitionTopOnly(rows);
-  pdfMake.createPdf(doc as any).download(`Top_5_Salas_${this.hoyYmd()}.pdf`);
-}
-
-private buildDocDefinitionTopOnly(rows: TopSalaRow[]) {
-  // Encabezado de la tabla
-  const header: any[] = [
-    { text: 'Sala', style: 'th' },
-    { text: 'Promedio estrellas', style: 'th', alignment: 'center' },
-    { text: 'Total calificaciones', style: 'th', alignment: 'center' },
-  ];
-
-  // Filas (solo top; ya viene limitado a 5 en tu lógica)
-  const body: any[] = [header];
-  for (const r of rows) {
-    body.push([
-      { text: r.salaNombre, style: 'td' },
-      { text: ` (${r.promedio.toFixed(2)}/5)`, style: 'td', alignment: 'center' },
-      { text: String(r.total), style: 'td', alignment: 'center' },
-    ]);
+    const rows = this.rows();
+    if (!rows.length) {
+      this.toast.add({
+        severity: 'info',
+        summary: 'PDF',
+        detail: 'No hay datos para exportar.',
+      });
+      return;
+    }
+    const doc = this.buildDocDefinitionTopOnly(rows);
+    pdfMake.createPdf(doc as any).download(`Top_5_Salas_${this.hoyYmd()}.pdf`);
   }
 
-  return {
-    content: [
-      { text: 'Top 5 Salas más gustadas', style: 'title' },
-      {
-        columns: [
-          { text: `Rango: ${this.fmtFecha(this.filtros.desde)}  —  ${this.fmtFecha(this.filtros.hasta)}`, style: 'meta' },
-          { text: `Sala (filtro): ${this.filtros.salaId ? this.salaMap[this.filtros.salaId] || this.filtros.salaId : 'Todas'}`, style: 'meta', alignment: 'right' },
-        ],
-        margin: [0, 0, 0, 8],
-      },
-      {
-        table: {
-          widths: ['*', 120, 150],
-          body,
+  private buildDocDefinitionTopOnly(rows: TopSalaRow[]) {
+    // Encabezado de la tabla
+    const header: any[] = [
+      { text: 'Sala', style: 'th' },
+      { text: 'Promedio estrellas', style: 'th', alignment: 'center' },
+      { text: 'Total calificaciones', style: 'th', alignment: 'center' },
+    ];
+
+    // Filas (solo top; ya viene limitado a 5 en tu lógica)
+    const body: any[] = [header];
+    for (const r of rows) {
+      body.push([
+        { text: r.salaNombre, style: 'td' },
+        {
+          text: ` (${r.promedio.toFixed(2)}/5)`,
+          style: 'td',
+          alignment: 'center',
         },
-        layout: {
-          fillColor: (rowIndex: number) => (rowIndex === 0 ? '#f1f3f5' : null),
-          hLineWidth: (i: number, node: any) => (i === 1 ? 1.2 : 0.5),
-          vLineWidth: () => 0,
-          hLineColor: () => '#999'
+        { text: String(r.total), style: 'td', alignment: 'center' },
+      ]);
+    }
+
+    return {
+      content: [
+        { text: 'Top 5 Salas más gustadas', style: 'title' },
+        {
+          columns: [
+            {
+              text: `Rango: ${this.fmtFecha(this.filtros.desde)}  —  ${this.fmtFecha(this.filtros.hasta)}`,
+              style: 'meta',
+            },
+            {
+              text: `Sala (filtro): ${this.filtros.salaId ? this.salaMap[this.filtros.salaId] || this.filtros.salaId : 'Todas'}`,
+              style: 'meta',
+              alignment: 'right',
+            },
+          ],
+          margin: [0, 0, 0, 8],
         },
+        {
+          table: {
+            widths: ['*', 120, 150],
+            body,
+          },
+          layout: {
+            fillColor: (rowIndex: number) =>
+              rowIndex === 0 ? '#f1f3f5' : null,
+            hLineWidth: (i: number, node: any) => (i === 1 ? 1.2 : 0.5),
+            vLineWidth: () => 0,
+            hLineColor: () => '#999',
+          },
+        },
+      ],
+      styles: {
+        title: { fontSize: 20, bold: true, margin: [0, 0, 0, 6] },
+        meta: { fontSize: 10, color: '#555' },
+        th: { bold: true, fontSize: 11, color: '#333', margin: [0, 6, 0, 6] },
+        td: { fontSize: 10, margin: [0, 6, 0, 6] },
       },
-    ],
-    styles: {
-      title: { fontSize: 20, bold: true, margin: [0, 0, 0, 6] },
-      meta: { fontSize: 10, color: '#555' },
-      th: { bold: true, fontSize: 11, color: '#333', margin: [0, 6, 0, 6] },
-      td: { fontSize: 10, margin: [0, 6, 0, 6] },
-    },
-    defaultStyle: { fontSize: 10 },
-    pageMargins: [40, 40, 40, 40],
-  };
-}
+      defaultStyle: { fontSize: 10 },
+      pageMargins: [40, 40, 40, 40],
+    };
+  }
 
-// Helpers de formato
-private stars(val: number) {
-  // Redondeo al 0.5 si quieres: const n = Math.round(val * 2) / 2;
-  const n = Math.round(val);        // 0..5 entero
-  return '★'.repeat(n) + '☆'.repeat(5 - n);
+  // Helpers de formato
+  private stars(val: number) {
+    // Redondeo al 0.5 si quieres: const n = Math.round(val * 2) / 2;
+    const n = Math.round(val); // 0..5 entero
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+  private fmtFecha(d: Date | null): string {
+    if (!d) return '-';
+    const dd = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return dd.toISOString().slice(0, 16).replace('T', ' ');
+  }
+  private hoyYmd(): string {
+    const d = new Date();
+    const z = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
+  }
 }
-private fmtFecha(d: Date | null): string {
-  if (!d) return '-';
-  const dd = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-  return dd.toISOString().slice(0, 16).replace('T', ' ');
-}
-private hoyYmd(): string {
-  const d = new Date();
-  const z = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
-}
-}
-
-
