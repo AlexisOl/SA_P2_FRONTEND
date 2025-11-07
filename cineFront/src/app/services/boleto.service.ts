@@ -1,8 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import {environment} from '../../environments/environment';
-import {ResponseBoletoDetalladoDTO, ResponseBoletoDTO} from '@/models/boleto.model';
+import {ReporteBoletosGeneralDTO, ResponseBoletoDetalladoDTO, ResponseBoletoDTO} from '@/models/boleto.model';
 
 const baseUrl = environment.URL_GATEWAY + '/api/ventas/boletos';
 
@@ -24,6 +24,20 @@ export class BoletoService {
 
   obtenerBoletoPorCodigo(codigoBoleto: string): Observable<ResponseBoletoDTO> {
     return this.http.get<ResponseBoletoDTO>(`${baseUrl}/codigo/${codigoBoleto}`).pipe(
+      catchError((error: HttpErrorResponse) => throwError(() => error))
+    );
+  }
+
+  generarReporteBoletos(fechaInicio: string, fechaFin: string, salaId?: string): Observable<ReporteBoletosGeneralDTO> {
+    let params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+
+    if (salaId) {
+      params = params.set('salaId', salaId);
+    }
+
+    return this.http.get<ReporteBoletosGeneralDTO>(`${baseUrl}/reporte`, { params }).pipe(
       catchError((error: HttpErrorResponse) => throwError(() => error))
     );
   }

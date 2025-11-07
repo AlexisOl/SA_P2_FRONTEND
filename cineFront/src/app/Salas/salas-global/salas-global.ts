@@ -299,9 +299,9 @@ generarBloqueo(){
   const nuevoBloqueo: bloqueoAnuncio= {
     fecha: this.fechaBloqueo,
     cantidad_dias: this.cantidadDias,
-    idCine: this.idCine
+    cine: this.idCine
   }
-    this.bloqueoServicio.crearBloqueoCine(nuevoBloqueo).subscribe(
+    this.propiedadAnuncioServicio.crearBloqueoCine(nuevoBloqueo).subscribe(
             (next) => {
             this.calificacionesVisibles = !this.calificacionesVisibles;
 

@@ -1,5 +1,5 @@
 import { PropiedadAnuncio } from '@/models/Anuncios';
-import { snacks } from '@/models/Cine';
+import { bloqueoAnuncio, snacks } from '@/models/Cine';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -46,4 +46,10 @@ export class PropiedadAnuncioServiceService {
         this.URL, sala
       )
     }
+
+         public crearBloqueoCine(sala: any):Observable<bloqueoAnuncio> {
+          return  this.http.post<bloqueoAnuncio>(
+            this.URL+"/GenerarBloqueo", sala
+          )
+        }
 }
