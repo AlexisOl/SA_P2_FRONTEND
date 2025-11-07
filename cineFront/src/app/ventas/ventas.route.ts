@@ -4,6 +4,7 @@ import { VentaSnack } from '@/ventas/venta-snack/venta-snack';
 import { VentaBoletos } from '@/ventas/venta-boletos/venta-boletos';
 import { authGuard } from '@/guards/auth.guard';
 import { roleMatchGuard } from '@/guards/role.guard';
+import { MisBoletos } from './mis-boletos/mis-boletos';
 
 export default [
   {
