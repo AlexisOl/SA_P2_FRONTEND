@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: '20.19.5'
           cache: 'npm'
+          cache-dependency-path: cineFront/package-lock.json
 
       - name:  Instalar dependencias
         working-directory: cineFront
