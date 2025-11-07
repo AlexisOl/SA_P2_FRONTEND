@@ -171,7 +171,10 @@ export class AppMenu {
               },
             ],
           },
-          { label: 'Cerrar sesión', icon: 'pi pi-fw pi-sign-out', visible: isLogged, command: () => this.logout() }
+          { label: 'Cerrar sesión', icon: 'pi pi-fw pi-sign-out', visible: isLogged, command: () => this.logout() },
+          { label: 'Login', icon: 'pi pi-fw pi-sign-in', routerLink: ['/auth/login'], visible: !isLogged },
+          //{ label: 'Registro', icon: 'pi pi-fw pi-user-plus', routerLink: ['/pages/register'], visible: isAdmin },
+          { label: 'Registro clientes', icon: 'pi pi-fw pi-user-plus', routerLink: ['/auth/register-cliente'], visible: !isLogged },
         ],
       },
     ];
