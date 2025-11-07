@@ -89,6 +89,11 @@ export class AppMenu {
                 icon: 'pi pi-fw pi-list',
                 routerLink: ['/report/reportes-top-salas'],
               },
+              {
+                label: 'Boletos mas vendidos',
+                icon: 'pi pi-fw pi-ticket',
+                routerLink: ['/report/reportes-boletos-vendidos'],
+              }
             ],
           },
           {
@@ -152,6 +157,11 @@ export class AppMenu {
                 routerLink: ['/peliculas/listado'],
               },
             ],
+          },
+          {
+            label: 'Mis boletos',
+            icon: 'pi pi-fw pi-ticket',
+            routerLink: ['/home/ventas/mis-boletos']
           },
           {
             label: 'Usuario',
