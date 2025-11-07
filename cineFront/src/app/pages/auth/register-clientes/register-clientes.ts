@@ -118,7 +118,10 @@ export class RegisterClientesComponent implements OnInit {
       next: (u) => {
         this.toast.add({ severity: 'success', summary: 'Registro exitoso', detail: u?.email });
         this.loading = false;
-        this.router.navigate(['/auth/login']); 
+        //this.router.navigate(['/auth/login']); 
+        setTimeout(() => {
+      this.router.navigate(['/auth/login']);
+    }, 2000);
       },
       error: (err) => {
         this.loading = false;
