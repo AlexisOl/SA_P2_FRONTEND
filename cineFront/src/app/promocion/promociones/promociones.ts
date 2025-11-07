@@ -1,25 +1,31 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { SelectModule } from 'primeng/select';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DialogModule } from 'primeng/dialog';
-import { TagModule } from 'primeng/tag';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DatePickerModule } from 'primeng/datepicker';
-import { TooltipModule } from 'primeng/tooltip';
+import {Component, OnInit, signal, ViewChild} from '@angular/core';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {Table, TableModule} from 'primeng/table';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ButtonModule} from 'primeng/button';
+import {RippleModule} from 'primeng/ripple';
+import {ToastModule} from 'primeng/toast';
+import {ToolbarModule} from 'primeng/toolbar';
+import {InputTextModule} from 'primeng/inputtext';
+import {TextareaModule} from 'primeng/textarea';
+import {SelectModule} from 'primeng/select';
+import {InputNumberModule} from 'primeng/inputnumber';
+import {DialogModule} from 'primeng/dialog';
+import {TagModule} from 'primeng/tag';
+import {InputIconModule} from 'primeng/inputicon';
+import {IconFieldModule} from 'primeng/iconfield';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {DatePickerModule} from 'primeng/datepicker';
+import {TooltipModule} from 'primeng/tooltip';
 import {PromocionService} from '@/services/promocion.service';
 import {CrearPromocionDTO, EditarPromocionDTO, ResponsePromocionDTO, TipoPromocion} from '@/models/promocion';
+import {cine, sala} from '@/models/Cine';
+import {CineServiceService} from '@/services/cine-service.service';
+import {isArray} from 'chart.js/helpers';
+import {SalaServicio} from '@/services/sala-servicio.service';
+import {MovieMin} from '@/peliculas/horarios-gestion/horarios-gestion';
+import {MovieService} from '@/peliculas/services/movie.service';
 
 @Component({
   selector: 'app-promociones',
@@ -43,7 +49,7 @@ import {CrearPromocionDTO, EditarPromocionDTO, ResponsePromocionDTO, TipoPromoci
     DatePickerModule,
     TooltipModule
   ],
-  providers: [MessageService, ConfirmationService, PromocionService],
+  providers: [MessageService, ConfirmationService, PromocionService, CineServiceService, SalaServicio, MovieService],
   templateUrl: './promociones.html',
   styleUrl: './promociones.scss',
 })
@@ -61,6 +67,14 @@ export class Promociones implements OnInit {
   // Opciones para selects
   tiposPromocion: any[] = [];
   estadosPromocion: any[] = [];
+  cines: cine[] = [];
+  peliculas: MovieMin[] = [];
+  clientes: any[] = [];
+  salas: sala[] = [];
+  cineSeleccionado: cine | null = null;
+  peliculaSeleccionada: MovieMin | null = null;
+  clienteSeleccionado: any | null = null;
+  salaSeleccionada: sala | null = null;
 
   // Para fechas
   minDate: Date = new Date();
@@ -68,21 +82,101 @@ export class Promociones implements OnInit {
   constructor(
     private promocionService: PromocionService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private cineService: CineServiceService,
+    private salaServicio: SalaServicio,
+    private movies: MovieService,
   ) {}
 
   ngOnInit() {
     this.loadPromociones();
     this.initializeSelectOptions();
+    this.cargarCines();
+    this.cargarPeliculas();
+  }
+
+  cargarPeliculas() {
+    this.movies.list().subscribe({
+      next: (list: any) => {
+        console.log('cargar peliculas');
+
+        // adapta si tu Movie tiene otro shape
+        this.peliculas = (list || []).map((m: any) => ({
+          id: m.id,
+          titulo: m.titulo,
+        }));
+      },
+    });
+  }
+
+  cargarCines() {
+    this.cineService.obtenerCInesLIst()
+      .subscribe({
+        next: data => {
+          this.cines = data;
+        }, error: err => {
+          console.error('Error al cargar cines:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron cargar los cines'
+          });
+        }
+      });
+  }
+
+
+  onCineChange(event: any): void {
+    this.promocion.cineId = event.value.id;
+    if (event.value && event.value.id) {
+      console.log('cargar salas');
+      this.cargarSalasPorCine(event.value.id);
+    }
+  }
+
+  onSalaChange(event: any): void {
+    this.promocion.salaId = event.value.id;
+  }
+
+  onChangePelicula() {
+    this.promocion.peliculaId = this.peliculaSeleccionada?.id;
+  }
+
+
+  cargarSalasPorCine(cineId: string): void {
+
+    this.salaServicio.listarSalasId(cineId).subscribe({
+      next: (res) => {
+        this.salas =  res as sala[];
+
+        if (isArray(res) && res.length == 0) {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Información',
+            detail: 'Este cine no tiene salas registradas'
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar salas:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudieron cargar las salas'
+        });
+      }
+    });
   }
 
   initializeSelectOptions() {
     this.tiposPromocion = [
-      { label: 'General', value: TipoPromocion.GENERAL },
-      { label: 'Cine', value: TipoPromocion.CINE },
+      { label: 'Boleto y snack', value: TipoPromocion.AMBOS },
+      //{ label: 'Cine', value: TipoPromocion.CINE },
       { label: 'Sala', value: TipoPromocion.SALA },
       { label: 'Película', value: TipoPromocion.PELICULA },
-      { label: 'Cliente', value: TipoPromocion.CLIENTE }
+      { label: 'Cliente', value: TipoPromocion.CLIENTE },
+      { label: 'Boletos', value: TipoPromocion.BOLETOS},
+      {label: 'Snack', value: TipoPromocion.SNACKS},
     ];
 
     this.estadosPromocion = [
@@ -362,7 +456,7 @@ export class Promociones implements OnInit {
 
   getSeverityTipo(tipo: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     switch (tipo) {
-      case TipoPromocion.GENERAL:
+      case TipoPromocion.AMBOS:
         return 'info';
       case TipoPromocion.CINE:
         return 'secondary';  // Cambiar 'primary' por cualquiera de los valores válidos
@@ -372,6 +466,10 @@ export class Promociones implements OnInit {
         return 'success';
       case TipoPromocion.CLIENTE:
         return 'contrast';
+        case TipoPromocion.BOLETOS:
+          return 'danger';
+          case TipoPromocion.SNACKS:
+            return 'secondary';
       default:
         return 'info';
     }

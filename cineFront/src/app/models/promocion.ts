@@ -65,9 +65,11 @@ export interface FiltroPromocionDTO {
  * Enum que representa los tipos de promoción
  */
 export enum TipoPromocion {
-  GENERAL = 'GENERAL',
+  AMBOS = 'AMBOS',
   CINE = 'CINE',
   SALA = 'SALA',
   PELICULA = 'PELICULA',
-  CLIENTE = 'CLIENTE'
+  CLIENTE = 'CLIENTE',
+  BOLETOS = 'BOLETOS',
+  SNACKS = 'SNACKS',
 }
