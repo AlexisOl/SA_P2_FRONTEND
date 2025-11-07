@@ -10,7 +10,7 @@ export default [
   //{path: '', component: CategoriesCrudComponent},
   {path: 'reportes-peliculas-sala', component: ReportePeliculasPorSalaComponent},
   {path: 'reportes-top-salas', component: ReporteTopSalasGustadasComponent},
-  {path: 'reportes-boletos-vendidos', component: ReporteBoletosVendidos}
+  {path: 'reportes-boletos-vendidos', component: ReporteBoletosVendidos},
   {path: 'reportes-anuncios', component: IngresosAnuncios},
 
 

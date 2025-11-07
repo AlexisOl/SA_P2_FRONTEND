@@ -93,6 +93,11 @@ export class AppMenu {
                 label: 'Boletos mas vendidos',
                 icon: 'pi pi-fw pi-ticket',
                 routerLink: ['/report/reportes-boletos-vendidos'],
+              },
+                  {
+                label: 'Ingreso de anuncios',
+                icon: 'pi pi-fw pi-ticket',
+                routerLink: ['/report/reportes-anuncios'],
               }
             ],
           },
