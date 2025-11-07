@@ -26,6 +26,13 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import {CalificacionPeliculaService} from '@/services/calificacion-pelicula.service';
 import {ConfirmationService, MessageService} from 'primeng/api';
+import {MovieMin} from '@/peliculas/horarios-gestion/horarios-gestion';
+import {MovieService} from '@/peliculas/services/movie.service';
+import {AuthService} from '@/services/auth';
+import {ResponseBoletoDetalladoDTO} from '@/models/boleto.model';
+import {VentaService} from '@/services/venta.service';
+import {BoletoService} from '@/services/boleto.service';
+import {ProgressSpinner} from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-calificacion-pelicula',
@@ -48,9 +55,10 @@ import {ConfirmationService, MessageService} from 'primeng/api';
     ChipModule,
     DividerModule,
     ProgressBarModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    ProgressSpinner
   ],
-  providers: [MessageService, ConfirmationService, CalificacionPeliculaService],
+  providers: [MessageService, ConfirmationService, CalificacionPeliculaService, MovieService, AuthService, VentaService, BoletoService],
   templateUrl: './calificacion-pelicula.html',
   styleUrl: './calificacion-pelicula.scss',
 })
@@ -79,17 +87,59 @@ export class CalificacionPelicula implements OnInit {
   // Estadísticas
   totalCalificaciones: number = 0;
   distribucionEstrellas: Map<number, number> = new Map();
+  peliculas: MovieMin[] = [];
+
+  // NUEVO: Para gestionar películas por calificar
+  usuarioId: string = '';
+  peliculasPorCalificar: Array<{
+    peliculaId: string;
+    peliculaTitulo: string;
+    yaCalificada: boolean;
+  }> = [];
+  cargandoPeliculas: boolean = false;
 
   constructor(
     private calificacionService: CalificacionPeliculaService,
     private fb: FormBuilder,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private movies: MovieService,
+    private authService: AuthService,
+    private ventaService: VentaService,
+    private boletoService: BoletoService,
   ) {}
 
   ngOnInit(): void {
+
+    this.authService.currentUser$.subscribe(u => {
+      if (u) {
+        this.usuarioId = u.id;
+        this.cargarPeliculasPorCalificar();
+      }
+    });
+
+    this.authService.fetchAndCacheUser().subscribe(u => {
+      if (u) {
+        this.usuarioId = u.id;
+        this.cargarPeliculasPorCalificar();
+      }
+    });
     this.inicializarFormulario();
     this.cargarCalificaciones();
+  }
+
+  cargarPeliculas() {
+    this.movies.list().subscribe({
+      next: (list: any) => {
+        console.log('cargar peliculas');
+
+        // adapta si tu Movie tiene otro shape
+        this.peliculas = (list || []).map((m: any) => ({
+          id: m.id,
+          titulo: m.titulo,
+        }));
+      },
+    });
   }
 
 
@@ -353,6 +403,83 @@ export class CalificacionPelicula implements OnInit {
 
   limpiarFiltros(): void {
     this.cargarCalificaciones();
+  }
+
+  cargarPeliculasPorCalificar(): void {
+    if (!this.usuarioId) return;
+
+    this.cargandoPeliculas = true;
+
+    // 1. Obtener todas las ventas del usuario
+    this.ventaService.listarVentas({ usuarioId: this.usuarioId }).subscribe({
+      next: (ventas) => {
+        // 2. Para cada venta, obtener sus boletos
+        const promesasBoletos = ventas.map(venta =>
+          this.boletoService.listarBoletosPorVenta(venta.ventaId).toPromise()
+        );
+
+        Promise.all(promesasBoletos).then((resultadosBoletos) => {
+          // 3. Extraer películas únicas
+          const peliculasMap = new Map<string, string>();
+
+          resultadosBoletos.forEach(boletos => {
+            if (boletos) {
+              boletos.forEach((boleto: ResponseBoletoDetalladoDTO) => {
+                peliculasMap.set(boleto.peliculaId, boleto.peliculaTitulo);
+              });
+            }
+          });
+
+          // 4. Verificar cuáles ya fueron calificadas
+          this.calificacionService.listarCalificacionesPorUsuario(this.usuarioId).subscribe({
+            next: (misCalificaciones) => {
+              this.peliculasPorCalificar = Array.from(peliculasMap.entries()).map(([id, titulo]) => ({
+                peliculaId: id,
+                peliculaTitulo: titulo,
+                yaCalificada: misCalificaciones.some(cal => cal.peliculaId === id)
+              }));
+
+              this.cargandoPeliculas = false;
+            },
+            error: (error) => {
+              console.error('Error al cargar mis calificaciones:', error);
+              this.cargandoPeliculas = false;
+            }
+          });
+        }).catch(error => {
+          console.error('Error al cargar boletos:', error);
+          this.cargandoPeliculas = false;
+        });
+      },
+      error: (error) => {
+        console.error('Error al cargar ventas:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudieron cargar tus películas'
+        });
+        this.cargandoPeliculas = false;
+      }
+    });
+  }
+
+  /**
+   * Abrir diálogo para calificar una película específica
+   */
+  abrirDialogoCalificarPelicula(peliculaId: string, peliculaTitulo: string): void {
+    this.calificacionForm.patchValue({
+      usuarioId: this.usuarioId,
+      peliculaId: peliculaId
+    });
+    this.ratingValue = 0;
+    this.displayDialog = true;
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Calificar Película',
+      detail: `Calificando: ${peliculaTitulo}`,
+      life: 3000
+    });
   }
 
 }

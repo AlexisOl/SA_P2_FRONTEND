@@ -12,14 +12,14 @@
         <h2 class="m-0">Calificaciones de Películas</h2>
       </div>
     </ng-template>
-    <ng-template pTemplate="right">
-      <p-button
-        label="Nueva Calificación"
-        icon="pi pi-plus"
-        (onClick)="abrirDialogoCalificacion()"
-        severity="success">
-      </p-button>
-    </ng-template>
+<!--    <ng-template pTemplate="right">-->
+<!--      <p-button-->
+<!--        label="Nueva Calificación"-->
+<!--        icon="pi pi-plus"-->
+<!--        (onClick)="abrirDialogoCalificacion()"-->
+<!--        severity="success">-->
+<!--      </p-button>-->
+<!--    </ng-template>-->
   </p-toolbar>
 
   <!-- Grid de estadísticas -->
@@ -93,6 +93,67 @@
             </p-progressBar>
             <span class="text-sm" style="width: 40px;">{{ obtenerPorcentajeEstrella(estrella) }}%</span>
           </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- NUEVO: Card de Películas por Calificar -->
+    <div class="col-12 md:col-3 pl-md-2 pl-0 pr-0">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="p-3 bg-primary">
+            <h4 class="m-0 text-white">
+              <i class="pi pi-pencil mr-2"></i>
+              Mis Películas
+            </h4>
+          </div>
+        </ng-template>
+
+        <p-progressSpinner
+          *ngIf="cargandoPeliculas"
+          [style]="{width: '40px', height: '40px'}">
+        </p-progressSpinner>
+
+        <div *ngIf="!cargandoPeliculas && peliculasPorCalificar.length > 0" class="flex flex-column gap-2">
+          <div
+            *ngFor="let pelicula of peliculasPorCalificar"
+            class="flex align-items-center justify-content-between p-2 border-round hover:surface-hover">
+            <div class="flex-1">
+              <div class="font-semibold text-sm">{{ pelicula.peliculaTitulo }}</div>
+              <p-tag
+                *ngIf="pelicula.yaCalificada"
+                value="Calificada"
+                severity="success"
+                icon="pi pi-check"
+                styleClass="mt-1"
+                [style]="{'font-size': '0.7rem'}">
+              </p-tag>
+              <p-tag
+                *ngIf="!pelicula.yaCalificada"
+                value="Pendiente"
+                severity="warn"
+                icon="pi pi-clock"
+                styleClass="mt-1"
+                [style]="{'font-size': '0.7rem'}">
+              </p-tag>
+            </div>
+            <p-button
+              *ngIf="!pelicula.yaCalificada"
+              icon="pi pi-star"
+              [rounded]="true"
+              [text]="true"
+              severity="warn"
+              size="small"
+              (onClick)="abrirDialogoCalificarPelicula(pelicula.peliculaId, pelicula.peliculaTitulo)"
+              pTooltip="Calificar ahora"
+              tooltipPosition="left">
+            </p-button>
+          </div>
+        </div>
+
+        <div *ngIf="!cargandoPeliculas && peliculasPorCalificar.length === 0" class="text-center p-3">
+          <i class="pi pi-inbox text-4xl text-color-secondary mb-2"></i>
+          <p class="text-sm text-color-secondary m-0">No has comprado boletos aún</p>
         </div>
       </p-card>
     </div>
@@ -360,7 +421,7 @@
             id="comentario"
             pInputTextarea
             formControlName="comentario"
-            rows="4"
+            rows="5"
             [maxlength]="MAX_COMENTARIO"
             placeholder="Comparte tu opinión sobre esta película..."
             [autoResize]="true">
