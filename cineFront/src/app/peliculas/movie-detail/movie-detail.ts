@@ -14,6 +14,7 @@ import { CineServiceService } from '@/services/cine-service.service';
 
 import { FormsModule } from '@angular/forms';
 import {Horario} from '@/models/horario';
+import { AuthService } from '@/services/auth';
 import { GalleriaModule } from 'primeng/galleria';
 import { PropiedadAnuncioServiceService } from '@/services/propiedad-anuncio-service.service';
 import { BloqueoCineServiceService } from '@/services/bloqueo-cine-service.service';
@@ -211,7 +212,13 @@ interface HorarioVM {
                          [severity]="h.activo ? 'success' : 'danger'"></p-tag>
                 </div>
                 <div class="flex items-center justify-between">
-                  <p-button label="Comprar" severity="info"  (onClick)="comprarBoletos(h)" />
+                  <p-button label="Comprar" *ngIf="isLogged" severity="info"  (onClick)="comprarBoletos(h)" />
+                  <span *ngIf="!isLogged"
+            routerLink="/auth/register-cliente"
+            style="cursor: pointer; color: blue"
+          >
+            Registrate para comprar
+          </span>
                 </div>
               </div>
             </div>
@@ -252,6 +259,8 @@ export class MovieDetailComponent implements OnInit {
   private cinesSvc = inject(CineServiceService);
   private router = inject(Router);
 
+  isLogged = false ;
+
 
   //anuncios
 selectedCineIdCine = signal<string>(''); 
@@ -269,7 +278,9 @@ selectedCineIdCine = signal<string>('');
   cineMap: Record<string, string> = {};
   private salaMaps: Record<string, Record<string, string>> = {}; // por cine
 
-  constructor() {
+  constructor(
+    private auth:AuthService
+  ) {
     // Mantener mapeo y opciones del select sincronizados con el signal de cines
     effect(() => {
       const cines = this.cinesSvc.cinesSignal?.() ?? [];
@@ -312,6 +323,7 @@ selectedCineIdCine = signal<string>('');
 
 
   ngOnInit(): void {
+    this.isLogged = !!this.auth.token;
     // Cargar cines para poblar el select
     this.cinesSvc.obtenerHoteles?.();
 

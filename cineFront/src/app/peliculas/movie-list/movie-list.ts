@@ -11,6 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '@/services/auth';
 
 @Component({
   selector: 'app-movies-grid',
@@ -33,12 +34,16 @@ export class MoviesListComponent implements OnInit {
 
   private _all = signal<Movie[]>([]);
   filtered = signal<Movie[]>([]);
+  isLogged = false ;
+  
   constructor(
     private moviesSvc: MovieService,
     private router: Router,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
+    this.isLogged = !!this.auth.token;
     this.moviesSvc.list().subscribe({
       next: (list) => {
         this._all.set(list ?? []);
