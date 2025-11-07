@@ -36,7 +36,7 @@
             @if (!this.visibleBloqueo) {
     <p-button label="Realizar Bloqueo de anuncios"  iconPos="right"
             severity="danger"
-            (onClick)="generarBloqueo()"
+            (onClick)="showDialogCrearBloqueo()"
             >
             </p-button>
             } @else {
@@ -308,6 +308,42 @@
     <div class="flex justify-end gap-2 mt-4">
       <p-button label="Cancelar" severity="secondary" (click)="visibleNuevaSala = false" />
       <p-button label="Guardar" (click)="guardarSala()" />
+    </div>
+
+  </p-dialog>
+
+</div>
+
+
+
+
+<!--bloquo-->
+<div class="card flex justify-center">
+  <p-dialog header="Nueva Sala" [modal]="true" [(visible)]="visibleCrearBloqueo" [style]="{ width: '35rem' }">
+
+    <!-- Nombre Sala -->
+    <div class="flex items-center gap-4 mb-3">
+      <label for="nombre" class="font-semibold w-32">Fecha</label>
+          <input
+        type="date"
+        [(ngModel)]="this.fechaBloqueo"
+        class="w-full p-inputtext p-2 border rounded"
+      />
+
+    </div>
+
+    <!-- Tipo Sala -->
+    <div class="flex items-center gap-4 mb-3">
+      <label for="tipo" class="font-semibold w-32">Cantidad de dias</label>
+            <input pInputText id="filas" type="number" min="1" [(ngModel)]="this.cantidadDias"
+        class="border border-gray-400 rounded px-2 py-1 flex-auto" />
+
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-2 mt-4">
+      <p-button label="Cancelar" severity="secondary" (click)="visibleCrearBloqueo = false" />
+      <p-button label="Guardar" (click)="generarBloqueo()" />
     </div>
 
   </p-dialog>

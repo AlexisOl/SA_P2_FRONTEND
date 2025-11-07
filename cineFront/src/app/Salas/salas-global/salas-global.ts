@@ -1,4 +1,4 @@
-import { cine, MatrizAsientos, sala, ValidacionesSala } from '@/models/Cine';
+import { bloqueoAnuncio, cine, MatrizAsientos, sala, ValidacionesSala } from '@/models/Cine';
 import { CineServiceService } from '@/services/cine-service.service';
 import { SalaServicio } from '@/services/sala-servicio.service';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -50,6 +50,7 @@ export class SalasGlobal implements OnInit{
   visible: boolean = false;
   visibleNuevaSala: boolean = false;
   visibleBloqueo: boolean = false;
+  visibleCrearBloqueo:boolean = false;
   listadoComentarios:[] =[]
 
 
@@ -80,6 +81,10 @@ export class SalasGlobal implements OnInit{
   //edicion
   id_cineEditar!:String|undefined
   cineEditar = signal<any>([])
+
+  //bloqueos
+  fechaBloqueo!:Date 
+cantidadDias!:Number
 
 
   // paginator
@@ -176,6 +181,13 @@ export class SalasGlobal implements OnInit{
 
 
   }
+ showDialogCrearBloqueo() {
+    this.visibleCrearBloqueo = true;
+    //this.listadoComentarios = []
+
+
+  }
+  
 
 
   verDialogoNuevaSala() {
@@ -284,6 +296,27 @@ cambiarVisibilidadCalificaciones(id: string) {
 
 
 generarBloqueo(){
-  
+  const nuevoBloqueo: bloqueoAnuncio= {
+    fecha: this.fechaBloqueo,
+    cantidad_dias: this.cantidadDias,
+    idCine: this.idCine
+  }
+    this.bloqueoServicio.crearBloqueoCine(nuevoBloqueo).subscribe(
+            (next) => {
+            this.calificacionesVisibles = !this.calificacionesVisibles;
+
+             this.alertaServicio.generacionAlerta(
+        'Éxito', 'El bloqueo de anuncios se realizo correctamente.', 'success'
+        )
+
+      }, (error) => {
+
+           this.alertaServicio.generacionAlerta(
+          'Error', 'Hubo un problema al bloquar los anuncios.', 'error'
+        )
+
+      }
+ 
+  );
 }
 }

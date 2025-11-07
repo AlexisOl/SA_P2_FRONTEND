@@ -49,7 +49,7 @@ export interface snacks {
 export interface bloqueoAnuncio {
      id?:String;
      fecha:Date;
-     fecha_fin:Date;
+     fecha_fin?:Date;
      cantidad_dias:Number;
      idCine:String;
 }

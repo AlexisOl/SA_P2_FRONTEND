@@ -383,6 +383,8 @@ export class VentaBoletos implements OnInit {
       aplicarPromocion: this.mejorPromocion !== null
     };
 
+    console.log(ventaDTO);
+    
     this.ventaService.crearVenta(ventaDTO).subscribe({
       next: (response) => {
         this.procesandoVenta = false;
