@@ -24,6 +24,7 @@
     "@sweetalert2/ngx-sweetalert2": "^14.0.0",
     "@tailwindcss/postcss": "^4.1.14",
     "chart.js": "4.4.2",
+    "html2canvas": "^1.4.1",
     "pdfmake": "^0.2.20",
     "postcss": "^8.5.6",
     "primeclt": "^0.1.5",

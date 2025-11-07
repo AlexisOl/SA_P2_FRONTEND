@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '@/services/auth';
 
-import { RouterModule } from '@angular/router'; 
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',

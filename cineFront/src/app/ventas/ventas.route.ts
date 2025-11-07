@@ -14,4 +14,5 @@ export default [
   },
   { path: 'snack', component: VentaSnack },
   { path: 'boletos', component: VentaBoletos },
+  {path: 'mis-boletos', component: MisBoletos}
 ] as Routes;
