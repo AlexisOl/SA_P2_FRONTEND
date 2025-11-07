@@ -1,0 +1,59 @@
+name: CI/CD Angular Frontend (cineFront)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cineFront/**'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name:  Checkout código
+        uses: actions/checkout@v4
+
+      - name:  Entrar a carpeta cineFront
+        working-directory: cineFront
+        run: echo "Usando carpeta cineFront"
+
+      - name:  Configurar Node.js 20.19.5
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.5'
+          cache: 'npm'
+
+      - name:  Instalar dependencias
+        working-directory: cineFront
+        run: npm ci
+
+      - name:  Compilar aplicación Angular
+        working-directory: cineFront
+        run: npm run build -- --configuration=production
+
+      - name:  Verificar contenido generado
+        working-directory: cineFront
+        run: ls -la dist/
+
+      #  Configuración SSH
+      - name:  Configurar clave privada SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_OR }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST_OR }} >> ~/.ssh/known_hosts
+
+      #  Crear directorio remoto si no existe
+      - name:  Crear directorio en el servidor
+        run: ssh ${{ secrets.SSH_USER_OR }}@${{ secrets.SSH_HOST_OR }} "sudo mkdir -p /var/www/html/cine && sudo chown ${{ secrets.SSH_USER_OR }} /var/www/html/cine"
+
+      #  Subir archivos al servidor
+      - name:  Subir archivos compilados
+        working-directory: cineFront
+        run: scp -r dist/cineFront/browser/* ${{ secrets.SSH_USER_OR }}@${{ secrets.SSH_HOST_OR }}:/var/www/html/cine/
+
+      #  Reiniciar NGINX
+      - name:  Reiniciar NGINX
+        run: ssh ${{ secrets.SSH_USER_OR }}@${{ secrets.SSH_HOST_OR }} "sudo systemctl restart nginx"
