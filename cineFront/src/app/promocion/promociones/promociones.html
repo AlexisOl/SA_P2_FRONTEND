@@ -17,13 +17,13 @@
       [disabled]="!selectedPromociones || !selectedPromociones.length" />
   </ng-template>
 
-  <ng-template #end>
-    <p-button
-      label="Exportar"
-      icon="pi pi-upload"
-      severity="secondary"
-      (onClick)="exportCSV()" />
-  </ng-template>
+<!--  <ng-template #end>-->
+<!--    <p-button-->
+<!--      label="Exportar"-->
+<!--      icon="pi pi-upload"-->
+<!--      severity="secondary"-->
+<!--      (onClick)="exportCSV()" />-->
+<!--  </ng-template>-->
 </p-toolbar>
 
 <p-table
@@ -129,13 +129,13 @@
           [severity]="promocion.activa ? 'warn' : 'success'"
           (click)="togglePromocionEstado(promocion)"
           [pTooltip]="promocion.activa ? 'Desactivar' : 'Activar'" />
-        <p-button
-          icon="pi pi-trash"
-          severity="danger"
-          [rounded]="true"
-          [outlined]="true"
-          (click)="deletePromocion(promocion)"
-          pTooltip="Eliminar" />
+<!--        <p-button-->
+<!--          icon="pi pi-trash"-->
+<!--          severity="danger"-->
+<!--          [rounded]="true"-->
+<!--          [outlined]="true"-->
+<!--          (click)="deletePromocion(promocion)"-->
+<!--          pTooltip="Eliminar" />-->
       </td>
     </tr>
   </ng-template>
@@ -223,6 +223,7 @@
             dateFormat="dd/mm/yy"
             [showIcon]="true"
             [minDate]="minDate"
+            appendTo="body"
             [fluid]="true" />
           <small class="text-red-500" *ngIf="submitted && !promocion.fechaInicio">
             La fecha de inicio es obligatoria.
@@ -236,6 +237,7 @@
             inputId="fechaFin"
             dateFormat="dd/mm/yy"
             [showIcon]="true"
+            appendTo="body"
             [minDate]="promocion.fechaInicio || minDate"
             [fluid]="true" />
           <small class="text-red-500" *ngIf="submitted && !promocion.fechaFin">
@@ -248,13 +250,28 @@
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12">
           <label for="cineId" class="block font-bold mb-2">ID del Cine *</label>
-          <input
-            type="text"
-            pInputText
-            id="cineId"
-            [(ngModel)]="promocion.cineId"
-            fluid
-            [disabled]="isEditMode" />
+          <p-select
+            id="cineSelect"
+            [options]="cines"
+            [(ngModel)]="cineSeleccionado"
+            (onChange)="onCineChange($event)"
+            optionLabel="nombre"
+            placeholder="Seleccione un cine"
+            [filter]="true"
+            appendTo="body"
+            [showClear]="true"
+            styleClass="w-full">
+            <ng-template #item let-cine>
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-video"></i>
+                <div>
+                  <div>{{ cine.nombre }}</div>
+                  <small class="text-color-secondary">{{ cine.direccion }}</small>
+                </div>
+              </div>
+            </ng-template>
+          </p-select>
+
           <small class="text-red-500" *ngIf="submitted && !promocion.cineId?.trim()">
             El ID del cine es obligatorio.
           </small>
@@ -265,24 +282,35 @@
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-4">
           <label for="salaId" class="block font-bold mb-2">ID Sala</label>
-          <input
-            type="text"
-            pInputText
-            id="salaId"
-            [(ngModel)]="promocion.salaId"
+          <p-select
+            id="salaSelect"
+            [options]="salas"
+            [(ngModel)]="salaSeleccionada"
+            (onChange)="onSalaChange($event)"
+            optionLabel="nombre"
             placeholder="Opcional"
-            fluid />
+            [filter]="true"
+            [showClear]="true"
+            appendTo="body"
+            [disabled]="!cineSeleccionado"
+            >
+          </p-select>
+
         </div>
 
         <div class="col-span-4">
           <label for="peliculaId" class="block font-bold mb-2">ID Película</label>
-          <input
-            type="text"
-            pInputText
-            id="peliculaId"
-            [(ngModel)]="promocion.peliculaId"
-            placeholder="Opcional"
-            fluid />
+          <p-select
+            [(ngModel)]="peliculaSeleccionada"
+            [options]="peliculas"
+            optionLabel="titulo"
+            optionValue="id"
+            placeholder="Selecciona película"
+            [filter]="true"
+            [showClear]="true"
+            appendTo="body"
+            (onChange)="onChangePelicula()"
+          />
         </div>
 
         <div class="col-span-4">

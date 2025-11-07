@@ -144,16 +144,6 @@ console.log('Seleccionado', this.cineSeleccionado, event.value);
     }
   }
 
-  onSalaChangeNative(): void {
-    this.asientos = [];
-    this.asientosSeleccionados = [];
-
-    if (this.salaSeleccionada && this.salaSeleccionada.salaId) {
-      this.salaIdSeleccionada = this.salaSeleccionada.salaId;
-    } else {
-      this.salaIdSeleccionada = '';
-    }
-  }
 
   cargarSalasPorCine(cineId: string): void {
     this.loadingSalas = true;
