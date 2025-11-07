@@ -230,9 +230,10 @@ export class RegisterComponent implements OnInit {
 
   rolesOptions = [
     { label: 'ADMIN', value: 'ADMIN' as Rol },
+    { label: 'ADMIN_CINE', value: 'ADMIN_CINE' as Rol },
     { label: 'CLIENTE', value: 'CLIENTE' as Rol },
-    { label: 'EMPLEADO_REST', value: 'EMPLEADO_REST' as Rol },
-    { label: 'EMPLEADO_HOTEL', value: 'EMPLEADO_HOTEL' as Rol },
+    { label: 'EMPLEADO_CINE', value: 'EMPLEADO_CINE' as Rol },
+    { label: 'CLIENTE_ANUNCIOS', value: 'CLIENTE_ANUNCIOS' as Rol },
   ];
   rolesFilter = [{ label: 'Todos', value: '' }, ...this.rolesOptions];
   enabledOptions = [
