@@ -246,7 +246,10 @@ export class HorariosPageComponent implements OnInit {
       formato: this.form.formato,
       inicio: this.toISO(this.formInicio!),
       fin: this.toISO(this.formFin!),
-      precio: Number(this.form.precio ?? 0)
+      precio: Number(this.form.precio ?? 0),
+      fila: 10,
+      columna: 10
+
     };
 
     const req = this.form.id ? this.svc.update(this.form.id, payload) : this.svc.create(payload);

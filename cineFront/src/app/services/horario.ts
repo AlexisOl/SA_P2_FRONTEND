@@ -27,6 +27,8 @@ export interface HorarioCreate {
   inicio: string; // ISO
   fin: string;    // ISO
   precio: number;
+  columna: number;
+  fila: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -43,7 +45,7 @@ export class HorarioService {
     if (opts.soloActivos !== undefined) params = params.set('soloActivos', String(opts.soloActivos));
     //params = params.set('soloActivos', String(opts.soloActivos ?? false));
     console.log(params.toString);
-    
+
     return this.http.get<Horario[]>(this.base, { params });
   }
 
@@ -54,8 +56,8 @@ export class HorarioService {
   update(id: string, body: Partial<HorarioCreate> & { activo?: boolean }) {
     console.log('update');
     console.log(body);
-    
-    
+
+
     return this.http.put<Horario>(`${this.base}/${id}`, body);
   }
 

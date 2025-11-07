@@ -34,6 +34,8 @@ export interface HorarioCreate {
   inicio: string;  // ISO
   fin: string;     // ISO
   precio: number;
+  fila: number;
+  columna: number;
 }
 
 export interface Sala {
