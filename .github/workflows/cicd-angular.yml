@@ -53,7 +53,7 @@ jobs:
       #  Subir archivos al servidor
       - name:  Subir archivos compilados
         working-directory: cineFront
-        run: scp -r dist/cineFront/browser/* ${{ secrets.SSH_USER_OR }}@${{ secrets.SSH_HOST_OR }}:/var/www/html/cine/
+        run: scp -r dist/sakai-ng/browser/* ${{ secrets.SSH_USER_OR }}@${{ secrets.SSH_HOST_OR }}:/var/www/html/cine/
 
       #  Reiniciar NGINX
       - name:  Reiniciar NGINX
