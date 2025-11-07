@@ -51,7 +51,8 @@ export interface bloqueoAnuncio {
      fecha:Date;
      fecha_fin?:Date;
      cantidad_dias:Number;
-     idCine:String;
+     cine:String;
+     peticiones?:string
 }
 
 

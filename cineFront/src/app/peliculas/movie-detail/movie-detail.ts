@@ -14,6 +14,9 @@ import { CineServiceService } from '@/services/cine-service.service';
 
 import { FormsModule } from '@angular/forms';
 import {Horario} from '@/models/horario';
+import { GalleriaModule } from 'primeng/galleria';
+import { PropiedadAnuncioServiceService } from '@/services/propiedad-anuncio-service.service';
+import { BloqueoCineServiceService } from '@/services/bloqueo-cine-service.service';
 
 type Clasificacion = 'A' | 'B' | 'B12' | 'B15' | 'C';
 
@@ -45,7 +48,10 @@ interface HorarioVM {
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TagModule, ButtonModule, DividerModule, SelectModule, FormsModule],
+  imports: [CommonModule, RouterModule, TagModule, ButtonModule, DividerModule, SelectModule, FormsModule,
+    GalleriaModule,
+
+  ],
   template: `
   <div class="container mx-auto p-4 lg:p-6">
 
@@ -107,6 +113,46 @@ interface HorarioVM {
 
     <p-divider class="my-5"></p-divider>
 
+      @if (!this.visibleBloqueo) {
+
+    <div class="card">
+      <p-galleria [value]="anuncios" [autoPlay]="true" [circular]="true" styleClass="shadow-lg" [showThumbnails]="false"
+        [responsiveOptions]="responsiveOptions" [numVisible]="5" [containerStyle]="{ 'max-width': '1400px' }">
+        <ng-template #item let-item>
+          @if (item.anuncio.tipo === "IMAGEN") {
+          <div class="relative w-full h-full flex flex-col justify-center items-center bg-white p-6">
+            <img [src]="item.materialAnuncio.linkimagen" class="max-w-full max-h-full object-contain rounded-lg"
+              style="flex-shrink: 0;" />
+
+            <div class="absolute inset-x-0 bottom-0 bg-black/80 p-5 text-center">
+              <h4 class="font-bold text-xl text-white drop-shadow-2xl"
+                style="color: white !important; text-shadow: 0 3px 10px rgba(0,0,0,0.9) !important;">
+                {{ item.materialAnuncio.texto }}
+              </h4>
+            </div>
+          </div>
+          } @else if (item.anuncio.tipo === "VIDEO") {
+
+        <div class="relative w-full h-full flex flex-col justify-center items-center bg-gray-900 p-4">
+
+          <video [src]="item.materialAnuncio.linkvideo" class="max-w-full max-h-full object-contain rounded-lg" autoplay muted loop
+            playsinline preload="auto" webkit-playsinline="true"></video>
+
+
+        </div>
+        }  @else if (item.idAnuncio.tipo === 'TEXTO' && item.texto) {
+            <div class="p-4 bg-white border rounded-lg min-h-32 flex items-center justify-center text-center">
+              <h3 class="text-3xl  text-black font-bold">{{ item.texto }}</h3>
+            </div>
+          }
+
+
+        </ng-template>
+
+      </p-galleria>
+    </div>
+  }
+
     <!-- SELECTOR DE CINE -->
     <div class="card p-3 mb-4 rounded-lg" style="background: var(--surface-card);">
       <div class="flex flex-wrap items-end gap-3">
@@ -118,7 +164,7 @@ interface HorarioVM {
                     optionValue="value"
                     placeholder="Todos los cines"
                     [(ngModel)]="selectedCineId"
-                    (onChange)="onChangeCine()">
+                    (onChange)="onChangeCine($event.value)"> 
           </p-select>
         </div>
         <div>
@@ -185,6 +231,20 @@ interface HorarioVM {
 })
 export class MovieDetailComponent implements OnInit {
 
+    //anuncios
+  //anuncios
+  anuncios:any[]=[]
+   responsiveOptions = [
+    { breakpoint: '768px', numVisible: 5 },
+    { breakpoint: '768px', numVisible: 3 },
+    { breakpoint: '560px', numVisible: 1 }
+  ];
+  visibleBloqueo: boolean = false;
+  propiedadAnuncioServicio = inject(PropiedadAnuncioServiceService)
+  bloqueoServicio = inject(BloqueoCineServiceService)
+
+
+  
   private route = inject(ActivatedRoute);
   private movies = inject(MovieService);
   private horariosSvc = inject(HorarioService);
@@ -192,6 +252,9 @@ export class MovieDetailComponent implements OnInit {
   private cinesSvc = inject(CineServiceService);
   private router = inject(Router);
 
+
+  //anuncios
+selectedCineIdCine = signal<string>(''); 
   // Estado
   movie = signal<MovieVM | null>(null);
   categorias = signal<Array<{id: string; nombre: string}>>([]);
@@ -223,7 +286,30 @@ export class MovieDetailComponent implements OnInit {
       this.cineMap = map;
       this.cineOptions = opts;
     });
+
+      effect(() => {
+    const cineId = this.selectedCineIdCine();
+    if (!cineId) {
+      this.visibleBloqueo = false;
+      return;
+    }
+      this.bloqueoServicio.verBloqueoActualCine(cineId).subscribe(
+        (bloqueo: any) => this.visibleBloqueo = !bloqueo, // fuerza a booleano
+        () => this.visibleBloqueo = true
+      );
+
+  });
   }
+
+
+
+   formatDate(date:Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // +1 porque meses van de 0-11
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 
   ngOnInit(): void {
     // Cargar cines para poblar el select
@@ -233,6 +319,19 @@ export class MovieDetailComponent implements OnInit {
     this.cargarPelicula(id);
     this.cargarCategorias(id);
     this.cargarHorarios(id);
+
+    //ver bloqueo
+    // this.bloqueoServicio.verBloqueoActualCine(this.selectedCineId).subscribe(
+    //        (next: any) => {
+    //         this.visibleBloqueo = next
+    //   }
+    // )
+    this.propiedadAnuncioServicio.listarAnunciosFecha(this.formatDate(new Date(Date.now())),this.formatDate(new Date(Date.now()))).subscribe(
+           (next: any) => {
+        console.log(next, "aca");
+        this.anuncios = next
+      }
+    )
   }
 
   // ---------- Cargas ----------
@@ -297,9 +396,18 @@ export class MovieDetailComponent implements OnInit {
   }
 
   // ---------- Filtro UI ----------
-  onChangeCine() {
-    // No hace nada especial aquí; el template llama displayedGrupos() que usa selectedCineId
+onChangeCine(cineId: string) {
+  if (!cineId) {
+    this.visibleBloqueo = false;
+    return;
   }
+
+  this.bloqueoServicio.verBloqueoActualCine(cineId).subscribe(
+    (bloqueo: any) => this.visibleBloqueo = !!bloqueo,
+    () => this.visibleBloqueo = false
+  );
+}
+
 
   displayedGrupos() {
     const gs = this.grupos();
