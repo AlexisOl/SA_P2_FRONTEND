@@ -1,0 +1,328 @@
+<div class="container mx-auto p-4 lg:p-6">
+  <h2 class="text-2xl font-bold mb-2">
+    Reporte: Boletos vendidos por intervalo
+  </h2>
+  <p class="text-color-secondary mb-4">
+    Seleccione un rango de fechas y opcionalmente filtre por sala para ver el detalle de ventas.
+  </p>
+
+  <!-- FILTROS -->
+  <div class="card p-4 mb-4 reporte-toolbar">
+    <div class="toolbar-header">
+      <div class="title">
+        <i class="pi pi-sliders-h mr-2"></i>
+        Filtros
+      </div>
+    </div>
+
+    <div class="toolbar-grid">
+      <!-- Desde -->
+      <div class="field">
+        <label class="field-label">Desde *</label>
+        <p-datepicker
+          name="desde"
+          [(ngModel)]="filtros.desde"
+          [showIcon]="true"
+          [showTime]="true"
+          inputId="desde"
+          class="w-full"
+        />
+        <small class="hint">Fecha/hora de inicio del intervalo</small>
+      </div>
+
+      <!-- Hasta -->
+      <div class="field">
+        <label class="field-label">Hasta *</label>
+        <p-datepicker
+          name="hasta"
+          [(ngModel)]="filtros.hasta"
+          [showIcon]="true"
+          [showTime]="true"
+          inputId="hasta"
+          class="w-full"
+        />
+        <small class="hint">Fecha/hora de fin del intervalo</small>
+      </div>
+
+      <!-- Sala -->
+
+
+
+
+    <div class="field">
+      <label class="field-label">Cine (opcional)</label>
+      <p-select
+        name="salaId"
+        class="w-full"
+        [options]="cines"
+        (onChange)="onCineChange($event)"
+        optionLabel="nombre"
+        optionValue="id"
+        placeholder="Todas"
+        [(ngModel)]="cineSeleccionado"
+      />
+      <small class="hint">Filtra por cine específica</small>
+    </div>
+
+
+      <div class="field">
+        <label class="field-label">Sala (opcional)</label>
+        <p-select
+          name="salaId"
+          class="w-full"
+          [options]="salas"
+          optionLabel="nombre"
+          (onChange)="onSalaChange($event)"
+          optionValue="id"
+          placeholder="Todas"
+          [(ngModel)]="filtros.salaId"
+        />
+        <small class="hint">Filtra por sala específica</small>
+      </div>
+    </div>
+
+    <div class="toolbar-footer">
+      <div class="quick">
+        <span class="quick-label">Rangos rápidos:</span>
+        <p-button
+          label="Hoy"
+          size="small"
+          [text]="true"
+          (onClick)="setQuickRange('today')"
+        />
+        <p-button
+          label="Últimos 7 días"
+          size="small"
+          [text]="true"
+          (onClick)="setQuickRange('7d')"
+        />
+        <p-button
+          label="Este mes"
+          size="small"
+          [text]="true"
+          (onClick)="setQuickRange('month')"
+        />
+      </div>
+
+      <div class="cta">
+        <p-button
+          label="Generar"
+          icon="pi pi-search"
+          (onClick)="generar()"
+          [loading]="loading"
+          severity="success"
+        />
+        <p-button
+          label="Limpiar"
+          icon="pi pi-eraser"
+          severity="secondary"
+          (onClick)="limpiar()"
+          [disabled]="loading"
+        />
+        <p-button
+          label="PDF"
+          icon="pi pi-file-pdf"
+          severity="danger"
+          (onClick)="generarPDF()"
+          [disabled]="!reporte() || loading"
+        />
+      </div>
+    </div>
+  </div>
+
+  <p-divider></p-divider>
+
+  <!-- RESUMEN GENERAL -->
+  <div class="card mb-4" *ngIf="reporte()">
+    <div class="grid gap-4 p-4">
+      <div class="col-12 md:col-6 lg:col-3">
+        <div class="stat-card">
+          <div class="stat-icon primary">
+            <i class="pi pi-ticket"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Total Boletos</span>
+            <span class="stat-value">{{ reporte()?.totalBoletosVendidos || 0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-3">
+        <div class="stat-card">
+          <div class="stat-icon success">
+            <i class="pi pi-dollar"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Total Recaudado</span>
+            <span class="stat-value">{{ reporte()?.totalDineroRecaudado | currency: 'GTQ' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-3">
+        <div class="stat-card">
+          <div class="stat-icon info">
+            <i class="pi pi-building"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Salas Activas</span>
+            <span class="stat-value">{{ reporte()?.detallesPorSala?.length || 0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 md:col-6 lg:col-3">
+        <div class="stat-card">
+          <div class="stat-icon warning">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Promedio/Sala</span>
+            <span class="stat-value">{{ calcularPromedioPorSala() | currency: 'GTQ' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLES POR SALA -->
+  <div class="card" *ngIf="reporte()">
+    <p-table
+      [value]="reporte()?.detallesPorSala || []"
+      dataKey="salaId"
+      [expandedRowKeys]="expandedRowKeys"
+      (onRowExpand)="onRowExpand($event)"
+      (onRowCollapse)="onRowCollapse($event)"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [responsiveLayout]="'scroll'"
+    >
+      <!-- HEADER -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width:3rem"></th>
+          <th pSortableColumn="nombreSala">
+            Sala <p-sortIcon field="nombreSala"></p-sortIcon>
+          </th>
+          <th pSortableColumn="totalBoletos" class="text-right">
+            Boletos Vendidos <p-sortIcon field="totalBoletos"></p-sortIcon>
+          </th>
+          <th pSortableColumn="totalDinero" class="text-right">
+            Total Recaudado <p-sortIcon field="totalDinero"></p-sortIcon>
+          </th>
+          <th class="text-center">Compradores</th>
+        </tr>
+      </ng-template>
+
+      <!-- BODY -->
+      <ng-template pTemplate="body" let-sala>
+        <tr>
+          <td>
+            <button
+              pButton
+              type="button"
+              class="p-button-text p-button-rounded"
+              [icon]="
+                expandedRowKeys[sala.salaId]
+                  ? 'pi pi-chevron-down'
+                  : 'pi pi-chevron-right'
+              "
+              (click)="toggleRow(sala)"
+            ></button>
+          </td>
+          <td class="font-medium">
+            <i class="pi pi-building mr-2 text-color-secondary"></i>
+            {{ sala.nombreSala || sala.salaId }}
+          </td>
+          <td class="text-right">
+            <p-tag [value]="sala.totalBoletos.toString()" severity="info"></p-tag>
+          </td>
+          <td class="text-right font-semibold">
+            {{ sala.totalDinero | currency: 'GTQ' }}
+          </td>
+          <td class="text-center">
+            <p-tag
+              [value]="sala.usuarios?.length?.toString() || '0'"
+              severity="secondary"
+              [rounded]="true"
+            ></p-tag>
+          </td>
+        </tr>
+
+        <!-- EXPANSIÓN: DETALLE DE USUARIOS -->
+        <tr *ngIf="expandedRowKeys[sala.salaId]">
+          <td [attr.colspan]="5">
+            <div class="p-3 bg-surface-100 rounded-md mt-2">
+              <h4 class="m-0 mb-3 flex align-items-center gap-2">
+                <i class="pi pi-users"></i>
+                Compradores ({{ sala.usuarios?.length || 0 }})
+              </h4>
+
+              <p-table
+                [value]="sala.usuarios || []"
+                [paginator]="true"
+                [rows]="5"
+                [rowsPerPageOptions]="[5, 10, 20]"
+                [responsiveLayout]="'scroll'"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th class="text-right">Boletos Comprados</th>
+                    <th class="text-right">Total Gastado</th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-usuario>
+                  <tr>
+                    <td>
+                      <div class="flex align-items-center gap-2">
+                        <div class="user-avatar-small">
+                          {{ getInitials(usuario.usuarioId) }}
+                        </div>
+                        <span class="font-medium">{{ usuario.usuarioId }}</span>
+                      </div>
+                    </td>
+                    <td class="text-color-secondary">
+                      <i class="pi pi-envelope mr-2"></i>
+                      {{ usuario.emailUsuario }}
+                    </td>
+                    <td class="text-right">
+                      <p-tag
+                        [value]="usuario.cantidadBoletosComprados.toString()"
+                        severity="success"
+                      ></p-tag>
+                    </td>
+                    <td class="text-right font-semibold">
+                      {{ usuario.totalGastado | currency: 'GTQ' }}
+                    </td>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="4" class="text-center text-color-secondary">
+                      No hay compradores para esta sala en el rango seleccionado.
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center text-color-secondary">
+            No hay datos para el rango y filtros seleccionados.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-toast />
+</div>
